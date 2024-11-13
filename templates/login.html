@@ -1,0 +1,11 @@
+<p> Kirjaudu sisään </p>
+<a href="/"> Takaisin </a>
+<form action="/login" method="POST">
+    <p> Käyttäjänimi: </p>
+    <input type="text" name="username">
+    <p> Salasana: </p>
+    <input type="password" name="password">
+    <br> <br>
+    <input type="submit" value="Kirjaudu sisään">
+    <p style="color:red"> {{ error_message }} </p>
+</form>
