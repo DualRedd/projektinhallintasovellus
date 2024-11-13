@@ -1,0 +1,7 @@
+Ryhmien määrä: {{ count }}
+<hr>
+{% for group in groups %}
+{{ group.name }}
+<hr>
+{% endfor %}
+<a href="/create-group">Luo uusi ryhmä</a>
