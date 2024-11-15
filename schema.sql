@@ -15,12 +15,13 @@ CREATE TABLE groups (
     visible BOOLEAN NOT NULL DEFAULT TRUE
 );
 
+CREATE TYPE GROUP_ROLE AS ENUM ('Observer', 'Participant', 'Member', 'Co-owner', 'Owner');
 CREATE TABLE group_roles (
     id SERIAL PRIMARY KEY,
     group_id INTEGER REFERENCES groups,
     user_id INTEGER REFERENCES users,
     is_creator BOOLEAN NOT NULL DEFAULT FALSE,
-    role INTEGER DEFAULT 0 CHECK (role BETWEEN 0 AND 4) -- 0 = 0bserver, 1 = participant, 2 = member, 3 = co-owner, 4 = owner
+    role GROUP_ROLE DEFAULT 'Observer'
 );
 
 CREATE TABLE projects (
