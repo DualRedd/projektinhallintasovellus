@@ -32,7 +32,6 @@ def create_user():
     if request.method == "GET":
         return render_template("create-user.html")
     elif request.method == "POST":
-        print("posting!")
         username = request.form["username"]
         if auth.user_exists(username):
             return render_template("create-user.html", error_message="Käyttäjänimi on varattu!")
@@ -40,7 +39,6 @@ def create_user():
         password_check = request.form["password_check"]
         if password != password_check:
             return render_template("create-user.html", error_message="Salasanat eivät täsmää!")
-        password_hash = auth.get_hash(password)
         auth.add_user(username, password)
         session["username"] = username
         return redirect("/")
