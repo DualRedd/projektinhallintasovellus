@@ -14,5 +14,6 @@ def route_create_group_result():
     if not username:
         return redirect("/") # not logged in
     group_name = request.form["name"]
-    create_group(username, group_name)
+    group_desc = request.form["desc"]
+    create_group(username, group_name, group_desc)
     return redirect("/")
