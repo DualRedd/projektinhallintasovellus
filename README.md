@@ -1,15 +1,27 @@
-# projektinhallintasovellus
+# Projektinhallintasovellus
 
-Projektien ja tehtävien seurantaa eri käyttäjien ja tiimien kesken.
+Projektien ja tehtävien seurantaa.
 - Sovellukseen on kirjauduttava
-- Voi luoda omia tiimejä ja kutsua muita käyttäjiä niiden jäseniksi
-- Tiimin ylläpitäjät (mahdollisesti muita roolejakin) voivat luoda ja hallinnoida tehtäviä.
+- Voi luoda omia ryhmiä ja kutsua muita käyttäjiä niiden jäseniksi
+- Ryhmän omistajat voivat luoda ja hallinnoida projekteja.
+- Projektit voivat koostua useista tehtävistä.
 - Tehtäviä voi jakaa tiimin jäsenille ja asettaa deadlinet.
 - Omalla sivulla näkyy omat ryhmät ja tehtävät.
-- Omat tehtävät voi merkitä valmiiksi (ehkä muitakin tiloja).
-- Hakutoimintoja: esim. voi hakea tiimin jäsenen kaikki tehtävät ja järjestää koko tiimin tai omat tehtävät aikajärjestykseen
+- Omat tehtävät voi merkitä keskeneräiseksi/valmiiksi (mahdollisesti muita tiloja).
+- Hakutoimintoja: esim. voi hakea ryhmän tietyn jäsenen kaikki tehtävät
+- Voi järjestää tehtäviä määräpäivän mukaan
 
 Mahdolllisia lisäyksiä:
 - Mahdollisuus kommentoida tehtäviä ja/tai lähettää viestiä tiimin vetäjälle.
-- Kalenterinäkymä
 - Eri tärkeysasteita tehtäville
+- Kalenterinäkymä
+
+
+# Asennusohjeet
+
+1. Kloonaa repositorio omalle koneellesi ja siirry sen juurikansioon
+2. Luo tiedosto .env ja määritä ympäristömuuttujat DATABASE_URL (tietokannan paikallinen osoite)
+sekä SECRET_KEY (käytä esim. pythonin secrets kirjastoa).
+3. 
+
+
