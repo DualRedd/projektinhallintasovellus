@@ -2,9 +2,9 @@
 <a href="/"> Takaisin </a>
 <form action="/login" method="POST">
     <p> Käyttäjänimi: </p>
-    <input type="text" name="username">
+    <input type="text" name="username" maxlength="{{ MAX_INPUT_SIZES['username']}}">
     <p> Salasana: </p>
-    <input type="password" name="password">
+    <input type="password" name="password" maxlength="{{ MAX_INPUT_SIZES['password']}}">
     <br> <br>
     <input type="submit" value="Kirjaudu sisään">
     <p style="color:red"> {{ error_message }} </p>

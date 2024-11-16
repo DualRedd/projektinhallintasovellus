@@ -2,11 +2,11 @@
 <a href="/"> Takaisin </a>
 <form action="/create-user" method="POST">
     <p> Käyttäjänimi: </p>
-    <input type="text" name="username">
+    <input type="text" name="username" maxlength="{{MAX_INPUT_SIZES['username']}}" required>
     <p> Salasana: </p>
-    <input type="password" name="password">
+    <input type="password" name="password" maxlength="{{MAX_INPUT_SIZES['password']}}" required>
     <p> Salasana uudelleen: </p>
-    <input type="password" name="password_check">
+    <input type="password" name="password_check" maxlength="{{MAX_INPUT_SIZES['password']}}" required>
     <br> <br>
     <input type="submit" value="Luo käyttäjä">
     <p style="color:red"> {{ error_message }} </p>
