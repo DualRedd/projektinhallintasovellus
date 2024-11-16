@@ -6,6 +6,10 @@ auth_bp = Blueprint('auth', __name__)
 
 @auth_bp.route("/login", methods=["GET", "POST"])
 def route_login():
+    username = session.get("username")
+    if username:
+        return redirect("/") # already logged in
+    
     if request.method == "GET":
         return render_template("login.html")
     elif request.method == "POST":
@@ -24,6 +28,10 @@ def route_logout():
 
 @auth_bp.route("/create-user", methods=["GET", "POST"])
 def route_create_user():
+    username = session.get("username")
+    if username:
+        return redirect("/") # already logged in
+    
     if request.method == "GET":
         return render_template("create-user.html")
     elif request.method == "POST":
