@@ -1,18 +1,9 @@
-{% if session.username %}
 <p> Kirjautuneena sisään käyttäjänä {{ session.username }}</p>
 <a href="/logout"> Kirjaudu ulos </a>
-{% else %}
-<a href="/login"> Kirjaudu sisään </a>
-<br>
-<a href="/create-user"> Luo käyttäjä </a>
-{% endif %}
 
-<!--
-Ryhmien määrä: {{ count }}
-<hr>
+<h1> Ryhmäsi: </h1>
 {% for group in groups %}
 {{ group.name }}
 <hr>
 {% endfor %}
 <a href="/create-group">Luo uusi ryhmä</a>
--->

@@ -3,12 +3,16 @@ from flask import session, request, render_template, redirect
 from sqlalchemy.sql import text
 from db import db
 
+import auth, groups
+
 @app.route("/")
 def index():
-    return render_template("index.html")
+    username = session.get("username")
+    if not username:
+        return render_template("index-no-account.html")
+    mygroups = groups.get_groups(username)
+    return render_template("index.html", groups=mygroups)
 
-
-import auth
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "GET":
@@ -24,7 +28,7 @@ def login():
     
 @app.route("/logout")
 def logout():
-    del session["username"]
+    session.pop("username")
     return redirect("/")
 
 @app.route("/create-user", methods=["GET", "POST"])
@@ -39,7 +43,7 @@ def create_user():
         password_check = request.form["password_check"]
         if password != password_check:
             return render_template("create-user.html", error_message="Salasanat eivät täsmää!")
-        auth.add_user(username, password)
+        auth.create_user(username, password)
         session["username"] = username
         return redirect("/")
 
@@ -50,6 +54,9 @@ def create_group():
 
 @app.route("/create-group/result", methods=["POST"])
 def create_group_result():
-    db.session.execute(text("INSERT INTO groups (name) VALUES (:name)"), {"name":request.form["name"]})
-    db.session.commit()
+    username = session.get("username")
+    if not username:
+        return redirect("/") # not logged in
+    group_name = request.form["name"]
+    groups.create_group(username, group_name)
     return redirect("/")
