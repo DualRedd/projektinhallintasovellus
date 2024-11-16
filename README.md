@@ -20,8 +20,27 @@ Mahdolllisia lisäyksiä:
 # Asennusohjeet
 
 1. Kloonaa repositorio omalle koneellesi ja siirry sen juurikansioon
-2. Luo tiedosto .env ja määritä ympäristömuuttujat DATABASE_URL (tietokannan paikallinen osoite)
-sekä SECRET_KEY (käytä esim. pythonin secrets kirjastoa).
-3. 
+2. Luo tiedosto .env ja määritä ympäristömuuttujat DATABASE_URL ja SECRET_KEY.
 
+        DATABASE_URL=<tietokannan-paikallinen-osoite>
+        SECRET_KEY=<salainen-avain>
+
+3. Aktivoi virtuaaliympäristö ja asenna riippuvuudet 
+
+        $ python3 -m venv venv
+        $ source venv/bin/activate
+        $ pip install -r ./requirements.txt
+
+4. Määritä tietokannan skeema
+
+        $ psql <tietokannan-nimi> < schema.sql
+
+5. Käynnistä sovellus seuraavalla komennolla
+
+        $ flask run
+
+# Sovelluksen nykytilanne
+
+- Sovelluksella on sivu uuden käyttäjän luomiselle sekä kirjautumiselle.
+- Sovellukseen on kirjauduttava, jolloin etusivulla näkyy omat ryhmät sekä linkki, josta voi luoda uuden ryhmän.
 
