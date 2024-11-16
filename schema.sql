@@ -20,7 +20,6 @@ CREATE TABLE group_roles (
     id SERIAL PRIMARY KEY,
     group_id INTEGER REFERENCES groups,
     user_id INTEGER REFERENCES users,
-    is_creator BOOLEAN NOT NULL DEFAULT FALSE,
     role GROUP_ROLE DEFAULT 'Observer'
 );
 
