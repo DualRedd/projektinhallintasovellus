@@ -3,7 +3,8 @@ from sqlalchemy.sql import text
 from werkzeug.security import check_password_hash, generate_password_hash
 
 def get_user(username : str):
-    user = db.session.execute(text("SELECT id, username, password FROM users WHERE username = :username"), {"username":username}).fetchone()
+    user = db.session.execute(text("SELECT id, username, password, visible FROM users WHERE username = :username"),
+                                    {"username":username}).fetchone()
     return user
 
 def user_exists(username : str) -> bool:
@@ -11,8 +12,8 @@ def user_exists(username : str) -> bool:
 
 def authenticate_user(username : str, password : str) -> bool:
     user = get_user(username)
-    if not user:
-        return False # username does not exist in database
+    if not user or user.visible == False:
+        return False # username does not exist
     return check_password_hash(user.password, password)
 
 def create_user(username : str, password : str):
