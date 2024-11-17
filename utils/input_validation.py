@@ -45,6 +45,6 @@ def validate_group_invite_form(group_id : int, invitee, role_value_str : int):
         role_value = int(role_value_str)
     except ValueError: 
         return ValidationResult(False, "Invalid role!")
-    if not RoleEnum.has_value(role_value):
+    if not RoleEnum.has_value(role_value) or RoleEnum(role_value) == RoleEnum.Owner:
         return ValidationResult(False, "Invalid role!")
     return ValidationResult(True)
