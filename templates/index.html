@@ -1,10 +1,16 @@
 <p> Logged in as {{ session.username }}</p>
 <a href="/logout"> Logout </a>
 
-<h1> Your groups: </h1>
-<hr>
+<h2> Your groups: </h2>
 {% for group in groups %}
 <a href="/group/{{group.id}}">{{group.name}}</a>
 <hr>
 {% endfor %}
 <a href="/create-group">Create new group</a>
+
+
+<h2> Invites: </h2>
+{% for invite in invites %}
+{{invite.group_name}} - {{invite.role|replace('_','-')}} - <a href="/join/{{invite.group_id}}"> Join </a>
+<hr>
+{% endfor %}

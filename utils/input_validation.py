@@ -1,5 +1,5 @@
 from services.auth_service import user_exists, authenticate_user
-from services.groups_service import get_group_role, check_invite_exists
+from services.groups_service import get_group_role, get_group_invite
 from enums.RoleEnum import RoleEnum
 from config import MAX_INPUT_SIZES
 
@@ -38,7 +38,7 @@ def validate_group_invite_form(group_id : int, invitee, role_value_str : int):
         return ValidationResult(False, "No such user found!")
     if get_group_role(group_id, invitee.username):
         return ValidationResult(False, "The user is already a member of the group!")
-    if check_invite_exists(group_id, invitee.id):
+    if get_group_invite(group_id, invitee.id):
         return ValidationResult(False, "The user has already been invited!")
     # Check if role input is valid
     try:

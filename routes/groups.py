@@ -2,7 +2,9 @@
 from flask import Blueprint
 from flask import session, request, render_template, redirect
 # Internal services
-from services.groups_service import create_group, get_group_details, get_group_invitees, get_group_members, get_group_role, create_group_invite
+from services.groups_service import create_group, create_group_invite, create_group_member
+from services.groups_service import get_group_details, get_group_invitees, get_group_members, get_group_role, get_group_invite
+from services.groups_service import delete_group_invite
 from services.auth_service import get_user
 from utils.input_validation import validate_create_group_form, validate_group_invite_form
 from utils.permissions import check_group_permission
@@ -57,6 +59,19 @@ def route_group_page(group_id):
     return render_template("group-view.html", group_details=group_details, group_members=group_members, group_invitees=group_invitees,
                                             roles=roles, MAX_INPUT_SIZES=MAX_INPUT_SIZES, error_message=error_message)
         
+@groups_bp.route("/join/<int:group_id>")
+def route_group_join(group_id):
+    username = session.get("username")
+    if not username:
+        return redirect("/") # not logged in
+    user = get_user(username)
+    invite = get_group_invite(group_id, user.id)
+    if invite:
+        create_group_member(group_id, user.id, RoleEnum[invite.role])
+        delete_group_invite(group_id, user.id)
+        return redirect(f"/group/{group_id}")
+    return redirect("/")
+
 
     
 

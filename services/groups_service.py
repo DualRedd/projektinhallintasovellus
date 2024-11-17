@@ -11,6 +11,14 @@ def get_groups(username : str):
                                     "), {"username":username}).fetchall()
     return result
 
+def get_invites(username : str):
+    result = db.session.execute(text("SELECT G.id AS group_id, G.name AS group_name, GI.role FROM group_invites GI \
+                                    JOIN users U ON U.id = GI.invitee_id AND U.visible = TRUE \
+                                    JOIN groups G ON G.id = GI.group_id AND G.visible = TRUE \
+                                    WHERE U.username = :username \
+                                    "), {"username":username}).fetchall()
+    return result
+
 def get_group_details(group_id : int):
     result = db.session.execute(text("SELECT id, name, description FROM groups \
                                     WHERE id = :group_id AND visible = TRUE \
@@ -45,18 +53,26 @@ def get_group_role(group_id : int, username : str) -> RoleEnum | None:
 def create_group(username : str, group_name : str, group_desc : str = "") -> int:
     group_id = db.session.execute(text("INSERT INTO groups (name, description) VALUES (:group_name, :group_desc) RETURNING id"), 
                                         {"group_name":group_name, "group_desc":group_desc}).fetchone()[0]
-    user_id = get_user(username).id
-    db.session.execute(text("INSERT INTO group_roles (group_id, user_id, role) VALUES (:group_id, :user_id, :role)"), 
-                            {"group_id":group_id, "user_id":user_id, "role":RoleEnum.Owner.name})
     db.session.commit()
+    create_group_member(group_id, get_user(username).id, RoleEnum.Owner)
     return group_id
 
-def check_invite_exists(group_id : int, invitee_id : int) -> bool:
-    result = db.session.execute(text("SELECT id FROM group_invites WHERE group_id = :group_id AND invitee_id = :invitee_id"), 
+def create_group_member(group_id : int, user_id : int, role : RoleEnum):
+    db.session.execute(text("INSERT INTO group_roles (group_id, user_id, role) VALUES (:group_id, :user_id, :role)"), 
+                            {"group_id":group_id, "user_id":user_id, "role":role.name})
+    db.session.commit()
+
+def get_group_invite(group_id : int, invitee_id : int):
+    result = db.session.execute(text("SELECT group_id, invitee_id, role FROM group_invites WHERE group_id = :group_id AND invitee_id = :invitee_id"), 
                                     {"group_id":group_id, "invitee_id":invitee_id}).fetchone()
-    return result != None
+    return result
 
 def create_group_invite(group_id : int, invitee_id : int, role : RoleEnum):
     db.session.execute(text("INSERT INTO group_invites (group_id, invitee_id, role) VALUES (:group_id, :invitee_id, :role)"), 
                             {"group_id":group_id, "invitee_id":invitee_id, "role":role.name})
+    db.session.commit()
+
+def delete_group_invite(group_id : int, invitee_id : int):
+    db.session.execute(text("DELETE FROM group_invites WHERE group_id = :group_id AND invitee_id = :invitee_id"), 
+                            {"group_id":group_id, "invitee_id":invitee_id})
     db.session.commit()
