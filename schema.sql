@@ -26,7 +26,7 @@ CREATE TABLE group_roles (
 CREATE TABLE group_invites (
     id SERIAL PRIMARY KEY,
     group_id INTEGER REFERENCES groups,
-    invitee_id INTEGER REFERENCES users
+    invitee_id INTEGER REFERENCES users,
     role GROUP_ROLE DEFAULT 'Observer'
 );
 
