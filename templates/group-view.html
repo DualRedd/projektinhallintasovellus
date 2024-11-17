@@ -1,0 +1,8 @@
+<h1>{{group_details.name}}</h1>
+<p>{{group_details.description}}</p>
+
+<hr>
+{% for member in group_members %}
+{{member.username}} - {{member.role}}
+<hr>
+{% endfor %}
