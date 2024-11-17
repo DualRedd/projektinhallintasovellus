@@ -14,7 +14,7 @@ def route_login():
     username = session.get("username")
     if username:
         return redirect("/") # already logged in
-    
+
     if request.method == "GET":
         return render_template("login.html", MAX_INPUT_SIZES=MAX_INPUT_SIZES)
     elif request.method == "POST":
@@ -31,7 +31,7 @@ def route_create_user():
     username = session.get("username")
     if username:
         return redirect("/") # already logged in
-    
+
     if request.method == "GET":
         return render_template("create-user.html", MAX_INPUT_SIZES=MAX_INPUT_SIZES)
     elif request.method == "POST":
@@ -44,7 +44,7 @@ def route_create_user():
         create_user(username, password)
         session["username"] = username
         return redirect("/")
-    
+
 @auth_bp.route("/logout")
 def route_logout():
     session.pop("username")

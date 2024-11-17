@@ -1,5 +1,5 @@
 from enums.RoleEnum import RoleEnum
-from services.groups_service import get_group_role 
+from services.groups_service import get_group_role
 
 def check_group_permission(group_id : int, username : str, min_role : RoleEnum):
     user_role = get_group_role(group_id, username)

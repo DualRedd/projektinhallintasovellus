@@ -1,6 +1,6 @@
-from app import db
 from sqlalchemy.sql import text
-from .auth_service import get_user
+from app import db
+from services.auth_service import get_user
 from enums.RoleEnum import RoleEnum
 
 def get_groups(username : str):
@@ -50,28 +50,28 @@ def get_group_role(group_id : int, username : str) -> RoleEnum | None:
     return RoleEnum[result[0]] if result else None
 
 def create_group(username : str, group_name : str, group_desc : str = "") -> int:
-    group_id = db.session.execute(text("INSERT INTO groups (name, description) VALUES (:group_name, :group_desc) RETURNING id"), 
+    group_id = db.session.execute(text("INSERT INTO groups (name, description) VALUES (:group_name, :group_desc) RETURNING id"),
                                         {"group_name":group_name, "group_desc":group_desc}).fetchone()[0]
     db.session.commit()
     create_group_member(group_id, get_user(username).id, RoleEnum.Owner)
     return group_id
 
 def create_group_member(group_id : int, user_id : int, role : RoleEnum):
-    db.session.execute(text("INSERT INTO group_roles (group_id, user_id, role) VALUES (:group_id, :user_id, :role)"), 
+    db.session.execute(text("INSERT INTO group_roles (group_id, user_id, role) VALUES (:group_id, :user_id, :role)"),
                             {"group_id":group_id, "user_id":user_id, "role":role.name})
     db.session.commit()
 
 def get_group_invite(group_id : int, invitee_id : int):
-    result = db.session.execute(text("SELECT group_id, invitee_id, role FROM group_invites WHERE group_id = :group_id AND invitee_id = :invitee_id"), 
+    result = db.session.execute(text("SELECT group_id, invitee_id, role FROM group_invites WHERE group_id = :group_id AND invitee_id = :invitee_id"),
                                     {"group_id":group_id, "invitee_id":invitee_id}).fetchone()
     return result
 
 def create_group_invite(group_id : int, invitee_id : int, role : RoleEnum):
-    db.session.execute(text("INSERT INTO group_invites (group_id, invitee_id, role) VALUES (:group_id, :invitee_id, :role)"), 
+    db.session.execute(text("INSERT INTO group_invites (group_id, invitee_id, role) VALUES (:group_id, :invitee_id, :role)"),
                             {"group_id":group_id, "invitee_id":invitee_id, "role":role.name})
     db.session.commit()
 
 def delete_group_invite(group_id : int, invitee_id : int):
-    db.session.execute(text("DELETE FROM group_invites WHERE group_id = :group_id AND invitee_id = :invitee_id"), 
+    db.session.execute(text("DELETE FROM group_invites WHERE group_id = :group_id AND invitee_id = :invitee_id"),
                             {"group_id":group_id, "invitee_id":invitee_id})
     db.session.commit()

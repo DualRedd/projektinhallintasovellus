@@ -1,6 +1,6 @@
-from app import db
 from sqlalchemy.sql import text
 from werkzeug.security import check_password_hash, generate_password_hash
+from app import db
 
 def get_user(username : str):
     user = db.session.execute(text("SELECT id, username, password, visible FROM users WHERE username = :username"),
@@ -8,11 +8,11 @@ def get_user(username : str):
     return user
 
 def user_exists(username : str) -> bool:
-    return get_user(username) != None
+    return get_user(username) is not None
 
 def authenticate_user(username : str, password : str) -> bool:
     user = get_user(username)
-    if not user or user.visible == False:
+    if not user or user.visible is False:
         return False # username does not exist
     return check_password_hash(user.password, password)
 

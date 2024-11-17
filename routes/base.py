@@ -1,6 +1,6 @@
 # standard imports
 from flask import Blueprint
-from flask import session, request, render_template, redirect
+from flask import session, render_template
 # Internal services
 from services.groups_service import get_groups, get_invites
 
