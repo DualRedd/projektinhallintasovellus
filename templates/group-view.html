@@ -1,8 +1,28 @@
+<a href="/"> Takaisin </a>
 <h1>{{group_details.name}}</h1>
 <p>{{group_details.description}}</p>
 
+<h3>Ryhmän jäsenet:</h2>
 <hr>
 {% for member in group_members %}
 {{member.username}} - {{member.role}}
 <hr>
 {% endfor %}
+
+{% if group_invitees|length > 0 %}
+<h3>Kutsutut jäsenet:</h2>
+<hr>
+{% for invitee in group_invitees %}
+{{invitee.username}} - {{invitee.role}}
+<hr>
+{% endfor %}
+{% endif %}
+
+<h4> Kutsu uusi jäsen: </h4>
+<form action="" method="POST">
+<p> Käyttäjänimi: </p>
+<input type="text" name="username" maxlength="{{MAX_INPUT_SIZES['username']}}" required>
+<br><br>
+<input type="submit" value="Kutsu käyttäjä">
+<p style="color:red"> {{ error_message }} </p>
+</form>
