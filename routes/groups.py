@@ -7,7 +7,7 @@ from services.auth_service import get_user
 from utils.input_validation import validate_create_group_form, validate_group_invite_form
 from utils.permissions import check_group_permission
 # Enums and config
-from enums.roleEnum import roleEnum
+from enums.RoleEnum import RoleEnum
 from config import MAX_INPUT_SIZES
 
 groups_bp = Blueprint('groups', __name__)
@@ -41,19 +41,21 @@ def route_group_page(group_id):
     
     error_message = ""
     if request.method == "POST": # invite form posted
-        if check_group_permission(group_id, username, roleEnum.Co_owner): # Co_owner is minimum required permission level
+        if check_group_permission(group_id, username, RoleEnum.Co_owner): # Co_owner is minimum required permission level
             invitee = get_user(request.form["username"])
-            result = validate_group_invite_form(group_id, invitee)
+            role_value_str = request.form["role"]
+            result = validate_group_invite_form(group_id, invitee, role_value_str)
             if result.valid:
-                create_group_invite(group_id, invitee.id)
+                create_group_invite(group_id, invitee.id, RoleEnum(int(role_value_str)))
             else:
                 error_message = result.error
 
     group_details = get_group_details(group_id)
     group_members = get_group_members(group_id)
     group_invitees = get_group_invitees(group_id)
+    roles = [role for role in RoleEnum if role != RoleEnum.Owner]
     return render_template("group-view.html", group_details=group_details, group_members=group_members, group_invitees=group_invitees,
-                                            MAX_INPUT_SIZES=MAX_INPUT_SIZES, error_message=error_message)
+                                            roles=roles, MAX_INPUT_SIZES=MAX_INPUT_SIZES, error_message=error_message)
         
 
     

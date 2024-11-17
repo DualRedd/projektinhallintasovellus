@@ -5,7 +5,7 @@
 <h3>Group members:</h2>
 <hr>
 {% for member in group_members %}
-{{member.username}} - {{member.role}}
+{{member.username}} - {{member.role|replace('_','-')}}
 <hr>
 {% endfor %}
 
@@ -13,15 +13,22 @@
 <h3>Invited users:</h2>
 <hr>
 {% for invitee in group_invitees %}
-{{invitee.username}} - {{invitee.role}}
+{{invitee.username}} - {{invitee.role|replace('_','-')}}
 <hr>
 {% endfor %}
 {% endif %}
 
 <h4> Invite user: </h4>
 <form action="" method="POST">
-<p> Username: </p>
+<p> Username:
 <input type="text" name="username" maxlength="{{MAX_INPUT_SIZES['username']}}" required>
+</p>
+<label for="role">Role:</label>
+<select name="role">
+    {% for role in roles %}
+    <option value="{{role.value}}">{{role.name|replace('_','-')}}</option>
+    {% endfor %}
+</select>
 <br><br>
 <input type="submit" value="Invite">
 <p style="color:red"> {{ error_message }} </p>
