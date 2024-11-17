@@ -15,7 +15,7 @@ CREATE TABLE groups (
     visible BOOLEAN NOT NULL DEFAULT TRUE
 );
 
-CREATE TYPE GROUP_ROLE AS ENUM ('Observer', 'Participant', 'Member', 'Co-owner', 'Owner');
+CREATE TYPE GROUP_ROLE AS ENUM ('Observer', 'Participant', 'Member', 'Co_owner', 'Owner');
 CREATE TABLE group_roles (
     id SERIAL PRIMARY KEY,
     group_id INTEGER REFERENCES groups,
