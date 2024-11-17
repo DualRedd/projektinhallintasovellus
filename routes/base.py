@@ -1,5 +1,7 @@
+# standard imports
 from flask import Blueprint
 from flask import session, request, render_template, redirect
+# Internal services
 from services.groups_service import get_groups
 
 base_bp = Blueprint('index', __name__)

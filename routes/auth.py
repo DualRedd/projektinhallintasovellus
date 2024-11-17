@@ -1,7 +1,10 @@
+# standard imports
 from flask import Blueprint
 from flask import session, request, render_template, redirect
+# Internal services
 from services.auth_service import authenticate_user, create_user
 from utils.input_validation import validate_create_user_form, validate_login_form
+# Enums and config
 from config import MAX_INPUT_SIZES
 
 auth_bp = Blueprint('auth', __name__)
