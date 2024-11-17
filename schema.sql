@@ -15,6 +15,12 @@ CREATE TABLE groups (
     visible BOOLEAN NOT NULL DEFAULT TRUE
 );
 
+CREATE TABLE group_invites (
+    id SERIAL PRIMARY KEY,
+    inviter_id INTEGER REFERENCES users,
+    invitee_id INTEGER REFERENCES users
+);
+
 CREATE TYPE GROUP_ROLE AS ENUM ('Observer', 'Participant', 'Member', 'Co_owner', 'Owner');
 CREATE TABLE group_roles (
     id SERIAL PRIMARY KEY,
