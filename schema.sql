@@ -17,6 +17,7 @@ CREATE TABLE groups (
 
 CREATE TABLE group_invites (
     id SERIAL PRIMARY KEY,
+    group_id INTEGER REFERENCES groups,
     inviter_id INTEGER REFERENCES users,
     invitee_id INTEGER REFERENCES users
 );
