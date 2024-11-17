@@ -1,5 +1,5 @@
 from enum import Enum
-class role(Enum):
+class roleEnum(Enum):
     Observer = 0
     Participant = 1
     Member = 2
