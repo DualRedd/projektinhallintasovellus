@@ -41,23 +41,24 @@ def route_group_page(group_id):
     if not is_member:
         return render_template("error.html", error_code='404', error_message="You do not have the right to view this page!")
     
+    can_invite = check_group_permission(group_id, username, RoleEnum.Co_owner) # Co-owner is minimum required permission level for invites
+    print(can_invite)
     error_message = ""
-    if request.method == "POST": # invite form posted
-        if check_group_permission(group_id, username, RoleEnum.Co_owner): # Co-owner is minimum required permission level
-            invitee = get_user(request.form["username"])
-            role_value_str = request.form["role"]
-            result = validate_group_invite_form(group_id, invitee, role_value_str)
-            if result.valid:
-                create_group_invite(group_id, invitee.id, RoleEnum(int(role_value_str)))
-            else:
-                error_message = result.error
+    if request.method == "POST" and can_invite: # invite form posted
+        invitee = get_user(request.form["username"])
+        role_value_str = request.form["role"]
+        result = validate_group_invite_form(group_id, invitee, role_value_str)
+        if result.valid:
+            create_group_invite(group_id, invitee.id, RoleEnum(int(role_value_str)))
+        else:
+            error_message = result.error
 
     group_details = get_group_details(group_id)
     group_members = get_group_members(group_id)
     group_invitees = get_group_invitees(group_id)
     roles = [role for role in RoleEnum if role != RoleEnum.Owner]
     return render_template("group-view.html", group_details=group_details, group_members=group_members, group_invitees=group_invitees,
-                                            roles=roles, MAX_INPUT_SIZES=MAX_INPUT_SIZES, error_message=error_message)
+                                            can_invite=can_invite, roles=roles, MAX_INPUT_SIZES=MAX_INPUT_SIZES, error_message=error_message)
         
 @groups_bp.route("/join/<int:group_id>")
 def route_group_join(group_id):
