@@ -5,12 +5,26 @@ from enums.role import role
 
 def get_groups(username : str):
     result = db.session.execute(text("SELECT G.id, G.name FROM group_roles GR \
-                                    JOIN users U ON U.id = GR.user_id \
-                                    JOIN groups G ON G.id = GR.group_id \
-                                    WHERE U.username = :username AND G.visible = TRUE \
+                                    JOIN users U ON U.id = GR.user_id AND U.visible = TRUE \
+                                    JOIN groups G ON G.id = GR.group_id AND G.visible = TRUE \
+                                    WHERE U.username = :username \
                                     "), {"username":username})
     return result.fetchall()
-    
+
+def get_group_details(group_id : int):
+    result = db.session.execute(text("SELECT id, name, description FROM groups \
+                                    WHERE id = :group_id AND visible = TRUE \
+                                    "), {"group_id":group_id})
+    return result.fetchone()
+
+def get_group_members(group_id : int):
+    result = db.session.execute(text("SELECT U.id, U.username, GR.role FROM group_roles GR \
+                                    JOIN users U ON U.id = GR.user_id AND U.visible = TRUE \
+                                    JOIN groups G ON G.id = GR.group_id AND G.visible = TRUE \
+                                    WHERE GR.group_id = :group_id \
+                                    "), {"group_id":group_id})
+    return result.fetchall()
+
 def create_group(username : str, group_name : str, group_desc : str = "") -> int:
     group_id = db.session.execute(text("INSERT INTO groups (name, description) VALUES (:group_name, :group_desc) RETURNING id"), 
                                         {"group_name":group_name, "group_desc":group_desc}).fetchone()[0]
