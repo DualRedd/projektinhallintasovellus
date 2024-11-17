@@ -47,8 +47,7 @@ def get_group_role(group_id : int, username : str) -> RoleEnum | None:
                                     JOIN groups G ON G.id = GR.group_id AND G.visible = TRUE \
                                     WHERE GR.group_id = :group_id AND U.username = :username \
                                     "), {"group_id":group_id, "username":username}).fetchone()
-    if result: result = RoleEnum[result[0]]
-    return result
+    return RoleEnum[result[0]] if result else None
 
 def create_group(username : str, group_name : str, group_desc : str = "") -> int:
     group_id = db.session.execute(text("INSERT INTO groups (name, description) VALUES (:group_name, :group_desc) RETURNING id"), 

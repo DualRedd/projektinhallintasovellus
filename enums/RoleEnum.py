@@ -1,8 +1,8 @@
 from enum import Enum
 class RoleEnum(Enum):
     Observer = 0
-    Participant = 1
-    Member = 2
+    Collaborator = 1
+    Manager = 2
     Co_owner = 3
     Owner = 4
 

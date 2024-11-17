@@ -43,7 +43,7 @@ def route_group_page(group_id):
     
     error_message = ""
     if request.method == "POST": # invite form posted
-        if check_group_permission(group_id, username, RoleEnum.Co_owner): # Co_owner is minimum required permission level
+        if check_group_permission(group_id, username, RoleEnum.Co_owner): # Co-owner is minimum required permission level
             invitee = get_user(request.form["username"])
             role_value_str = request.form["role"]
             result = validate_group_invite_form(group_id, invitee, role_value_str)
