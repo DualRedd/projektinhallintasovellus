@@ -2,7 +2,7 @@
 from flask import Blueprint
 from flask import session, request, render_template, redirect
 # Internal services
-from services.auth_service import authenticate_user, create_user
+from services.auth_service import create_user
 from utils.input_validation import validate_create_user_form, validate_login_form
 # Enums and config
 from config import MAX_INPUT_SIZES
@@ -23,9 +23,6 @@ def route_login():
         result = validate_login_form(username, password)
         if not result.valid:
             return render_template("login.html", MAX_INPUT_SIZES=MAX_INPUT_SIZES, error_message=result.error)
-        valid = authenticate_user(username, password)
-        if not valid:
-            return render_template("login.html", MAX_INPUT_SIZES=MAX_INPUT_SIZES, error_message="Käyttäjänimi tai salasana on väärä!")
         session["username"] = username
         return redirect("/")
 

@@ -1,10 +1,10 @@
-<p> Kirjautuneena sisään käyttäjänä {{ session.username }}</p>
-<a href="/logout"> Kirjaudu ulos </a>
+<p> Logged in as {{ session.username }}</p>
+<a href="/logout"> Logout </a>
 
-<h1> Ryhmäsi: </h1>
+<h1> Your groups: </h1>
 <hr>
 {% for group in groups %}
 <a href="/group/{{group.id}}">{{group.name}}</a>
 <hr>
 {% endfor %}
-<a href="/create-group">Luo uusi ryhmä</a>
+<a href="/create-group">Create new group</a>

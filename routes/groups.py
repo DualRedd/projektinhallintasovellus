@@ -37,7 +37,7 @@ def route_group_page(group_id):
         return redirect("/") # not logged in
     is_member = get_group_role(group_id, username) != None
     if not is_member:
-        return render_template("error.html", error_code='404', error_message="Sinulla ei ole oikeuksia tälle sivulle!")
+        return render_template("error.html", error_code='404', error_message="You do not have the right to view this page!")
     
     error_message = ""
     if request.method == "POST": # invite form posted

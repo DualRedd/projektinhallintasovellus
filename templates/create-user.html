@@ -1,13 +1,13 @@
-<p> Luo uusi käyttäjä </p>
-<a href="/"> Takaisin </a>
+<p> Create new user </p>
+<a href="/"> Back </a>
 <form action="/create-user" method="POST">
-    <p> Käyttäjänimi: </p>
+    <p> Username: </p>
     <input type="text" name="username" maxlength="{{MAX_INPUT_SIZES['username']}}" required>
-    <p> Salasana: </p>
+    <p> Password: </p>
     <input type="password" name="password" maxlength="{{MAX_INPUT_SIZES['password']}}" required>
-    <p> Salasana uudelleen: </p>
+    <p> Password again: </p>
     <input type="password" name="password_check" maxlength="{{MAX_INPUT_SIZES['password']}}" required>
     <br> <br>
-    <input type="submit" value="Luo käyttäjä">
+    <input type="submit" value="Create user">
     <p style="color:red"> {{ error_message }} </p>
 </form>

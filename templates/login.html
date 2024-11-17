@@ -1,11 +1,11 @@
-<p> Kirjaudu sisään </p>
-<a href="/"> Takaisin </a>
+<p> Login </p>
+<a href="/"> Back </a>
 <form action="/login" method="POST">
-    <p> Käyttäjänimi: </p>
+    <p> Username: </p>
     <input type="text" name="username" maxlength="{{ MAX_INPUT_SIZES['username']}}">
-    <p> Salasana: </p>
+    <p> Password: </p>
     <input type="password" name="password" maxlength="{{ MAX_INPUT_SIZES['password']}}">
     <br> <br>
-    <input type="submit" value="Kirjaudu sisään">
+    <input type="submit" value="Login">
     <p style="color:red"> {{ error_message }} </p>
 </form>
