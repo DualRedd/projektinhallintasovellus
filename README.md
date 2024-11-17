@@ -42,5 +42,7 @@ Mahdolllisia lisäyksiä:
 # Sovelluksen nykytilanne
 
 - Sovelluksella on sivu uuden käyttäjän luomiselle sekä kirjautumiselle.
-- Sovellukseen on kirjauduttava, jolloin etusivulla näkyy omat ryhmät sekä linkki, josta voi luoda uuden ryhmän.
+- Sovellukseen kirjauduttua etuvisulla näkyy ryhmät joihin kuuluu sekä mahdolliset ryhmäkutsut.
+- Etusivulla on myös linkki uuden ryhmän luomiseen.
+- Ryhmän omistajat voivat kutsua uusia jäseniä ja asettaa heidän roolinsa
 
