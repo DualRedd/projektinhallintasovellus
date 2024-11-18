@@ -10,8 +10,6 @@ class ValidationResult:
         self.error = error
 
 def validate_create_user_form(username : str, password : str, password_check : str) -> ValidationResult:
-    if not check_csrf_token():
-        return ValidationResult(False, "Invalid csrf token!")
     if len(username) > config["MAX_INPUT_SIZES"]["username"]:
         return ValidationResult(False, "Username is too long!")
     if user_exists(username):
@@ -23,8 +21,6 @@ def validate_create_user_form(username : str, password : str, password_check : s
     return ValidationResult(True)
 
 def validate_login_form(username : str, password : str):
-    if not check_csrf_token():
-        return ValidationResult(False, "Invalid csrf token!")
     if len(username) > config["MAX_INPUT_SIZES"]["username"] or len(password) > config["MAX_INPUT_SIZES"]["password"]:
         return ValidationResult(False, "Username or password is incorrect!")
     if not authenticate_user(username, password):
