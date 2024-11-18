@@ -12,6 +12,7 @@ auth_bp = Blueprint('auth', __name__)
 @auth_bp.route("/login", methods=["GET", "POST"])
 def route_login():
     username = session.get("username")
+    print(username)
     if username:
         return redirect("/") # already logged in
 
@@ -47,5 +48,6 @@ def route_create_user():
 
 @auth_bp.route("/logout")
 def route_logout():
-    session.pop("username")
-    return redirect("/")
+    if "username" in session:
+        session.pop("username")
+    return redirect("/login")

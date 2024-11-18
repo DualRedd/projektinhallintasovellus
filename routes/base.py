@@ -1,6 +1,6 @@
 # standard imports
 from flask import Blueprint
-from flask import session, render_template
+from flask import session, render_template, redirect
 # Internal services
 from services.groups_service import get_groups, get_invites
 
@@ -10,7 +10,7 @@ base_bp = Blueprint('index', __name__)
 def route_index():
     username = session.get("username")
     if not username:
-        return render_template("index-no-account.html")
+        return redirect("/login")
     groups = get_groups(username)
     invites = get_invites(username)
     return render_template("index.html", groups=groups, invites=invites)

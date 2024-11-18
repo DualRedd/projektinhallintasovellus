@@ -18,7 +18,7 @@ groups_bp = Blueprint('groups', __name__)
 def route_create_group():
     username = session.get("username")
     if not username:
-        return redirect("/") # not logged in
+        return redirect("/login") # not logged in
 
     if request.method == "GET":
         return render_template("create-group-form.html", config=config)
@@ -35,7 +35,7 @@ def route_create_group():
 def route_group_page(group_id):
     username = session.get("username")
     if not username:
-        return redirect("/") # not logged in
+        return redirect("/login") # not logged in
     is_member = get_group_role(group_id, username) is not None
     if not is_member:
         return render_template("error.html", error_code='404', error_message="You do not have the right to view this page!")
@@ -64,7 +64,8 @@ def route_group_page(group_id):
 def route_group_join(group_id):
     username = session.get("username")
     if not username:
-        return redirect("/") # not logged in
+        return redirect("/login") # not logged in
+
     user = get_user(username)
     invite = get_group_invite(group_id, user.id)
     if invite:

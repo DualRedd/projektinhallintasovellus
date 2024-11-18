@@ -7,7 +7,7 @@
 <h3>Group members:</h2>
 <hr>
 {% for member in group_members %}
-{{member.username}} - {{member.role|replace('_','-')}}
+<p class="secondary-text"> {{member.username}} - {{member.role|replace('_','-')}} </p>
 <hr>
 {% endfor %}
 
@@ -15,7 +15,7 @@
 <h3>Invited users:</h2>
 <hr>
 {% for invitee in group_invitees %}
-{{invitee.username}} - {{invitee.role|replace('_','-')}}
+<p class="secondary-text"> {{invitee.username}} - {{invitee.role|replace('_','-')}} </p>
 <hr>
 {% endfor %}
 {% endif %}

@@ -14,16 +14,22 @@
 <body>
     <header>
         <nav>
-            <a href="/">Home</a>
-            {% if 'username' in session %}
+            <span class="left-align">
+                <span> Project Management App </span>
+                {% if 'username' in session %}
+                <a href="/">Home</a>
+                <!--<a href="/">My Groups</a>-->
+                {% endif %}
+            </span>
+            <span class="right-align">
+                {% if 'username' in session %}
+                <a href="/user/{{session['username']}}">{{session['username']}}</a> -
                 <a href="/logout">Logout</a>
-                <span>Welcome, {{session['username']}}</span>
-            {% else %}
-                <a href="/login">Login</a>
-                <a href="/create-user">Create user</a>
-            {% endif %}
+                {% endif %}
+            </span>
         </nav>
     </header>
+
     <main>
         {% block content %}{% endblock %}
     </main>
