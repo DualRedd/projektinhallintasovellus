@@ -5,7 +5,7 @@ from flask import session, request, render_template, redirect
 from services.auth_service import create_user
 from utils.input_validation import validate_create_user_form, validate_login_form
 # Enums and config
-from config import MAX_INPUT_SIZES
+from config import config
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -16,13 +16,13 @@ def route_login():
         return redirect("/") # already logged in
 
     if request.method == "GET":
-        return render_template("login.html", MAX_INPUT_SIZES=MAX_INPUT_SIZES)
+        return render_template("login.html", config=config)
     elif request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
         result = validate_login_form(username, password)
         if not result.valid:
-            return render_template("login.html", MAX_INPUT_SIZES=MAX_INPUT_SIZES, error_message=result.error)
+            return render_template("login.html", config=config, error_message=result.error)
         session["username"] = username
         return redirect("/")
 
@@ -33,14 +33,14 @@ def route_create_user():
         return redirect("/") # already logged in
 
     if request.method == "GET":
-        return render_template("create-user.html", MAX_INPUT_SIZES=MAX_INPUT_SIZES)
+        return render_template("create-user.html", config=config)
     elif request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
         password_check = request.form["password_check"]
         result = validate_create_user_form(username, password, password_check)
         if not result.valid:
-            return render_template("create-user.html", MAX_INPUT_SIZES=MAX_INPUT_SIZES, error_message=result.error)
+            return render_template("create-user.html", config=config, error_message=result.error)
         create_user(username, password)
         session["username"] = username
         return redirect("/")
