@@ -1,4 +1,5 @@
-<a href="/"> Back </a>
+{% extends "layout.html" %}
+{% block content %}
 <form action="/create-group" method="POST">
     <label for="desc">Group name:</label><br>
     <input type="text" name="name" maxlength="{{config['MAX_INPUT_SIZES']['group_name']}}"> <br>
@@ -8,3 +9,4 @@
     <input type="submit" value="Create group">
     <p style="color:red"> {{ error_message }} </p>
 </form>
+{% endblock %}

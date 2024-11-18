@@ -1,5 +1,6 @@
-<p> Logged in as {{ session.username }}</p>
-<a href="/"> Back </a>
+{% extends "layout.html" %}
+{% block content %}
+
 <h1>{{group_details.name}}</h1>
 <p>{{group_details.description}}</p>
 
@@ -19,7 +20,6 @@
 {% endfor %}
 {% endif %}
 
-
 {% if can_invite %}
 <h4> Invite user: </h4>
 <form action="" method="POST">
@@ -37,3 +37,5 @@
 <p style="color:red"> {{ error_message }} </p>
 </form>
 {% endif %}
+
+{% endblock %}

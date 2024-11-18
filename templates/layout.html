@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A project management application.">
+    <meta name="author" content="Jonni Haapiainen">
+    <title>{% block title %}Project Management App{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    {% block head %}{% endblock %}
+</head>
+
+<body>
+    <header>
+        <nav>
+            <a href="/">Home</a>
+            {% if 'username' in session %}
+                <a href="/logout">Logout</a>
+                <span>Welcome, {{session['username']}}</span>
+            {% else %}
+                <a href="/login">Login</a>
+                <a href="/create-user">Create user</a>
+            {% endif %}
+        </nav>
+    </header>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+</body>
+
+</html>
