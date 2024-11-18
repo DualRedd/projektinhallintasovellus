@@ -1,5 +1,6 @@
 from services.auth_service import user_exists, authenticate_user
 from services.groups_service import get_group_role, get_group_invite
+from .permissions import check_csrf_token
 from enums.RoleEnum import RoleEnum
 from config import config
 
@@ -9,6 +10,8 @@ class ValidationResult:
         self.error = error
 
 def validate_create_user_form(username : str, password : str, password_check : str) -> ValidationResult:
+    if not check_csrf_token():
+        return ValidationResult(False, "Invalid csrf token!")
     if len(username) > config["MAX_INPUT_SIZES"]["username"]:
         return ValidationResult(False, "Username is too long!")
     if user_exists(username):
@@ -20,6 +23,8 @@ def validate_create_user_form(username : str, password : str, password_check : s
     return ValidationResult(True)
 
 def validate_login_form(username : str, password : str):
+    if not check_csrf_token():
+        return ValidationResult(False, "Invalid csrf token!")
     if len(username) > config["MAX_INPUT_SIZES"]["username"] or len(password) > config["MAX_INPUT_SIZES"]["password"]:
         return ValidationResult(False, "Username or password is incorrect!")
     if not authenticate_user(username, password):
@@ -27,6 +32,8 @@ def validate_login_form(username : str, password : str):
     return ValidationResult(True)
 
 def validate_create_group_form(group_name : str, group_desc : str) -> ValidationResult:
+    if not check_csrf_token():
+        return ValidationResult(False, "Invalid csrf token!")
     if len(group_name) > config["MAX_INPUT_SIZES"]["group_name"]:
         return ValidationResult(False, "Group name is too long!")
     if len(group_desc) > config["MAX_INPUT_SIZES"]["group_description"]:
@@ -34,6 +41,8 @@ def validate_create_group_form(group_name : str, group_desc : str) -> Validation
     return ValidationResult(True)
 
 def validate_group_invite_form(group_id : int, invitee, role_value_str : int):
+    if not check_csrf_token():
+        return ValidationResult(False, "Invalid csrf token!")
     if not invitee:
         return ValidationResult(False, "No such user found!")
     if get_group_role(group_id, invitee.username):

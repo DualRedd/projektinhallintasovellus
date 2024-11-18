@@ -2,7 +2,7 @@
 from flask import Blueprint
 from flask import session, request, render_template, redirect
 # Internal services
-from services.auth_service import create_user
+from services.auth_service import create_user, login
 from utils.input_validation import validate_create_user_form, validate_login_form
 # Enums and config
 from config import config
@@ -23,7 +23,7 @@ def route_login():
         result = validate_login_form(username, password)
         if not result.valid:
             return render_template("login.html", config=config, error_message=result.error)
-        session["username"] = username
+        login(username)
         return redirect("/")
 
 @auth_bp.route("/create-user", methods=["GET", "POST"])
@@ -42,7 +42,7 @@ def route_create_user():
         if not result.valid:
             return render_template("create-user.html", config=config, error_message=result.error)
         create_user(username, password)
-        session["username"] = username
+        login(username)
         return redirect("/")
 
 @auth_bp.route("/logout")

@@ -6,6 +6,7 @@
     <label for="desc">Group description:</label><br>
     <textarea name="desc" rows="10" cols="50" maxlength="{{config['MAX_INPUT_SIZES']['group_description']}}"></textarea>
     <br> <br>
+    <input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
     <input type="submit" value="Create group">
     <p style="color:red"> {{ error_message }} </p>
 </form>

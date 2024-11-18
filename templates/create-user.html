@@ -9,6 +9,7 @@
     <p> Password again: </p>
     <input type="password" name="password_check" maxlength="{{config['MAX_INPUT_SIZES']['password']}}" required>
     <br> <br>
+    <input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
     <input type="submit" value="Create user">
     <p style="color:red"> {{ error_message }} </p>
 </form>

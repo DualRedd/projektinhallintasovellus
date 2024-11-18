@@ -8,6 +8,7 @@
     <input type="password" name="password" maxlength="{{config['MAX_INPUT_SIZES']['password']}}">
     <br> <br>
     <input type="submit" value="Login">
+    <input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
     <p style="color:red"> {{ error_message }} </p>
 </form>
 {% endblock %}

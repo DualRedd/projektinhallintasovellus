@@ -1,5 +1,9 @@
+# standard imports
+from flask import session
 from sqlalchemy.sql import text
 from werkzeug.security import check_password_hash, generate_password_hash
+from secrets import token_hex
+# Internal services
 from app import db
 
 def get_user(username : str):
@@ -21,3 +25,7 @@ def create_user(username : str, password : str):
     db.session.execute(text("INSERT INTO users (username, password) VALUES (:username, :password)"),
                        {"username":username, "password":password_hash})
     db.session.commit()
+
+def login(username : str):
+    session["username"] = username
+    session["csrf_token"] = token_hex(16)
