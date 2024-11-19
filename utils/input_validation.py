@@ -1,3 +1,4 @@
+import re
 from services.auth_service import user_exists, authenticate_user
 from services.groups_service import get_group_role, get_group_invite
 from .permissions import check_csrf_token
@@ -10,19 +11,21 @@ class ValidationResult:
         self.error = error
 
 def validate_create_user_form(username : str, password : str, password_check : str) -> ValidationResult:
-    if len(username) > config["MAX_INPUT_SIZES"]["username"]:
-        return ValidationResult(False, "Username is too long!")
+    if not (res := validate_string_size(username, "username", "Username")).valid:
+        return res
+    if username[0].isspace() or username[-1].isspace():
+        return ValidationResult(False, f"Username cannot start or end with a space!")
+    if not check_string_chars(username, "a-zA-Z0-9_\-äöå "):
+        return ValidationResult(False, f"Username can only contain characters a-zA-Z0-9_-äöå and spaces!")
     if user_exists(username):
         return ValidationResult(False, "Username has already been taken!")
+    if not (res := validate_string_size(password, "password", "Password")).valid:
+        return res
     if password != password_check:
         return ValidationResult(False, "Passwords do not match!")
-    if len(password) > config["MAX_INPUT_SIZES"]["password"]:
-        return ValidationResult(False, "Password is too long!")
     return ValidationResult(True)
 
-def validate_login_form(username : str, password : str):
-    if len(username) > config["MAX_INPUT_SIZES"]["username"] or len(password) > config["MAX_INPUT_SIZES"]["password"]:
-        return ValidationResult(False, "Username or password is incorrect!")
+def validate_login_form(username : str, password : str) -> ValidationResult:
     if not authenticate_user(username, password):
         return ValidationResult(False, "Username or password is incorrect!")
     return ValidationResult(True)
@@ -30,13 +33,13 @@ def validate_login_form(username : str, password : str):
 def validate_create_group_form(group_name : str, group_desc : str) -> ValidationResult:
     if not check_csrf_token():
         return ValidationResult(False, "Invalid csrf token!")
-    if len(group_name) > config["MAX_INPUT_SIZES"]["group_name"]:
-        return ValidationResult(False, "Group name is too long!")
-    if len(group_desc) > config["MAX_INPUT_SIZES"]["group_description"]:
-        return ValidationResult(False, "Group description is too long!")
+    if not (res := validate_string_size(group_name, "group_name", "Group name")).valid:
+        return res
+    if not (res := validate_string_size(group_desc, "group_description", "Group description")).valid:
+        return res
     return ValidationResult(True)
 
-def validate_group_invite_form(group_id : int, invitee, role_value_str : int):
+def validate_group_invite_form(group_id : int, invitee, role_value_str : int) -> ValidationResult:
     if not check_csrf_token():
         return ValidationResult(False, "Invalid csrf token!")
     if not invitee:
@@ -52,4 +55,17 @@ def validate_group_invite_form(group_id : int, invitee, role_value_str : int):
         return ValidationResult(False, "Invalid role!")
     if not RoleEnum.has_value(role_value) or RoleEnum(role_value) == RoleEnum.Owner:
         return ValidationResult(False, "Invalid role!")
+    return ValidationResult(True)
+
+
+# Helper functions
+def check_string_chars(string : str, allowed : str) -> bool:
+    print(f"^[{allowed}]*$")
+    return bool(re.match(f"^[{allowed}]*$", string))
+
+def validate_string_size(string : str, string_type : str, error_string : str) -> ValidationResult:
+    if len(string) < config["MIN_INPUT_SIZES"][string_type]:
+        return ValidationResult(False, f"{error_string} cannot be shorter than {config['MIN_INPUT_SIZES'][string_type]} characters!")
+    if len(string) > config["MAX_INPUT_SIZES"][string_type]:
+        return ValidationResult(False, f"{error_string} cannot be longer than {config['MAX_INPUT_SIZES'][string_type]} characters!")
     return ValidationResult(True)
