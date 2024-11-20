@@ -29,17 +29,37 @@ def route_create_group():
             g.error_message = result.error
             return render_template("create-group-form.html")
         group_id = create_group(username, group_name, group_desc)
-        return redirect(f"/group/{group_id}")
+        return redirect(f"/group/{group_id}/dashboard")
 
-@groups_bp.route("/group/<int:group_id>", methods=["GET", "POST"])
-def route_group_page(group_id):
+
+@groups_bp.route("/join/<int:group_id>")
+def route_group_join(group_id):
+    username = session.get("username")
+    if not username:
+        return redirect("/login") # not logged in
+
+    user = get_user(username)
+    invite = get_group_invite(group_id, user.id)
+    if invite:
+        create_group_member(group_id, user.id, RoleEnum[invite.role])
+        delete_group_invite(group_id, user.id)
+        return redirect(f"/group/{group_id}/dashboard")
+    return redirect("/")
+
+
+@groups_bp.route("/group/<int:group_id>")
+def route_group_page_base(group_id):
+    return redirect(f"/group/{group_id}/dashboard")
+
+@groups_bp.route("/group/<int:group_id>/dashboard", methods=["GET", "POST"])
+def route_group_page_dashboard(group_id):
     username = session.get("username")
     if not username:
         return redirect("/login") # not logged in
     is_member = get_group_role(group_id, username) is not None
     if not is_member:
         g.error_message = "You do not have the right to view this page!"
-        g.error_code
+        g.error_code = 404
         return render_template("error.html")
 
     # Co-owner is minimum required permission level for invites
@@ -58,18 +78,34 @@ def route_group_page(group_id):
     g.group_invitees = get_group_invitees(group_id)
     g.roles = [role for role in RoleEnum if role != RoleEnum.Owner]
     g.sidebar = True
+    g.current_page = 'dashboard'
+    g.group_id = group_id
     return render_template("group-view.html")
 
-@groups_bp.route("/join/<int:group_id>")
-def route_group_join(group_id):
-    username = session.get("username")
-    if not username:
-        return redirect("/login") # not logged in
+@groups_bp.route("/group/<int:group_id>/projects", methods=["GET"])
+def route_group_page_projects(group_id):
+    g.sidebar = True
+    g.current_page = 'projects'
+    g.group_id = group_id
+    return render_template("error.html")
 
-    user = get_user(username)
-    invite = get_group_invite(group_id, user.id)
-    if invite:
-        create_group_member(group_id, user.id, RoleEnum[invite.role])
-        delete_group_invite(group_id, user.id)
-        return redirect(f"/group/{group_id}")
-    return redirect("/")
+@groups_bp.route("/group/<int:group_id>/tasks", methods=["GET"])
+def route_group_page_tasks(group_id):
+    g.sidebar = True
+    g.current_page = 'tasks'
+    g.group_id = group_id
+    return render_template("error.html")
+
+@groups_bp.route("/group/<int:group_id>/members", methods=["GET"])
+def route_group_page_members(group_id):
+    g.sidebar = True
+    g.current_page = 'members'
+    g.group_id = group_id
+    return render_template("error.html")
+
+@groups_bp.route("/group/<int:group_id>/settings", methods=["GET"])
+def route_group_page_settings(group_id):
+    g.sidebar = True
+    g.current_page = 'settings'
+    g.group_id = group_id
+    return render_template("error.html")

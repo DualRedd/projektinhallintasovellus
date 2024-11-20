@@ -34,11 +34,11 @@
         {% if g.sidebar %}
         <aside class="sidebar">
             <ul>
-                <li><a href="/">Dashboard</a></li>
-                <li><a href="/">Projects</a></li>
-                <li><a href="/">Tasks</a></li>
-                <li><a href="/">Members</a></li>
-                <li><a href="/">Settings</a></li>
+                <li><a href="/group/{{g.group_id}}/dashboard" class="{% if g.current_page == 'dashboard' %}sidebar-active{% else %}sidebar-deactive{% endif %}">Dashboard</a></li>
+                <li><a href="/group/{{g.group_id}}/projects" class="{% if g.current_page == 'projects' %}sidebar-active{% else %}sidebar-deactive{% endif %}">Projects</a></li>
+                <li><a href="/group/{{g.group_id}}/tasks" class="{% if g.current_page == 'tasks' %}sidebar-active{% else %}sidebar-deactive{% endif %}">Tasks</a></li>
+                <li><a href="/group/{{g.group_id}}/members" class="{% if g.current_page == 'members' %}sidebar-active{% else %}sidebar-deactive{% endif %}">Members</a></li>
+                <li><a href="/group/{{g.group_id}}/settings" class="{% if g.current_page == 'settings' %}sidebar-active{% else %}sidebar-deactive{% endif %}">Settings</a></li>
             </ul>
         </aside>
         {% endif %}
