@@ -1,6 +1,6 @@
 :root {
     --primary-blue: #1850e7;
-    --secondary-blue: #3B82F6;
+    --secondary-blue: #87b2f8;
     --light-gray: #F3F4F6;
     --dark-charcoal: #333333;
     --secondary-text: #414349;
@@ -19,6 +19,7 @@ body {
     margin: 0px;
 }
 
+/* HEADER */
 header {
     background-color: var(--primary-blue);
     color: var(--secondary-text);
@@ -38,11 +39,25 @@ header nav span a, header nav span span {
     padding: 0px 8px;
 }
 
-main {
-    padding: 16px;
-    margin: auto;
-    max-width: 60em;
+.page-container {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
 }
+
+/* SIDERBAR */
+.sidebar {
+    background-color: var(--secondary-blue);
+    width: 200px;
+}
+
+/* MAIN CONTENT */
+.content {
+    flex-grow: 1;
+    margin: 0;
+    padding: 16px 32px;
+}
+
 
 
 

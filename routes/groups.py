@@ -54,6 +54,7 @@ def route_group_page(group_id):
     g.group_members = get_group_members(group_id)
     g.group_invitees = get_group_invitees(group_id)
     g.roles = [role for role in RoleEnum if role != RoleEnum.Owner]
+    g.sidebar = True
     return render_template("group-view.html")
 
 @groups_bp.route("/join/<int:group_id>")

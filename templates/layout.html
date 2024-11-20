@@ -29,10 +29,25 @@
             </span>
         </nav>
     </header>
+    
+    <div class="page-container">
+        {% if g.sidebar %}
+        <aside class="sidebar">
+            <ul>
+                <li><a href="/">Dashboard</a></li>
+                <li><a href="/">Projects</a></li>
+                <li><a href="/">Tasks</a></li>
+                <li><a href="/">Members</a></li>
+                <li><a href="/">Settings</a></li>
+            </ul>
+        </aside>
+        {% endif %}
+        <main class="content">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
 
-    <main>
-        {% block content %}{% endblock %}
-    </main>
+    
 </body>
 
 </html>
