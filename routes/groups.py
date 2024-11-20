@@ -26,7 +26,8 @@ def route_create_group():
         group_desc = request.form["desc"]
         result = validate_create_group_form(group_name, group_desc)
         if not result.valid:
-            return render_template("create-group-form.html", error_message=result.error)
+            g.error_message = result.error
+            return render_template("create-group-form.html")
         group_id = create_group(username, group_name, group_desc)
         return redirect(f"/group/{group_id}")
 
@@ -37,7 +38,9 @@ def route_group_page(group_id):
         return redirect("/login") # not logged in
     is_member = get_group_role(group_id, username) is not None
     if not is_member:
-        return render_template("error.html", error_code='404', error_message="You do not have the right to view this page!")
+        g.error_message = "You do not have the right to view this page!"
+        g.error_code
+        return render_template("error.html")
 
     # Co-owner is minimum required permission level for invites
     g.can_invite = check_group_permission(group_id, username, RoleEnum.Co_owner)
