@@ -8,9 +8,8 @@ from services.groups_service import delete_group_invite
 from services.auth_service import get_user
 from utils.input_validation import validate_create_group_form, validate_group_invite_form
 from utils.permissions import check_group_permission
-# Enums and config
+# Enums
 from enums.RoleEnum import RoleEnum
-from config import config
 
 groups_bp = Blueprint('groups', __name__)
 
@@ -21,13 +20,13 @@ def route_create_group():
         return redirect("/login") # not logged in
 
     if request.method == "GET":
-        return render_template("create-group-form.html", config=config)
+        return render_template("create-group-form.html")
     elif request.method == "POST":
         group_name = request.form["name"]
         group_desc = request.form["desc"]
         result = validate_create_group_form(group_name, group_desc)
         if not result.valid:
-            return render_template("create-group-form.html", config=config, error_message=result.error)
+            return render_template("create-group-form.html", error_message=result.error)
         group_id = create_group(username, group_name, group_desc)
         return redirect(f"/group/{group_id}")
 
@@ -40,6 +39,7 @@ def route_group_page(group_id):
     if not is_member:
         return render_template("error.html", error_code='404', error_message="You do not have the right to view this page!")
 
+    data = {}
     # Co-owner is minimum required permission level for invites
     can_invite = check_group_permission(group_id, username, RoleEnum.Co_owner)
 
@@ -58,7 +58,7 @@ def route_group_page(group_id):
     group_invitees = get_group_invitees(group_id)
     roles = [role for role in RoleEnum if role != RoleEnum.Owner]
     return render_template("group-view.html", group_details=group_details, group_members=group_members, group_invitees=group_invitees,
-                                            can_invite=can_invite, roles=roles, config=config, error_message=error_message)
+                                            can_invite=can_invite, roles=roles, error_message=error_message)
 
 @groups_bp.route("/join/<int:group_id>")
 def route_group_join(group_id):

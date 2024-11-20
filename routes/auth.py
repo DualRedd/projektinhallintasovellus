@@ -4,8 +4,6 @@ from flask import session, request, render_template, redirect
 # Internal services
 from services.auth_service import create_user, login
 from utils.input_validation import validate_create_user_form, validate_login_form
-# Enums and config
-from config import config
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -17,13 +15,13 @@ def route_login():
         return redirect("/") # already logged in
 
     if request.method == "GET":
-        return render_template("login.html", config=config)
+        return render_template("login.html")
     elif request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
         result = validate_login_form(username, password)
         if not result.valid:
-            return render_template("login.html", config=config, error_message=result.error)
+            return render_template("login.html", error_message=result.error)
         login(username)
         return redirect("/")
 
@@ -34,14 +32,14 @@ def route_create_user():
         return redirect("/") # already logged in
 
     if request.method == "GET":
-        return render_template("create-user.html", config=config)
+        return render_template("create-user.html")
     elif request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
         password_check = request.form["password_check"]
         result = validate_create_user_form(username, password, password_check)
         if not result.valid:
-            return render_template("create-user.html", config=config, error_message=result.error)
+            return render_template("create-user.html", error_message=result.error)
         create_user(username, password)
         login(username)
         return redirect("/")

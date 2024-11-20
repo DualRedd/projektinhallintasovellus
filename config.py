@@ -12,5 +12,3 @@ config = {
         "group_description": 0,
     }
 }
-
-
