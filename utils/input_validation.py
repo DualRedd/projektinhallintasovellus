@@ -60,7 +60,6 @@ def validate_group_invite_form(group_id : int, invitee, role_value_str : int) ->
 
 # Helper functions
 def check_string_chars(string : str, allowed : str) -> bool:
-    print(f"^[{allowed}]*$")
     return bool(re.match(f"^[{allowed}]*$", string))
 
 def validate_string_size(string : str, string_type : str, error_string : str) -> ValidationResult:
