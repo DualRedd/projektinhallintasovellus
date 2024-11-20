@@ -1,6 +1,6 @@
 from os import getenv
 from flask import Flask
-from flask import request
+from flask import request, session, g
 from flask_sqlalchemy import SQLAlchemy
 from config import config
 
@@ -16,8 +16,13 @@ db = SQLAlchemy(app)
 from routes import blueprints
 for blueprint in blueprints:
     app.register_blueprint(blueprint)
-    
-# cache
+
+# global data for rendering pages
+@app.context_processor
+def inject_config_data():
+    return config
+
+# cache control
 @app.after_request
 def cache_control_headers(response):
     if not request.path.startswith('/static'):
@@ -26,7 +31,8 @@ def cache_control_headers(response):
         response.headers['Expires'] = '-1'
     return response
 
-# global data for rendering pages
-@app.context_processor
-def inject_config_data():
-    return config
+# basic request data
+@app.before_request
+def get_user_data():
+    g.username = session.get("username")
+    g.user_id = session.get("user_id")

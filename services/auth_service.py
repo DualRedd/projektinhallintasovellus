@@ -20,12 +20,14 @@ def authenticate_user(username : str, password : str) -> bool:
         return False # username does not exist
     return check_password_hash(user.password, password)
 
-def create_user(username : str, password : str):
+def create_user(username : str, password : str) -> int:
     password_hash = generate_password_hash(password)
-    db.session.execute(text("INSERT INTO users (username, password) VALUES (:username, :password)"),
-                       {"username":username, "password":password_hash})
+    row_id = db.session.execute(text("INSERT INTO users (username, password) VALUES (:username, :password) RETURNING id"),
+                                    {"username":username, "password":password_hash}).fetchone()[0]
     db.session.commit()
+    return row_id
 
-def login(username : str):
+def login(username : str, user_id : int):
     session["username"] = username
+    session["user_id"] = user_id
     session["csrf_token"] = token_hex(16)
