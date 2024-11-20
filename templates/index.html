@@ -2,14 +2,14 @@
 {% block content %}
 
 <h2> Your groups: </h2>
-{% for group in groups %}
+{% for group in g.groups %}
     <a class="secondary-text" href="/group/{{group.id}}">{{group.name}}</a>
     <hr>
 {% endfor %}
 <a href="/create-group">Create new group</a>
 
 <h2> Invites: </h2>
-{% for invite in invites %}
+{% for invite in g.invites %}
     <span class="secondary-text">
         {{invite.group_name}} - {{invite.role|replace('_','-')}} - <a href="/join/{{invite.group_id}}"> Join </a>
     </span>

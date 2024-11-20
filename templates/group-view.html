@@ -1,26 +1,26 @@
 {% extends "layout.html" %}
 {% block content %}
 
-<h1>{{group_details.name}}</h1>
-<p>{{group_details.description}}</p>
+<h1>{{g.group_details.name}}</h1>
+<p>{{g.group_details.description}}</p>
 
 <h3>Group members:</h2>
 <hr>
-{% for member in group_members %}
+{% for member in g.group_members %}
 <p class="secondary-text"> {{member.username}} - {{member.role|replace('_','-')}} </p>
 <hr>
 {% endfor %}
 
-{% if group_invitees|length > 0 %}
+{% if g.group_invitees|length > 0 %}
 <h3>Invited users:</h2>
 <hr>
-{% for invitee in group_invitees %}
+{% for invitee in g.group_invitees %}
 <p class="secondary-text"> {{invitee.username}} - {{invitee.role|replace('_','-')}} </p>
 <hr>
 {% endfor %}
 {% endif %}
 
-{% if can_invite %}
+{% if g.can_invite %}
 <h4> Invite user: </h4>
 <form action="" method="POST">
 <p> Username:
@@ -28,7 +28,7 @@
 </p>
 <label for="role">Role:</label>
 <select name="role">
-    {% for role in roles %}
+    {% for role in g.roles %}
     <option value="{{role.value}}">{{role.name|replace('_','-')}}</option>
     {% endfor %}
 </select>

@@ -1,6 +1,6 @@
 # standard imports
 from flask import Blueprint
-from flask import session, request, render_template, redirect
+from flask import session, request, render_template, redirect, g
 # Internal services
 from services.auth_service import create_user, login
 from utils.input_validation import validate_create_user_form, validate_login_form
@@ -21,7 +21,8 @@ def route_login():
         password = request.form["password"]
         result = validate_login_form(username, password)
         if not result.valid:
-            return render_template("login.html", error_message=result.error)
+            g.error_message = result.error
+            return render_template("login.html")
         login(username)
         return redirect("/")
 
@@ -39,7 +40,8 @@ def route_create_user():
         password_check = request.form["password_check"]
         result = validate_create_user_form(username, password, password_check)
         if not result.valid:
-            return render_template("create-user.html", error_message=result.error)
+            g.error_message = result.error
+            return render_template("create-user.html")
         create_user(username, password)
         login(username)
         return redirect("/")

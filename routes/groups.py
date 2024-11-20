@@ -1,6 +1,6 @@
 # standard imports
 from flask import Blueprint
-from flask import session, request, render_template, redirect
+from flask import session, request, render_template, redirect, g
 # Internal services
 from services.groups_service import create_group, create_group_invite, create_group_member
 from services.groups_service import get_group_details, get_group_invitees, get_group_members, get_group_role, get_group_invite
@@ -39,26 +39,22 @@ def route_group_page(group_id):
     if not is_member:
         return render_template("error.html", error_code='404', error_message="You do not have the right to view this page!")
 
-    data = {}
     # Co-owner is minimum required permission level for invites
-    can_invite = check_group_permission(group_id, username, RoleEnum.Co_owner)
-
-    error_message = ""
-    if request.method == "POST" and can_invite: # invite form posted
+    g.can_invite = check_group_permission(group_id, username, RoleEnum.Co_owner)
+    if request.method == "POST" and g.can_invite: # invite form posted
         invitee = get_user(request.form["username"])
         role_value_str = request.form["role"]
         result = validate_group_invite_form(group_id, invitee, role_value_str)
         if result.valid:
             create_group_invite(group_id, invitee.id, RoleEnum(int(role_value_str)))
         else:
-            error_message = result.error
+            g.error_message = result.error
 
-    group_details = get_group_details(group_id)
-    group_members = get_group_members(group_id)
-    group_invitees = get_group_invitees(group_id)
-    roles = [role for role in RoleEnum if role != RoleEnum.Owner]
-    return render_template("group-view.html", group_details=group_details, group_members=group_members, group_invitees=group_invitees,
-                                            can_invite=can_invite, roles=roles, error_message=error_message)
+    g.group_details = get_group_details(group_id)
+    g.group_members = get_group_members(group_id)
+    g.group_invitees = get_group_invitees(group_id)
+    g.roles = [role for role in RoleEnum if role != RoleEnum.Owner]
+    return render_template("group-view.html")
 
 @groups_bp.route("/join/<int:group_id>")
 def route_group_join(group_id):
