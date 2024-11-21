@@ -1,10 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
 
-<h1>{{g.group_details.name}}</h1>
-<p>{{g.group_details.description}}</p>
-
-<h3>Group members:</h2>
+<h3>Members:</h2>
 <hr>
 {% for member in g.group_members %}
 <p class="secondary-text"> {{member.username}} - {{member.role|replace('_','-')}} </p>
@@ -12,7 +9,7 @@
 {% endfor %}
 
 {% if g.group_invitees|length > 0 %}
-<h3>Invited users:</h2>
+<h3>Invited:</h2>
 <hr>
 {% for invitee in g.group_invitees %}
 <p class="secondary-text"> {{invitee.username}} - {{invitee.role|replace('_','-')}} </p>
@@ -21,7 +18,7 @@
 {% endif %}
 
 {% if g.can_invite %}
-<h4> Invite user: </h4>
+<h3> Invite user: </h3>
 <form action="" method="POST">
 <p> Username:
 <input type="text" name="username" maxlength="{{MAX_INPUT_SIZES['username']}}" required>

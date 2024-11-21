@@ -24,14 +24,14 @@ def get_group_id():
 def route_create_group():
     if (res := get_page_permission_response(require_login=True)) is not None: return res
     if request.method == "GET":
-        return render_template("create-group-form.html")
+        return render_template("group/create-group-form.html")
     elif request.method == "POST":
         group_name = request.form["name"]
         group_desc = request.form["desc"]
         result = validate_create_group_form(group_name, group_desc)
         if not result.valid:
             g.error_message = result.error
-            return render_template("create-group-form.html")
+            return render_template("group/create-group-form.html")
         g.group_id = create_group(g.username, group_name, group_desc)
         return redirect(f"/group/{g.group_id}/dashboard")
 
@@ -48,29 +48,14 @@ def route_group_join(group_id):
 
 @groups_bp.route("/group/<int:group_id>")
 def route_group_page_base(group_id):
-    return redirect(f"/group/{group_id}/dashboard")
+    return redirect(f"/group/{g.group_id}/dashboard")
 
-@groups_bp.route("/group/<int:group_id>/dashboard", methods=["GET", "POST"])
+@groups_bp.route("/group/<int:group_id>/dashboard", methods=["GET"])
 def route_group_page_dashboard(group_id):
     if (res := get_page_permission_response(require_login=True, require_group_membership=True)) is not None: return res
-
-    # Co-owner is minimum required permission level for invites
-    g.can_invite = check_group_permission(g.group_id, g.username, RoleEnum.Co_owner)
-    if request.method == "POST" and g.can_invite: # invite form posted
-        invitee = get_user(request.form["username"])
-        role_value_str = request.form["role"]
-        result = validate_group_invite_form(g.group_id, invitee, role_value_str)
-        if result.valid:
-            create_group_invite(g.group_id, invitee.id, RoleEnum(int(role_value_str)))
-        else:
-            g.error_message = result.error
-
     g.group_details = get_group_details(g.group_id)
-    g.group_members = get_group_members(g.group_id)
-    g.group_invitees = get_group_invitees(g.group_id)
-    g.roles = [role for role in RoleEnum if role != RoleEnum.Owner]
     g.current_page = 'dashboard'
-    return render_template("group-view.html")
+    return render_template("group/group-dashboard.html")
 
 @groups_bp.route("/group/<int:group_id>/projects", methods=["GET"])
 def route_group_page_projects(group_id):
@@ -84,11 +69,26 @@ def route_group_page_tasks(group_id):
     g.current_page = 'tasks'
     return render_template("error.html")
 
-@groups_bp.route("/group/<int:group_id>/members", methods=["GET"])
+@groups_bp.route("/group/<int:group_id>/members", methods=["GET", "POST"])
 def route_group_page_members(group_id):
     if (res := get_page_permission_response(require_login=True, require_group_membership=True)) is not None: return res
+
+    # Co-owner is minimum required permission level for invites
+    g.can_invite = check_group_permission(g.group_id, g.username, RoleEnum.Co_owner)
+    if request.method == "POST" and g.can_invite: # invite form posted
+        invitee = get_user(request.form["username"])
+        role_value_str = request.form["role"]
+        result = validate_group_invite_form(g.group_id, invitee, role_value_str)
+        if result.valid:
+            create_group_invite(g.group_id, invitee.id, RoleEnum(int(role_value_str)))
+        else:
+            g.error_message = result.error
+
+    g.group_members = get_group_members(g.group_id)
+    g.group_invitees = get_group_invitees(g.group_id)
+    g.roles = [role for role in RoleEnum if role != RoleEnum.Owner]
     g.current_page = 'members'
-    return render_template("error.html")
+    return render_template("group/group-members.html")
 
 @groups_bp.route("/group/<int:group_id>/settings", methods=["GET"])
 def route_group_page_settings(group_id):
