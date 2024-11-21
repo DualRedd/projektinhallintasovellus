@@ -85,7 +85,6 @@ def route_group_page_members(group_id):
             create_group_invite(g.group_id, invitee.id, RoleEnum(int(role_value_str)))
         else:
             g.error_message = result.error
-        return redirect(f"/group/{g.group_id}/members")
 
     g.group_members = get_group_members(g.group_id)
     g.group_invitees = get_group_invitees(g.group_id)
@@ -103,11 +102,10 @@ def route_group_page_settings(group_id):
         group_name = request.form["name"]
         group_desc = request.form["desc"]
         result = validate_group_details_form(group_name, group_desc)
-        if not result.valid:
+        if result.valid:
+            update_group(g.group_id, group_name, group_desc)
+        else:
             g.error_message = result.error
-            return render_template("group/group-settings.html")
-        update_group(g.group_id, group_name, group_desc)
-        return redirect(f"/group/{g.group_id}/settings")
 
     g.group_details = get_group_details(g.group_id)
     g.current_page = 'settings'
