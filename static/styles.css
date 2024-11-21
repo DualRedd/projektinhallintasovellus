@@ -87,11 +87,13 @@ header nav span a, header nav span span {
 .main {
     flex-grow: 1;
     overflow-y: auto;
+    width: 160px;
 }
 
 .content {
     margin: 10px auto;
-    max-width: 80%;
+    width: 80%;
+    max-width: 60em;
     padding: 2em;
     border-radius: 16px;
     background-color: white;
@@ -133,17 +135,20 @@ header nav span a, header nav span span {
 /* OTHER */
 
 .editable-data-field{
-    white-space: pre;
+    white-space: pre-wrap;
+    word-wrap: break-word;
     margin: 1em 0px;
 }
 .editable-data-field span{
     display: inline-block;
+    box-sizing: border-box;
     color: var(--secondary-text);
     border: 1px solid rgb(198, 198, 198);
     border-radius: 4px;
     padding: 1em;
     background-color: white;
     font-size: small;
+    max-width: 100%;
 }
 
 form textarea, form input{
@@ -152,4 +157,9 @@ form textarea, form input{
     padding: 1em;
     background-color: white;
     font-size: small;
+}
+
+textarea{
+    resize: none;
+    box-sizing: border-box;
 }

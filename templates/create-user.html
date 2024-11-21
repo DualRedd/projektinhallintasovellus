@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
-<p> Create new user </p>
+<h2> Register New Account </h2>
 <form action="/create-user" method="POST">
     <p> Username: </p>
     <input type="text" name="username" maxlength="{{MAX_INPUT_SIZES['username']}}" required>
@@ -10,7 +10,7 @@
     <input type="password" name="password_check" maxlength="{{MAX_INPUT_SIZES['password']}}" required>
     <br> <br>
     <input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
-    <input type="submit" value="Create Account">
+    <button type="submit" class="button-green">Register</button>
     <p style="color:red"> {{ g.error_message }} </p>
     <p> Already have an account? <a href="/login"> Log in! </a></p>
 </form>

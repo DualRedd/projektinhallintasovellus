@@ -2,31 +2,32 @@
 {% block content %}
 
 <h1>General</h1>
+<hr>
 <div id="view-mode">
-    <p>Group name:<p>
-    <p><span class="editable-data-field">{{g.group_details.name}}</span></p>
-    <p>Group description:<p>
-    <p><span class="editable-data-field">{{g.group_details.description}}</span></p>
-    <button onclick="toggleEditMode(true)">Edit</button>
+    <p>Group name:</p>
+    <div class="editable-data-field"><span>{{g.group_details.name}}</span></div>
+    <p>Group description:</p>
+    <div class="editable-data-field"><span>{{g.group_details.description}}</span></div>
+    <button class="button-grey" onclick="toggleEditMode(true)">Edit</button>
 </div>
 <div id="edit-mode" style="display: none;">
     <form action="/group/{{g.group_id}}/settings" method="POST">
-        <p>Group name:<p>
+        <p>Group name:</p>
         <input type="text" name="name" maxlength="{{MAX_INPUT_SIZES['group_name']}}">
-        <p>Group description:<p>
-        <textarea name="desc" rows="10" cols="50" maxlength="{{MAX_INPUT_SIZES['group_description']}}"></textarea>
+        <p>Group description:</p>
+        <textarea style="width: 100%; height: 10em;" name="desc" maxlength="{{MAX_INPUT_SIZES['group_description']}}"></textarea>
         <br> <br>
         <input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
-        <button type="button" onclick="toggleEditMode(false)">Cancel</button>
-        <button type="submit">Submit</button>
+        <button type="button" class="button-red" onclick="toggleEditMode(false)">Cancel</button>
+        <button type="submit" class="button-green">Submit</button>
         <p style="color:red"> {{ g.error_message }} </p>
     </form>
-</div>
+</div>  
 
 {% endblock %}
 {% block scripts %}
 <script>
-    let group_name = "{{g.group_details.name}}";
+    let group_name = "{{g.group_details.name}}";    
     let group_desc = "{{g.group_details.description}}";
     function toggleEditMode(editing = true) {
         const viewMode = document.getElementById('view-mode');
