@@ -9,6 +9,7 @@ from services.groups_service import delete_group_invite
 from services.auth_service import get_user
 from utils.input_validation import validate_group_details_form, validate_group_invite_form
 from utils.permissions import check_group_permission, get_page_permission_response
+from utils.tools import remove_line_breaks
 # Enums
 from enums.RoleEnum import RoleEnum
 
@@ -28,7 +29,7 @@ def route_create_group():
         return render_template("group/create-group-form.html")
     elif request.method == "POST":
         group_name = request.form["name"]
-        group_desc = request.form["desc"]
+        group_desc = remove_line_breaks(request.form["desc"])
         result = validate_group_details_form(group_name, group_desc)
         if not result.valid:
             g.error_message = result.error
@@ -100,7 +101,7 @@ def route_group_page_settings(group_id):
     settings_access = check_group_permission(g.group_id, g.username, RoleEnum.Co_owner)
     if request.method == "POST" and settings_access: # group data change form
         group_name = request.form["name"]
-        group_desc = request.form["desc"]
+        group_desc = remove_line_breaks(request.form["desc"])
         result = validate_group_details_form(group_name, group_desc)
         if result.valid:
             update_group(g.group_id, group_name, group_desc)

@@ -133,6 +133,7 @@ header nav span a, header nav span span {
 /* OTHER */
 
 .editable-data-field{
+    white-space: pre;
     margin: 1em 0px;
 }
 .editable-data-field span{
