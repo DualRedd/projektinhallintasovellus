@@ -30,7 +30,7 @@ def validate_login_form(username : str, password : str) -> ValidationResult:
         return ValidationResult(False, "Username or password is incorrect!")
     return ValidationResult(True)
 
-def validate_create_group_form(group_name : str, group_desc : str) -> ValidationResult:
+def validate_group_details_form(group_name : str, group_desc : str) -> ValidationResult:
     if not check_csrf_token():
         return ValidationResult(False, "Invalid csrf token!")
     if not (res := validate_string_size(group_name, "group_name", "Group name")).valid:

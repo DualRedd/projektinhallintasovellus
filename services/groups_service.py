@@ -49,12 +49,16 @@ def get_group_role(group_id : int, username : str) -> RoleEnum | None:
                                     "), {"group_id":group_id, "username":username}).fetchone()
     return RoleEnum[result[0]] if result else None
 
-def create_group(username : str, group_name : str, group_desc : str = "") -> int:
+def create_group(group_name : str, group_desc : str = "") -> int:
     group_id = db.session.execute(text("INSERT INTO groups (name, description) VALUES (:group_name, :group_desc) RETURNING id"),
                                         {"group_name":group_name, "group_desc":group_desc}).fetchone()[0]
     db.session.commit()
-    create_group_member(group_id, get_user(username).id, RoleEnum.Owner)
     return group_id
+
+def update_group(group_id : int, group_name : str, group_desc : str = ""):
+    db.session.execute(text("UPDATE groups SET name = :group_name, description = :group_desc WHERE id = :group_id"),
+                            {"group_name":group_name, "group_desc":group_desc, "group_id":group_id})
+    db.session.commit()
 
 def create_group_member(group_id : int, user_id : int, role : RoleEnum):
     db.session.execute(text("INSERT INTO group_roles (group_id, user_id, role) VALUES (:group_id, :user_id, :role)"),

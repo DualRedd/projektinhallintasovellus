@@ -4,9 +4,10 @@ from flask import session, request, render_template, redirect, g
 # Internal services
 from services.groups_service import create_group, create_group_invite, create_group_member
 from services.groups_service import get_group_details, get_group_invitees, get_group_members, get_group_invite
+from services.groups_service import update_group
 from services.groups_service import delete_group_invite
 from services.auth_service import get_user
-from utils.input_validation import validate_create_group_form, validate_group_invite_form
+from utils.input_validation import validate_group_details_form, validate_group_invite_form
 from utils.permissions import check_group_permission, get_page_permission_response
 # Enums
 from enums.RoleEnum import RoleEnum
@@ -28,11 +29,12 @@ def route_create_group():
     elif request.method == "POST":
         group_name = request.form["name"]
         group_desc = request.form["desc"]
-        result = validate_create_group_form(group_name, group_desc)
+        result = validate_group_details_form(group_name, group_desc)
         if not result.valid:
             g.error_message = result.error
             return render_template("group/create-group-form.html")
-        g.group_id = create_group(g.username, group_name, group_desc)
+        g.group_id = create_group(group_name, group_desc)
+        create_group_member(g.group_id, g.user_id, RoleEnum.Owner)
         return redirect(f"/group/{g.group_id}/dashboard")
 
 @groups_bp.route("/join/<int:group_id>")
@@ -83,6 +85,7 @@ def route_group_page_members(group_id):
             create_group_invite(g.group_id, invitee.id, RoleEnum(int(role_value_str)))
         else:
             g.error_message = result.error
+        return redirect(f"/group/{g.group_id}/members")
 
     g.group_members = get_group_members(g.group_id)
     g.group_invitees = get_group_invitees(g.group_id)
@@ -90,8 +93,22 @@ def route_group_page_members(group_id):
     g.current_page = 'members'
     return render_template("group/group-members.html")
 
-@groups_bp.route("/group/<int:group_id>/settings", methods=["GET"])
+@groups_bp.route("/group/<int:group_id>/settings", methods=["GET", "POST"])
 def route_group_page_settings(group_id):
     if (res := get_page_permission_response(require_login=True, require_group_membership=True)) is not None: return res
+
+    # Co-owner is minimum required permission level group settings
+    settings_access = check_group_permission(g.group_id, g.username, RoleEnum.Co_owner)
+    if request.method == "POST" and settings_access: # group data change form
+        group_name = request.form["name"]
+        group_desc = request.form["desc"]
+        result = validate_group_details_form(group_name, group_desc)
+        if not result.valid:
+            g.error_message = result.error
+            return render_template("group/group-settings.html")
+        update_group(g.group_id, group_name, group_desc)
+        return redirect(f"/group/{g.group_id}/settings")
+
+    g.group_details = get_group_details(g.group_id)
     g.current_page = 'settings'
-    return render_template("error.html")
+    return render_template("group/group-settings.html")

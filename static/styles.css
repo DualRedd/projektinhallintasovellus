@@ -97,3 +97,20 @@ header nav span a, header nav span span {
 
 
 
+/* OTHER */
+
+.editable-data-field{
+    color: var(--secondary-text);
+    border: 1px solid rgb(198, 198, 198);
+    border-radius: 4px;
+    padding: 0.5em;
+    background-color: white;
+    font-size: small;
+}
+
+form textarea, form input{
+    border: 1px solid rgb(198, 198, 198);
+    border-radius: 4px;
+    padding: 0.5em;
+    background-color: white;
+}
