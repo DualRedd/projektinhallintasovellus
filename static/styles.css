@@ -13,8 +13,10 @@
 body {
     background-color: var(--primary-background);
     color: var(--dark-charcoal);
-    font-family: Arial, sans-serif;
     margin: 0px;
+}
+body, textarea, input {
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 /* HEADER */
@@ -95,15 +97,50 @@ header nav span a, header nav span span {
     background-color: white;
 }
 
+/* BUTTONS */
+.button-green {
+    cursor: pointer;
+    background-color: #1f883d;
+    border: 1px solid grey;
+    border-radius: 5px;
+    padding: 0.6em 1em;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-weight: bold;
+    color: white;
+}
+.button-red {
+    cursor: pointer;
+    background-color: #961818;
+    border: 1px solid grey;
+    border-radius: 5px;
+    padding: 0.6em 1em;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-weight: bold;
+    color: white;
+}
+.button-grey {
+    cursor: pointer;
+    background-color: #ebebeb;
+    border: 1px solid grey;
+    border-radius: 5px;
+    padding: 0.6em 1em;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-weight: bold;
+    color: black;
+}
 
 
 /* OTHER */
 
 .editable-data-field{
+    margin: 1em 0px;
+}
+.editable-data-field span{
+    display: inline-block;
     color: var(--secondary-text);
     border: 1px solid rgb(198, 198, 198);
     border-radius: 4px;
-    padding: 0.5em;
+    padding: 1em;
     background-color: white;
     font-size: small;
 }
@@ -111,6 +148,7 @@ header nav span a, header nav span span {
 form textarea, form input{
     border: 1px solid rgb(198, 198, 198);
     border-radius: 4px;
-    padding: 0.5em;
+    padding: 1em;
     background-color: white;
+    font-size: small;
 }
