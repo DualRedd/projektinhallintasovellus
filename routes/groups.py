@@ -89,15 +89,13 @@ def route_group_page_members(group_id):
     # Co-owner is minimum required permission level for invites
     g.can_invite = check_group_permission(g.group_id, g.username, RoleEnum.Co_owner)
     if request.method == "POST" and g.can_invite: # invite form posted
-        username = request.form["username"]
+        username = session["form-username"] = request.form["username"]
+        role_value_str = session["form-role"] = request.form["role"]
         invitee = get_user(username)
-        role_value_str = request.form["role"]
         result = validate_group_invite_form(g.group_id, invitee, role_value_str)
         if result.valid:
             create_group_invite(g.group_id, invitee.id, RoleEnum(int(role_value_str)))
         else:
-            session["form-username"] = username
-            session["form-role"] = role_value_str
             flash(result.error, "bad-form")
         return redirect(f"/group/{group_id}/members")
 
@@ -114,15 +112,13 @@ def route_group_page_settings(group_id):
     # Co-owner is minimum required permission level for group settings
     settings_access = check_group_permission(g.group_id, g.username, RoleEnum.Co_owner)
     if request.method == "POST" and settings_access: # group data change form
-        group_name = request.form["name"]
-        group_desc = remove_line_breaks(request.form["desc"])
+        group_name = session["form-group-name"] = request.form["name"]
+        group_desc = session["form-group-desc"] = remove_line_breaks(request.form["desc"])
         result = validate_group_details_form(group_name, group_desc)
         if result.valid:
             update_group(g.group_id, group_name, group_desc)
         else:
             flash(result.error, "bad-form")
-            session["form-group-name"] = group_name
-            session["form-group-desc"] = group_desc
         return redirect(f"/group/{group_id}/settings")
 
     g.group_details = get_group_details(g.group_id)

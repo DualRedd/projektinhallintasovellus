@@ -21,12 +21,11 @@ def route_login():
     if request.method == "GET":
         return render_template("login.html")
     elif request.method == "POST":
-        username = request.form["username"]
+        username = session["form-username"] = request.form["username"]
         password = request.form["password"]
         result = validate_login_form(username, password)
         if not result.valid:
             flash(result.error, "bad-form")
-            session["form-username"] = username
             return redirect("/login")
         login(username, get_user(username).id)
         return redirect("/")
@@ -37,13 +36,12 @@ def route_create_user():
     if request.method == "GET":
         return render_template("create-user.html")
     elif request.method == "POST":
-        username = request.form["username"]
+        username = session["form-username"] = request.form["username"]
         password = request.form["password"]
         password_check = request.form["password_check"]
         result = validate_create_user_form(username, password, password_check)
         if not result.valid:
             flash(result.error, "bad-form")
-            session["form-username"] = username
             return redirect("/create-user")
         user_id = create_user(username, password)
         login(username, user_id)
