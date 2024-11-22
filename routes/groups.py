@@ -1,6 +1,6 @@
 # standard imports
 from flask import Blueprint
-from flask import session, request, render_template, redirect, g
+from flask import session, request, render_template, redirect, flash, g
 # Internal services
 from services.groups_service import create_group, create_group_invite, create_group_member
 from services.groups_service import get_group_details, get_group_invitees, get_group_members, get_group_invite
@@ -21,6 +21,15 @@ def get_group_id():
         g.group_id = request.view_args["group_id"]
         g.sidebar = True
 
+@groups_bp.after_request
+def remove_stored_forms(response):
+    if not (300 <= response.status_code < 400):
+        # if this is not a redirect, remove stored form values
+        session.pop("form-group-name", None)
+        session.pop("form-group-desc", None)
+        session.pop("form-username", None)
+        session.pop("form-role", None)
+    return response
 
 @groups_bp.route("/create-group", methods=["GET", "POST"])
 def route_create_group():
@@ -31,12 +40,13 @@ def route_create_group():
         group_name = request.form["name"]
         group_desc = remove_line_breaks(request.form["desc"])
         result = validate_group_details_form(group_name, group_desc)
-        if not result.valid:
-            g.error_message = result.error
-            return render_template("group/create-group-form.html")
-        g.group_id = create_group(group_name, group_desc)
-        create_group_member(g.group_id, g.user_id, RoleEnum.Owner)
-        return redirect(f"/group/{g.group_id}/dashboard")
+        if result.valid:
+            g.group_id = create_group(group_name, group_desc)
+            create_group_member(g.group_id, g.user_id, RoleEnum.Owner)
+            return redirect(f"/group/{g.group_id}/dashboard")
+        else:
+            flash(result.error, "bad-form")
+            return redirect("/create-group")
 
 @groups_bp.route("/join/<int:group_id>")
 def route_group_join(group_id):
@@ -79,13 +89,17 @@ def route_group_page_members(group_id):
     # Co-owner is minimum required permission level for invites
     g.can_invite = check_group_permission(g.group_id, g.username, RoleEnum.Co_owner)
     if request.method == "POST" and g.can_invite: # invite form posted
-        invitee = get_user(request.form["username"])
+        username = request.form["username"]
+        invitee = get_user(username)
         role_value_str = request.form["role"]
         result = validate_group_invite_form(g.group_id, invitee, role_value_str)
         if result.valid:
             create_group_invite(g.group_id, invitee.id, RoleEnum(int(role_value_str)))
         else:
-            g.error_message = result.error
+            session["form-username"] = username
+            session["form-role"] = role_value_str
+            flash(result.error, "bad-form")
+        return redirect(f"/group/{group_id}/members")
 
     g.group_members = get_group_members(g.group_id)
     g.group_invitees = get_group_invitees(g.group_id)
@@ -97,7 +111,7 @@ def route_group_page_members(group_id):
 def route_group_page_settings(group_id):
     if (res := get_page_permission_response(require_login=True, require_group_membership=True)) is not None: return res
 
-    # Co-owner is minimum required permission level group settings
+    # Co-owner is minimum required permission level for group settings
     settings_access = check_group_permission(g.group_id, g.username, RoleEnum.Co_owner)
     if request.method == "POST" and settings_access: # group data change form
         group_name = request.form["name"]
@@ -106,7 +120,10 @@ def route_group_page_settings(group_id):
         if result.valid:
             update_group(g.group_id, group_name, group_desc)
         else:
-            g.error_message = result.error
+            flash(result.error, "bad-form")
+            session["form-group-name"] = group_name
+            session["form-group-desc"] = group_desc
+        return redirect(f"/group/{group_id}/settings")
 
     g.group_details = get_group_details(g.group_id)
     g.current_page = 'settings'

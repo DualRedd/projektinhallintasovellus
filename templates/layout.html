@@ -49,6 +49,14 @@
         </main>
     </div>
 
+    <script>
+        function remove_errors(){
+            let elements = document.querySelectorAll('.error');
+            elements.forEach(function (element) {
+                element.remove();
+            });null
+        }
+    </script>
     {% block scripts %}{% endblock %}
 </body>
 

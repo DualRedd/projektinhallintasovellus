@@ -3,7 +3,7 @@
 <h2> Register New Account </h2>
 <form action="/create-user" method="POST">
     <p> Username: </p>
-    <input type="text" name="username" maxlength="{{MAX_INPUT_SIZES['username']}}" required>
+    <input id="username-field" type="text" name="username" maxlength="{{MAX_INPUT_SIZES['username']}}" required>
     <p> Password: </p>
     <input type="password" name="password" maxlength="{{MAX_INPUT_SIZES['password']}}" required>
     <p> Password again: </p>
@@ -11,7 +11,22 @@
     <br> <br>
     <input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
     <button type="submit" class="button-grey">Register</button>
-    <p style="color:red"> {{ g.error_message }} </p>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            {% if category == 'bad-form' %}
+                <p class="error" style="color:red"> {{message}} </p>
+            {% endif %}
+        {% endfor %}
+    {% endwith %}
     <p> Already have an account? <a href="/login"> Log in! </a></p>
 </form>
+{% endblock %}
+{% block scripts %}
+<script>
+    const username_field = document.getElementById('username-field');
+    let stored_username = {% if 'form-username' in session %}"{{session['form-username']}}"{% else %}null{% endif %};
+    if (stored_username !== null){
+        username_field.value = stored_username;
+    }
+</script>
 {% endblock %}
