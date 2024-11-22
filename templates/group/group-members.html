@@ -20,18 +20,18 @@
 {% if g.can_invite %}
 <h3> Invite user: </h3>
 <form action="" method="POST">
-<p> Username:
-<input type="text" name="username" maxlength="{{MAX_INPUT_SIZES['username']}}" required>
-</p>
-<label for="role">Role:</label>
-<select name="role">
-    {% for role in g.roles %}
-    <option value="{{role.value}}">{{role.name|replace('_','-')}}</option>
-    {% endfor %}
-</select>
-<br><br>
-<input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
-<input type="submit" value="Invite">
+    <p> Username: </p>
+    <input type="text" name="username" maxlength="{{MAX_INPUT_SIZES['username']}}" required>
+    <br> <br>
+    <label for="role">Role:</label>
+    <select name="role">
+        {% for role in g.roles %}
+        <option value="{{role.value}}">{{role.name|replace('_','-')}}</option>
+        {% endfor %}
+    </select>
+    <br><br>
+    <input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
+    <button type="submit" class="button-grey">Invite</button>
 <p style="color:red"> {{ g.error_message }} </p>
 </form>
 {% endif %}
