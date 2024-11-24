@@ -32,6 +32,7 @@
 {% endif %}
 
 <h1>Group Actions</h1>
+<hr><br>
 {% if g.delete_access %}
 <form action="/group/{{g.group_id}}/settings/delete-group" method="POST">
     <input type="hidden" name="csrf_token" value="{{session.csrf_token}}">

@@ -30,7 +30,7 @@ def route_create():
     if (res := get_page_permission_response(require_login=True)) is not None: return res
     if request.method == "GET":
         return render_template("group/create-group-form.html")
-    # POST REQUEST
+    # else POST-request
     group_name = request.form["name-stored"]
     group_desc = remove_line_breaks(request.form["desc-stored"])
     result = validate_group_details_form(group_name, group_desc)
@@ -73,7 +73,16 @@ def route_dashboard(group_id):
 def route_projects(group_id):
     if (res := get_page_permission_response(require_login=True, require_group_membership=True)) is not None: return res
     g.current_page = 'projects'
-    return render_template("error.html")
+    return render_template("group/group-projects.html")
+
+@groups_bp.route("/group/<int:group_id>/projects/new", methods=["GET", "POST"])
+def route_projects_new(group_id):
+    if (res := get_page_permission_response(require_login=True, require_group_membership=True)) is not None: return res
+    if request.method == "GET":
+        g.current_page = 'projects'
+        return render_template("group/group-new-project.html")
+    # else POST-request
+    # TODO: process form
 
 #------------#
 # TASKS PAGE #
