@@ -5,9 +5,9 @@ from flask import session, request, render_template, redirect, flash, g
 from services.groups_service import create_group, create_group_invite, create_group_member
 from services.groups_service import get_group_details, get_group_invitees, get_group_members, get_group_invite
 from services.groups_service import update_group
-from services.groups_service import delete_group_invite
+from services.groups_service import delete_group, delete_group_invite
 from services.auth_service import get_user
-from utils.input_validation import validate_group_details_form, validate_group_invite_form
+from utils.input_validation import validate_group_details_form, validate_group_invite_form, validate_empty_form
 from utils.permissions import check_group_permission, get_page_permission_response
 from utils.tools import remove_line_breaks
 # Enums
@@ -49,6 +49,18 @@ def route_group_join(group_id):
         return redirect(f"/group/{g.group_id}/dashboard")
     return redirect("/")
 
+@groups_bp.route("/group/<int:group_id>/delete-group", methods=["POST"])
+def route_delete_group(group_id):
+    if (res := get_page_permission_response(require_login=True, require_group_membership=True)) is not None: return res
+    # Only the owner can delete the group
+    g.can_delete = check_group_permission(g.group_id, g.username, RoleEnum.Owner)
+    result = validate_empty_form()
+    if g.can_delete and result.valid:
+        delete_group(g.group_id)
+        return redirect("/")
+    else:
+        flash(result.error, "bad-form2")
+        return redirect(f"/group/{g.group_id}/settings")
 
 @groups_bp.route("/group/<int:group_id>")
 def route_group_page_base(group_id):
@@ -69,7 +81,8 @@ def route_group_page_projects(group_id):
 
 @groups_bp.route("/group/<int:group_id>/tasks", methods=["GET"])
 def route_group_page_tasks(group_id):
-    if res := get_page_permission_response(require_login=True, require_group_membership=True) is not None: return res
+    if (res := get_page_permission_response(require_login=True, require_group_membership=True)) is not None: return res
+    print("here!")
     g.current_page = 'tasks'
     return render_template("error.html")
 
@@ -88,7 +101,7 @@ def route_group_page_members(group_id):
             create_group_invite(g.group_id, invitee.id, RoleEnum(int(role_value_str)))
         else:
             flash(result.error, "bad-form")
-        return redirect(f"/group/{group_id}/members")
+        return redirect(f"/group/{g.group_id}/members")
 
     g.group_members = get_group_members(g.group_id)
     g.group_invitees = get_group_invitees(g.group_id)
@@ -101,8 +114,8 @@ def route_group_page_settings(group_id):
     if (res := get_page_permission_response(require_login=True, require_group_membership=True)) is not None: return res
 
     # Co-owner is minimum required permission level for group settings
-    settings_access = check_group_permission(g.group_id, g.username, RoleEnum.Co_owner)
-    if request.method == "POST" and settings_access: # group data change form
+    g.settings_access = check_group_permission(g.group_id, g.username, RoleEnum.Co_owner)
+    if request.method == "POST" and g.settings_access: # group data change form
         group_name = request.form["name-stored"]
         group_desc = remove_line_breaks(request.form["desc-stored"])
         result = validate_group_details_form(group_name, group_desc)
@@ -112,7 +125,7 @@ def route_group_page_settings(group_id):
         else:
             flash(result.error, "bad-form")
             session["edit-mode-stored"] = True # flag to open edit mode after redirect
-        return redirect(f"/group/{group_id}/settings")
+        return redirect(f"/group/{g.group_id}/settings")
 
     g.group_details = get_group_details(g.group_id)
     g.current_page = 'settings'

@@ -1,6 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
-
+{% set messages = get_flashed_messages(with_categories=true) %}
+{% if settings_access %}
 <h1>General</h1>
 <hr>
 <div id="view-mode">
@@ -20,15 +21,31 @@
         <input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
         <button type="button" class="button-red" onclick="toggle_edit_mode(false);remove_errors();">Cancel</button>
         <button type="submit" class="button-green">Submit</button>
-        {% with messages = get_flashed_messages(with_categories=true) %}
         {% for category, message in messages %}
             {% if category == 'bad-form' %}
                 <p class="error" style="color:red"> {{message}} </p>
             {% endif %}
         {% endfor %}
-        {% endwith %}
     </form>
-</div>  
+</div>
+<br><br>
+<h1>Other</h1>
+<form action="/group/{{g.group_id}}/delete-group" method="POST">
+    <input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
+    <button class="button-red-inverted" onclick="return confirm('Are you sure you want to delete this group?');">Delete Group Permanently</button>
+    {% for category, message in messages %}
+        {% if category == 'bad-form2' %}
+            <p class="error" style="color:red"> {{message}} </p>
+        {% endif %}
+    {% endfor %}
+</form>
+
+{% else %}
+
+<h1> Empty for now </h1>
+<p> TODO: add option to leave group </p>
+
+{% endif %}
 
 {% endblock %}
 {% block scripts %}

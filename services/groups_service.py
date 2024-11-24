@@ -60,6 +60,11 @@ def update_group(group_id : int, group_name : str, group_desc : str = ""):
                             {"group_name":group_name, "group_desc":group_desc, "group_id":group_id})
     db.session.commit()
 
+def delete_group(group_id : int):
+    db.session.execute(text("UPDATE groups SET visible = FALSE WHERE id = :group_id"),
+                            {"group_id":group_id})
+    db.session.commit()
+
 def create_group_member(group_id : int, user_id : int, role : RoleEnum):
     db.session.execute(text("INSERT INTO group_roles (group_id, user_id, role) VALUES (:group_id, :user_id, :role)"),
                             {"group_id":group_id, "user_id":user_id, "role":role.name})

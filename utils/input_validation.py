@@ -57,6 +57,10 @@ def validate_group_invite_form(group_id : int, invitee, role_value_str : int) ->
         return ValidationResult(False, "Invalid role!")
     return ValidationResult(True)
 
+def validate_empty_form():
+    if not check_csrf_token():
+        return ValidationResult(False, "Invalid csrf token!")
+    return ValidationResult(True)
 
 # Helper functions
 def check_string_chars(string : str, allowed : str) -> bool:

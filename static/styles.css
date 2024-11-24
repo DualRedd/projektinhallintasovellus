@@ -125,6 +125,20 @@ header nav span a, header nav span span {
 .button-red:hover {
     background-color: #6e1414;
 }
+.button-red-inverted {
+    cursor: pointer;
+    border: 1px solid #961818;
+    border-radius: 5px;
+    padding: 0.4em 0.7em;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-weight: bold;
+    color: #961818;
+}
+.button-red-inverted:hover {
+    border-color: grey;
+    background-color: #961818;
+    color: white;
+}
 .button-grey {
     cursor: pointer;
     background-color: #ebebeb;
