@@ -70,6 +70,11 @@ def create_group_member(group_id : int, user_id : int, role : RoleEnum):
                             {"group_id":group_id, "user_id":user_id, "role":role.name})
     db.session.commit()
 
+def delete_group_member(group_id : int, user_id : int):
+    db.session.execute(text("DELETE FROM group_roles WHERE group_id = :group_id AND user_id = :user_id"),
+                            {"group_id":group_id, "user_id":user_id})
+    db.session.commit()
+
 def get_group_invite(group_id : int, invitee_id : int):
     result = db.session.execute(text("SELECT group_id, invitee_id, role FROM group_invites WHERE group_id = :group_id AND invitee_id = :invitee_id"),
                                     {"group_id":group_id, "invitee_id":invitee_id}).fetchone()

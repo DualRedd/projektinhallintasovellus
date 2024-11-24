@@ -5,7 +5,7 @@ from flask import session, request, render_template, redirect, flash, g
 from services.groups_service import create_group, create_group_invite, create_group_member
 from services.groups_service import get_group_details, get_group_invitees, get_group_members, get_group_invite, get_group_role
 from services.groups_service import update_group
-from services.groups_service import delete_group, delete_group_invite
+from services.groups_service import delete_group, delete_group_invite, delete_group_member
 from services.auth_service import get_user
 from utils.input_validation import validate_group_details_form, validate_group_invite_form, validate_empty_form
 from utils.permissions import check_group_permission, get_page_permission_response
@@ -121,7 +121,8 @@ def route_members_add(group_id):
 def route_settings(group_id):
     if (res := get_page_permission_response(require_login=True, require_group_membership=True)) is not None: return res
     # Co-owner is minimum required permission level for access to group settings
-    g.settings_access = check_group_permission(g.group_id, g.username, RoleEnum.Co_owner)
+    g.details_access = check_group_permission(g.group_id, g.username, RoleEnum.Co_owner)
+    g.delete_access = check_group_permission(g.group_id, g.username, RoleEnum.Owner)
     g.group_details = get_group_details(g.group_id)
     g.current_page = 'settings'
     return render_template("group/group-settings.html")
@@ -154,4 +155,18 @@ def route_settings_delete_group(group_id):
             return redirect("/")
         else:
             flash(result.error, "bad-form2")
+    return redirect(f"/group/{g.group_id}/settings")
+
+@groups_bp.route("/group/<int:group_id>/settings/leave-group", methods=["POST"])
+def route_settings_leave_group(group_id):
+    if (res := get_page_permission_response(require_login=True, require_group_membership=True)) is not None: return res
+    # Owner cannot leave own group
+    permission = not check_group_permission(g.group_id, g.username, RoleEnum.Owner)
+    if permission:
+        result = validate_empty_form()
+        if result.valid:
+            delete_group_member(g.group_id, g.user_id)
+            return redirect("/")
+        else:
+            flash(result.error, "bad-form3")
     return redirect(f"/group/{g.group_id}/settings")
