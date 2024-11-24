@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
 {% set messages = get_flashed_messages(with_categories=true) %}
-{% if settings_access %}
+{% if g.settings_access %}
 <h1>General</h1>
 <hr>
 <div id="view-mode">
