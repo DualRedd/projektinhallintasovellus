@@ -21,10 +21,10 @@
 <h3> Invite user: </h3>
 <form action="" method="POST">
     <p> Username: </p>
-    <input id="username-field" type="text" name="username" maxlength="{{MAX_INPUT_SIZES['username']}}" required>
+    <input type="text" name="username-stored" maxlength="{{MAX_INPUT_SIZES['username']}}" required>
     <br> <br>
     <label for="role">Role:</label>
-    <select id="role-select-field" name="role">
+    <select name="role-stored">
         {% for role in g.roles %}
         <option value="{{role.value}}">{{role.name|replace('_','-')}}</option>
         {% endfor %}
@@ -42,18 +42,4 @@
 </form>
 {% endif %}
 
-{% endblock %}
-{% block scripts %}
-<script>
-    const username_field = document.getElementById('username-field');
-    const role_select_field = document.getElementById('role-select-field');
-    let stored_username = {% if 'form-username' in session %}"{{session['form-username']}}"{% else %}null{% endif %};
-    let stored_role = {% if 'form-role' in session %}{{session['form-role']}}{% else %}null{% endif %};
-    if (stored_username !== null){
-        username_field.value = stored_username;
-    }
-    if(stored_role !== null){
-        role_select_field.value = stored_role;
-    }
-</script>
 {% endblock %}

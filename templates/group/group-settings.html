@@ -13,9 +13,9 @@
 <div id="edit-mode" style="display: none;"> 
     <form action="/group/{{g.group_id}}/settings" method="POST">
         <p>Group name:</p>
-        <input type="text" name="name" maxlength="{{MAX_INPUT_SIZES['group_name']}}">
+        <input type="text" name="name-stored" maxlength="{{MAX_INPUT_SIZES['group_name']}}">
         <p>Group description:</p>
-        <textarea style="width: 100%; height: 10em;" name="desc" maxlength="{{MAX_INPUT_SIZES['group_description']}}"></textarea>
+        <textarea name="desc-stored" maxlength="{{MAX_INPUT_SIZES['group_description']}}"></textarea>
         <br> <br>
         <input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
         <button type="button" class="button-red" onclick="toggle_edit_mode(false);remove_errors();">Cancel</button>
@@ -37,23 +37,20 @@
     const editMode = document.getElementById('edit-mode');
     let group_name = "{{g.group_details.name}}";    
     let group_desc = "{{g.group_details.description}}";
-    let stored_group_name = {% if 'form-group-name' in session %}"{{session['form-group-name']}}"{% else %}null{% endif %};
-    let stored_group_desc = {% if 'form-group-desc' in session %}"{{session['form-group-desc']}}"{% else %}null{% endif %};
     function toggle_edit_mode(editing = true) {
         if (editing) {
             viewMode.style.display = 'none';
             editMode.style.display = 'block';
-            editMode.querySelector("form input[name='name']").value = group_name;
-            editMode.querySelector("form textarea[name='desc']").value = group_desc;
+            editMode.querySelector("form input[name='name-stored']").value = group_name;
+            editMode.querySelector("form textarea[name='desc-stored']").value = group_desc;
         } else {
             viewMode.style.display = 'block';
             editMode.style.display = 'none';
         }
     }
-    if (stored_group_name !== null || stored_group_desc !== null){
-        toggle_edit_mode(true);
-        editMode.querySelector("form input[name='name']").value = stored_group_name;
-        editMode.querySelector("form textarea[name='desc']").value = stored_group_desc;
+    if('edit-mode-stored' in stored_data){
+        viewMode.style.display = 'none';
+        editMode.style.display = 'block';
     }
 </script>
 {% endblock %}

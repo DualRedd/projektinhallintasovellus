@@ -17,19 +17,10 @@ groups_bp = Blueprint('groups', __name__)
 
 @groups_bp.before_request
 def get_group_id():
+    # global data for all group pages
     if "group_id" in request.view_args:
         g.group_id = request.view_args["group_id"]
         g.sidebar = True
-
-@groups_bp.after_request
-def remove_stored_forms(response):
-    if not (300 <= response.status_code < 400):
-        # if this is not a redirect, remove stored form values
-        session.pop("form-group-name", None)
-        session.pop("form-group-desc", None)
-        session.pop("form-username", None)
-        session.pop("form-role", None)
-    return response
 
 @groups_bp.route("/create-group", methods=["GET", "POST"])
 def route_create_group():
@@ -37,8 +28,8 @@ def route_create_group():
     if request.method == "GET":
         return render_template("group/create-group-form.html")
     elif request.method == "POST":
-        group_name = request.form["name"]
-        group_desc = remove_line_breaks(request.form["desc"])
+        group_name = request.form["name-stored"]
+        group_desc = remove_line_breaks(request.form["desc-stored"])
         result = validate_group_details_form(group_name, group_desc)
         if result.valid:
             g.group_id = create_group(group_name, group_desc)
@@ -89,8 +80,8 @@ def route_group_page_members(group_id):
     # Co-owner is minimum required permission level for invites
     g.can_invite = check_group_permission(g.group_id, g.username, RoleEnum.Co_owner)
     if request.method == "POST" and g.can_invite: # invite form posted
-        username = session["form-username"] = request.form["username"]
-        role_value_str = session["form-role"] = request.form["role"]
+        username = request.form["username-stored"]
+        role_value_str = request.form["role-stored"]
         invitee = get_user(username)
         result = validate_group_invite_form(g.group_id, invitee, role_value_str)
         if result.valid:
@@ -112,13 +103,15 @@ def route_group_page_settings(group_id):
     # Co-owner is minimum required permission level for group settings
     settings_access = check_group_permission(g.group_id, g.username, RoleEnum.Co_owner)
     if request.method == "POST" and settings_access: # group data change form
-        group_name = session["form-group-name"] = request.form["name"]
-        group_desc = session["form-group-desc"] = remove_line_breaks(request.form["desc"])
+        group_name = request.form["name-stored"]
+        group_desc = remove_line_breaks(request.form["desc-stored"])
         result = validate_group_details_form(group_name, group_desc)
+        
         if result.valid:
             update_group(g.group_id, group_name, group_desc)
         else:
             flash(result.error, "bad-form")
+            session["edit-mode-stored"] = True # flag to open edit mode after redirect
         return redirect(f"/group/{group_id}/settings")
 
     g.group_details = get_group_details(g.group_id)

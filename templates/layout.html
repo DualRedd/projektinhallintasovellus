@@ -56,6 +56,13 @@
                 element.remove();
             });null
         }
+
+        const stored_data = {{stored_data|tojson|safe}};
+        document.querySelectorAll("form input, form textarea, form select").forEach(element => {
+            if(element.name in stored_data){
+                element.value = stored_data[element.name];
+            }
+        });
     </script>
     {% block scripts %}{% endblock %}
 </body>

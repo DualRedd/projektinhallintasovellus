@@ -3,7 +3,7 @@
 <h2> Login </h2>
 <form action="/login" method="POST">
     <p> Username: </p>
-    <input id="username-field" type="text" name="username" maxlength="{{MAX_INPUT_SIZES['username']}}" required>
+    <input type="text" name="username-stored" maxlength="{{MAX_INPUT_SIZES['username']}}" required>
     <p> Password: </p>
     <input type="password" name="password" maxlength="{{MAX_INPUT_SIZES['password']}}" required>
     <br> <br>
@@ -18,13 +18,4 @@
     {% endwith %}
     <p> No account? <a href="/create-user"> Create one! </a></p>
 </form>
-{% endblock %}
-{% block scripts %}
-<script>
-    const username_field = document.getElementById('username-field');
-    let stored_username = {% if 'form-username' in session %}"{{session['form-username']}}"{% else %}null{% endif %};
-    if (stored_username !== null){
-        username_field.value = stored_username;
-    }
-</script>
 {% endblock %}

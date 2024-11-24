@@ -8,20 +8,13 @@ from utils.input_validation import validate_create_user_form, validate_login_for
 
 auth_bp = Blueprint('auth', __name__)
 
-@auth_bp.after_request
-def remove_stored_forms(response):
-    if not (300 <= response.status_code < 400):
-        # if this is not a redirect, remove stored form values
-        session.pop("form-username", None)
-    return response
-
 @auth_bp.route("/login", methods=["GET", "POST"])
 def route_login():
     if g.username: return redirect("/") # check if already logged in
     if request.method == "GET":
         return render_template("login.html")
     elif request.method == "POST":
-        username = session["form-username"] = request.form["username"]
+        username = request.form["username-stored"]
         password = request.form["password"]
         result = validate_login_form(username, password)
         if not result.valid:
@@ -36,7 +29,7 @@ def route_create_user():
     if request.method == "GET":
         return render_template("create-user.html")
     elif request.method == "POST":
-        username = session["form-username"] = request.form["username"]
+        username = request.form["username-stored"]
         password = request.form["password"]
         password_check = request.form["password_check"]
         result = validate_create_user_form(username, password, password_check)
