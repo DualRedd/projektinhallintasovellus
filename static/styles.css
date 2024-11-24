@@ -1,7 +1,7 @@
 :root {
     --primary-text: #333333;
     --secondary-text: #414349;
-    --primary-background: #F3F4F6;
+    --primary-background: #f3f4f6c5;
     --error-color: #EF4444;
     --success-color: #10B981;
 }
@@ -88,6 +88,7 @@ header nav span a, header nav span span {
     flex-grow: 1;
     overflow-y: auto;
     width: 160px;
+    background-color: var(--primary-background);
 }
 
 .content {
@@ -95,8 +96,6 @@ header nav span a, header nav span span {
     width: 80%;
     max-width: 60em;
     padding: 2em;
-    border-radius: 16px;
-    background-color: white;
 }
 
 /* BUTTONS */
@@ -105,30 +104,39 @@ header nav span a, header nav span span {
     background-color: #1f883d;
     border: 1px solid grey;
     border-radius: 5px;
-    padding: 0.6em 1em;
+    padding: 0.4em 0.7em;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
     font-weight: bold;
     color: white;
+}
+.button-green:hover {
+    background-color: #1c7736;
 }
 .button-red {
     cursor: pointer;
     background-color: #961818;
     border: 1px solid grey;
     border-radius: 5px;
-    padding: 0.6em 1em;
+    padding: 0.4em 0.7em;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
     font-weight: bold;
     color: white;
+}
+.button-red:hover {
+    background-color: #6e1414;
 }
 .button-grey {
     cursor: pointer;
     background-color: #ebebeb;
     border: 1px solid grey;
     border-radius: 5px;
-    padding: 0.6em 1em;
+    padding: 0.4em 0.7em;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
     font-weight: bold;
     color: black;
+}
+.button-grey:hover {
+    background-color: #e6e6e6;
 }
 
 
@@ -145,7 +153,7 @@ header nav span a, header nav span span {
     color: var(--secondary-text);
     border: 1px solid rgb(198, 198, 198);
     border-radius: 4px;
-    padding: 1em;
+    padding: 0.5em;
     background-color: white;
     font-size: small;
     max-width: 100%;
@@ -154,7 +162,7 @@ header nav span a, header nav span span {
 form textarea, form input{
     border: 1px solid rgb(198, 198, 198);
     border-radius: 4px;
-    padding: 1em;
+    padding: 0.5em;
     background-color: white;
     font-size: small;
 }
@@ -162,4 +170,6 @@ form textarea, form input{
 textarea{
     resize: none;
     box-sizing: border-box;
+    width: 100%;
+    height: 10em;
 }
