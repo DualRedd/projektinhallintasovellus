@@ -29,7 +29,7 @@ def get_group_id():
 def route_create():
     if (res := get_page_permission_response(require_login=True)) is not None: return res
     if request.method == "GET":
-        return render_template("group/create-group-form.html")
+        return render_template("group/new-group.html")
     # else POST-request
     group_name = request.form["name-stored"]
     group_desc = remove_line_breaks(request.form["desc-stored"])
@@ -64,7 +64,7 @@ def route_dashboard(group_id):
     if (res := get_page_permission_response(require_login=True, require_group_membership=True)) is not None: return res
     g.group_details = get_group_details(g.group_id)
     g.current_page = 'dashboard'
-    return render_template("group/group-dashboard.html")
+    return render_template("group/dashboard.html")
 
 #---------------#
 # PROJECTS PAGE #
@@ -73,14 +73,14 @@ def route_dashboard(group_id):
 def route_projects(group_id):
     if (res := get_page_permission_response(require_login=True, require_group_membership=True)) is not None: return res
     g.current_page = 'projects'
-    return render_template("group/group-projects.html")
+    return render_template("group/projects.html")
 
 @groups_bp.route("/group/<int:group_id>/projects/new", methods=["GET", "POST"])
 def route_projects_new(group_id):
     if (res := get_page_permission_response(require_login=True, require_group_membership=True)) is not None: return res
     if request.method == "GET":
         g.current_page = 'projects'
-        return render_template("group/group-new-project.html")
+        return render_template("group/new-project.html")
     # else POST-request
     # TODO: process form
 
@@ -106,7 +106,7 @@ def route_members(group_id):
     g.group_invitees = get_group_invitees(g.group_id)
     g.roles = [role for role in RoleEnum if role != RoleEnum.Owner]
     g.current_page = 'members'
-    return render_template("group/group-members.html")
+    return render_template("group/members.html")
 
 @groups_bp.route("/group/<int:group_id>/members/add", methods=["POST"])
 def route_members_add(group_id):
@@ -134,7 +134,7 @@ def route_settings(group_id):
     g.delete_access = check_group_permission(g.group_id, g.username, RoleEnum.Owner)
     g.group_details = get_group_details(g.group_id)
     g.current_page = 'settings'
-    return render_template("group/group-settings.html")
+    return render_template("group/settings.html")
 
 @groups_bp.route("/group/<int:group_id>/settings/details", methods=["POST"])
 def route_settings_details(group_id):
