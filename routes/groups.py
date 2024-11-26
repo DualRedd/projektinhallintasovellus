@@ -17,11 +17,11 @@ from enums.RoleEnum import RoleEnum
 groups_bp = Blueprint('groups', __name__)
 
 @groups_bp.before_request
-def get_group_id():
+def get_group_data():
     # global data for all group pages
     if "group_id" in request.view_args:
         g.group_id = request.view_args["group_id"]
-        g.sidebar = True
+        g.sidebar = 1
         g.role = get_group_role(g.group_id, g.username)
 
 #------------#
@@ -86,7 +86,7 @@ def route_projects_new(group_id):
         return render_template("group/new-project.html")
     # else POST-request
     project_name = request.form["name-stored"]
-    project_desc = request.form["desc-stored"]
+    project_desc = remove_line_breaks(request.form["desc-stored"])
     result = input.validate_create_project_form(project_name, project_desc)
     if result.valid:
         project_id = create_project(g.group_id, project_name, project_desc)

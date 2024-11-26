@@ -31,7 +31,7 @@
     </header>
     
     <div class="page-container">
-        {% if g.sidebar %}
+        {% if g.sidebar == 1 %}
         <aside class="sidebar">
             <ul>
                 <li><a href="/group/{{g.group_id}}/dashboard" class="{% if g.current_page == 'dashboard' %}sidebar-active{% else %}sidebar-deactive{% endif %}">Dashboard</a></li>
@@ -39,6 +39,14 @@
                 <li><a href="/group/{{g.group_id}}/tasks" class="{% if g.current_page == 'tasks' %}sidebar-active{% else %}sidebar-deactive{% endif %}">Tasks</a></li>
                 <li><a href="/group/{{g.group_id}}/members" class="{% if g.current_page == 'members' %}sidebar-active{% else %}sidebar-deactive{% endif %}">Members</a></li>
                 <li><a href="/group/{{g.group_id}}/settings" class="{% if g.current_page == 'settings' %}sidebar-active{% else %}sidebar-deactive{% endif %}">Settings</a></li>
+            </ul>
+        </aside>
+        {% elif g.sidebar == 2 %}
+        <aside class="sidebar">
+            <ul>
+                <li><a href="/group/{{g.group_id}}/project/{{g.project_id}}/tasks" class="{% if g.current_page == 'tasks' %}sidebar-active{% else %}sidebar-deactive{% endif %}">Tasks</a></li>
+                <li><a href="/group/{{g.group_id}}/project/{{g.project_id}}/stats" class="{% if g.current_page == 'stats' %}sidebar-active{% else %}sidebar-deactive{% endif %}">Statistics</a></li>
+                <li><a href="/group/{{g.group_id}}/project/{{g.project_id}}/settings" class="{% if g.current_page == 'settings' %}sidebar-active{% else %}sidebar-deactive{% endif %}">Settings</a></li>
             </ul>
         </aside>
         {% endif %}
