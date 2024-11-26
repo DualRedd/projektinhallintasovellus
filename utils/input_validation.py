@@ -57,6 +57,15 @@ def validate_group_invite_form(group_id : int, invitee, role_value_str : int) ->
         return ValidationResult(False, "Invalid role!")
     return ValidationResult(True)
 
+def validate_create_project_form(project_name : str, project_desc : str):
+    if not check_csrf_token():
+        return ValidationResult(False, "Invalid csrf token!")
+    if not (res := validate_string_size(project_name, "project_name", "Project name")).valid:
+        return res
+    if not (res := validate_string_size(project_name, "project_description", "Project description")).valid:
+        return res
+    return ValidationResult(True)
+
 def validate_empty_form():
     if not check_csrf_token():
         return ValidationResult(False, "Invalid csrf token!")
