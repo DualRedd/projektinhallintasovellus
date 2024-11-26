@@ -6,6 +6,7 @@ from services.groups_service import create_group, create_group_invite, create_gr
 from services.groups_service import get_group_details, get_group_invitees, get_group_members, get_group_invite, get_group_role
 from services.groups_service import update_group
 from services.groups_service import delete_group, delete_group_invite, delete_group_member
+from services.projects_service import create_project, get_projects
 from services.auth_service import get_user
 from utils.permissions import permissions
 from utils.tools import remove_line_breaks
@@ -74,6 +75,7 @@ def route_dashboard(group_id):
 @permissions(require_login=True, require_min_role=RoleEnum.Observer)
 def route_projects(group_id):
     g.current_page = 'projects'
+    g.projects = get_projects(g.group_id)
     return render_template("group/projects.html")
 
 @groups_bp.route("/group/<int:group_id>/projects/new", methods=["GET", "POST"])
@@ -87,11 +89,11 @@ def route_projects_new(group_id):
     project_desc = request.form["desc-stored"]
     result = input.validate_create_project_form(project_name, project_desc)
     if result.valid:
-        # TODO
-        return redirect(f"/group/{g.group_id}/projects)")
+        project_id = create_project(g.group_id, project_name, project_desc)
+        return redirect(f"/group/{g.group_id}/project/{project_id}")
     else:
         flash(result.error, "bad-form")
-        return redirect(f"/group/{g.group_id}/projects/new)")
+        return redirect(f"/group/{g.group_id}/projects/new")
 
 #------------#
 # TASKS PAGE #

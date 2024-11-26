@@ -3,7 +3,14 @@
 
 <h1>Active Projects</h1>
 <hr>
+{% if g.projects %}
+{% for project in g.projects %}
+    <p>{{project.name}} - {{project.description}}</p>
+{% endfor %}
+{% else %}
 <p>Nothingness</p>
+{% endif %}
+
 <a href="/group/{{g.group_id}}/projects/new">
     <button class="button-grey">Create New Project</button>
 </a>
