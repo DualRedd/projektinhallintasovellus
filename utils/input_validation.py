@@ -1,7 +1,7 @@
 import re
+from flask import session, request
 from services.auth_service import user_exists, authenticate_user
 from services.groups_service import get_group_role, get_group_invite
-from .permissions import check_csrf_token
 from enums.RoleEnum import RoleEnum
 from config import config
 
@@ -72,6 +72,11 @@ def validate_empty_form():
     return ValidationResult(True)
 
 # Helper functions
+def check_csrf_token() -> bool:
+    form_token = request.form.get("csrf_token")
+    session_token = session.get("csrf_token")
+    return form_token and session_token and form_token == session_token
+
 def check_string_chars(string : str, allowed : str) -> bool:
     return bool(re.match(f"^[{allowed}]*$", string))
 

@@ -1,5 +1,5 @@
 from functools import wraps
-from flask import Response, session, request, redirect, render_template, g
+from flask import Response, request, redirect, render_template, g
 from enums.RoleEnum import RoleEnum
 
 def permissions(require_login : bool = False, require_min_role : RoleEnum = None,
@@ -27,8 +27,3 @@ def get_page_permission_response(require_login : bool = False, require_min_role 
             g.error_code = 404
             return render_template("error.html")
     return None
-
-def check_csrf_token() -> bool:
-    form_token = request.form.get("csrf_token")
-    session_token = session.get("csrf_token")
-    return form_token and session_token and form_token == session_token
