@@ -74,8 +74,9 @@ def route_dashboard(group_id):
 @groups_bp.route("/group/<int:group_id>/projects", methods=["GET"])
 @permissions(require_login=True, require_min_role=RoleEnum.Observer)
 def route_projects(group_id):
-    g.current_page = 'projects'
+    g.can_create_project = g.role.value >= RoleEnum.Manager.value
     g.projects = get_projects(g.group_id)
+    g.current_page = 'projects'
     return render_template("group/projects.html")
 
 @groups_bp.route("/group/<int:group_id>/projects/new", methods=["GET", "POST"])

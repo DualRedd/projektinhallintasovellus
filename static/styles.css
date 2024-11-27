@@ -230,22 +230,28 @@ textarea{
     font-weight: bold;
     padding-bottom: 0.2em;
 }
-
 .card-desc {
     box-sizing: border-box;
-    flex-grow: 100;
+    color: var(--secondary-text);
     height: 100%;
     line-height: 1em;
     max-height: 4em;
     overflow: hidden;
-    color: var(--secondary-text);
 }
-
 .card-button {
     box-sizing: border-box;
     padding-top: 0.5em;
 }
+.all-column-item {
+    grid-column: 1 / -1;
+}
 
-.full-width-item {
-    flex-basis: 100%;
+.empty-placeholder {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+    width: 100%;
+    color: var(--secondary-text);
+    font-size: large;
 }
