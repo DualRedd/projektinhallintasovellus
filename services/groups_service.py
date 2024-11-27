@@ -4,7 +4,7 @@ from services.auth_service import get_user
 from enums.RoleEnum import RoleEnum
 
 def get_groups(username : str):
-    result = db.session.execute(text("SELECT G.id, G.name FROM group_roles GR \
+    result = db.session.execute(text("SELECT G.id, G.name, G.description, GR.role FROM group_roles GR \
                                     JOIN users U ON U.id = GR.user_id AND U.visible = TRUE \
                                     JOIN groups G ON G.id = GR.group_id AND G.visible = TRUE \
                                     WHERE U.username = :username \
@@ -12,7 +12,8 @@ def get_groups(username : str):
     return result
 
 def get_invites(username : str):
-    result = db.session.execute(text("SELECT G.id AS group_id, G.name AS group_name, GI.role FROM group_invites GI \
+    result = db.session.execute(text("SELECT G.id AS group_id, G.name AS group_name, G.description AS group_description, GI.role \
+                                    FROM group_invites GI \
                                     JOIN users U ON U.id = GI.invitee_id AND U.visible = TRUE \
                                     JOIN groups G ON G.id = GI.group_id AND G.visible = TRUE \
                                     WHERE U.username = :username \

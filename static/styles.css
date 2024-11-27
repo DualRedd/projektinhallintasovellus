@@ -215,6 +215,7 @@ textarea{
 
 .card {
     display: grid;
+    grid-template-columns: 1fr 1fr;
     grid-template-rows: auto 1fr auto;
     box-sizing: border-box;
     border: 1px solid grey;
@@ -223,7 +224,6 @@ textarea{
     max-width: 24em;
     padding: 1em;
 }
-
 .card-title {
     box-sizing: border-box;
     font-size: large;
@@ -237,10 +237,14 @@ textarea{
     line-height: 1em;
     max-height: 4em;
     overflow: hidden;
+    overflow-wrap: break-word;
 }
 .card-button {
     box-sizing: border-box;
     padding-top: 0.5em;
+}
+.card-item {
+    box-sizing: border-box;
 }
 .all-column-item {
     grid-column: 1 / -1;
@@ -250,7 +254,7 @@ textarea{
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 200px;
+    height: 150px;
     width: 100%;
     color: var(--secondary-text);
     font-size: large;

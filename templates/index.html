@@ -1,19 +1,43 @@
 {% extends "layout.html" %}
 {% block content %}
 
-<h2> Your groups: </h2>
+<h1>Your groups</h1>
+<hr>
+<div class="card-holder">
 {% for group in g.groups %}
-    <a class="secondary-text" href="/group/{{group.id}}/dashboard">{{group.name}}</a>
-    <hr>
+    <div class="card">
+        <div class="card-title all-column-item">{{group.name}}</div>
+        <div class="card-desc all-column-item">{{group.description}}</div>
+        <div class="card-button">
+            <a href="/group/{{group.id}}/dashboard"><button class="button-green-inverted">Enter</button></a>
+        </div>
+        <div class="card-item secondary-text" style="justify-self:end;align-self:end;">{{group.role|replace('_','-')}}</div>
+    </div>
 {% endfor %}
-<a href="/create-group">Create new group</a>
+{% if not g.groups %}
+<div class="empty-placeholder all-column-item"> No groups! Begin by creating or joining one! </div>
+{% endif %}
+<a href="/create-group" class="all-column-item">
+    <button class="button-grey">Create New Group</button>
+</a>
+</div>
 
-<h2> Invites: </h2>
+<h1> Invites </h1>
+<hr>
+<div class="card-holder">
 {% for invite in g.invites %}
-    <span class="secondary-text">
-        {{invite.group_name}} - {{invite.role|replace('_','-')}} - <a href="/join/{{invite.group_id}}"> Join </a>
-    </span>
-    <hr>
+    <div class="card">
+        <div class="card-title all-column-item">{{invite.group_name}}</div>
+        <div class="card-desc all-column-item">{{invite.group_description}}</div>
+        <div class="card-button">
+            <a href="/join/{{invite.group_id}}"><button class="button-green-inverted">Join</button></a>
+        </div>
+        <div class="card-item secondary-text" style="justify-self:end;align-self:end;">{{invite.role|replace('_','-')}}</div>
+    </div>
 {% endfor %}
+{% if not g.invites %}
+<div class="empty-placeholder all-column-item"> No invites! </div>
+{% endif %}
+</div>
 
 {% endblock %}

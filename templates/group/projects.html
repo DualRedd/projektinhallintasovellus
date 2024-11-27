@@ -6,9 +6,9 @@
 <div class="card-holder">
 {% for project in g.projects %}
     <div class="card">
-        <div class="card-title">{{project.name}}</div>
-        <div class="card-desc">{{project.description}}</div>
-        <div class="card-button">
+        <div class="card-title all-column-item">{{project.name}}</div>
+        <div class="card-desc all-column-item">{{project.description}}</div>
+        <div class="card-button all-column-item">
             <a href="/group/{{g.group_id}}/project/{{project.id}}">
                 <button class="button-green-inverted">View</button>
             </a>
@@ -24,8 +24,6 @@
 </a>
 {% endif %}
 </div>
-
-
 
 <h1>Archived Projects</h1>
 <hr>
