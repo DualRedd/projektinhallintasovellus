@@ -4,16 +4,30 @@
 <h1>Active Projects</h1>
 <hr>
 {% if g.projects %}
+<div class="card-holder">
 {% for project in g.projects %}
-    <p>{{project.name}} - {{project.description}}</p>
+    <div class="card">
+        <div class="card-title">{{project.name}}</div>
+        <div class="card-desc">{{project.description}}</div>
+        <div class="card-button">
+            <a href="/group/{{g.group_id}}/project/{{project.id}}">
+                <button class="button-green-inverted">View</button>
+            </a>
+        </div>  
+    </div>
 {% endfor %}
+
+<a href="/group/{{g.group_id}}/projects/new" class="full-width-item">
+    <button class="button-grey">Create New Project</button>
+</a>
+
+</div>
 {% else %}
+
 <p>Nothingness</p>
 {% endif %}
 
-<a href="/group/{{g.group_id}}/projects/new">
-    <button class="button-grey">Create New Project</button>
-</a>
+
 
 <h1>Archived Projects</h1>
 <hr>
