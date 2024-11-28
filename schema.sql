@@ -39,13 +39,12 @@ CREATE TABLE projects (
     visible BOOLEAN NOT NULL DEFAULT TRUE
 );
 
-CREATE TYPE TASK_STATE AS ENUM ('Pending', 'In Progress', 'Completed', 'Archived');
 CREATE TABLE tasks (
     id SERIAL PRIMARY KEY,
     project_id INTEGER REFERENCES projects,
     title TEXT,
     description TEXT,
-    state TASK_STATE DEFAULT 'Pending',
+    state TEXT DEFAULT 'Pending', -- meaning defined in TaskStateEnum.py file
     priority INTEGER DEFAULT 1,
     deadline TIMESTAMP WITH TIME ZONE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
