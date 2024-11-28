@@ -1,7 +1,70 @@
 {% extends "layout.html" %}
 {% block content %}
 
-<h1> Empty! </h1>
+<h1>My Tasks</h1>
+<hr>
 
+<div class="tasks-container">
+    <div class="task-item">
+        <div></div>
+        <div>Title</div>
+        <div>Priority</div>
+        <div>Due Date</div>
+        <div>Status</div>
+        <div>Assigned Members</div>
+    </div>
+    <div class="task-item">
+        <button>e</button>
+        <div>Tehtävä 1</div>
+        <div>1</div>
+        <div>1.12.2024</div>
+        <div>In Progress</div>
+        <div>DualRed</div>
+    </div>
+    <div class="task-item">
+        <div class="task-summary">
+            <button>e</button>
+            <div>Tehtävä 2</div>
+            <div>3</div>
+            <div>6.12.2024</div>
+            <div>Pending</div>
+            <div>DualRed, testi, testi, testi, testi, testi, testi, testi</div>
+        </div>
+        <div class="task-details">
+            <button>e</button>
+            <div>Tehtävä 2</div>
+            <div>3</div>
+            <div>6.12.2024</div>
+            <div>Pending</div>
+            <div style="grid-row: span 2;">DualRed, testi, testi, testi, testi, testi, testi, testi</div>
 
+            <div style="grid-column: span 4;">descritiondescritiondescritiondescritiondescritiondescritiondescritiondescritiondescritiondescritiondescrition</div>
+        </div>
+    </div>
+</div>
+
+<h1>All Tasks</h1>
+<hr>
+
+{% endblock %}
+{% block scripts %}
+<script>
+document.querySelectorAll('.task-summary button').forEach(button => {
+  button.addEventListener('click', function () {
+    const summary = this.parentElement;
+    const details = summary.nextElementSibling;
+    summary.style.display = 'none';
+    details.style.display = 'contents';
+  });
+});
+document.querySelectorAll('.task-details button').forEach(button => {
+  button.addEventListener('click', function () {
+    const details = this.parentElement;
+    const summary = details.previousElementSibling;
+    summary.style.display = 'contents';
+    details.style.display = 'none';
+  });
+});
+
+</script>
 {% endblock %}
