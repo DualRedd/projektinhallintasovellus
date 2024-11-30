@@ -1,8 +1,9 @@
 import re
-from flask import session, request
+from datetime import datetime
+from flask import session, request, g
 from services.auth_service import user_exists, authenticate_user
 from services.groups_service import get_group_role, get_group_invite
-from enums.RoleEnum import RoleEnum
+from enums.enums import role_enum, task_priority_enum
 from config import config
 
 class ValidationResult:
@@ -44,7 +45,7 @@ def validate_group_invite_form(group_id : int, invitee, role_value_str : int) ->
         return ValidationResult(False, "Invalid csrf token!")
     if not invitee:
         return ValidationResult(False, "No such user found!")
-    if get_group_role(group_id, invitee.username):
+    if get_group_role(group_id, invitee.id):
         return ValidationResult(False, "The user is already a member of the group!")
     if get_group_invite(group_id, invitee.id):
         return ValidationResult(False, "The user has already been invited!")
@@ -53,7 +54,7 @@ def validate_group_invite_form(group_id : int, invitee, role_value_str : int) ->
         role_value = int(role_value_str)
     except ValueError:
         return ValidationResult(False, "Invalid role!")
-    if not RoleEnum.has_value(role_value) or RoleEnum(role_value) == RoleEnum.Owner:
+    if not role_enum.has_value(role_value) or role_enum(role_value) == role_enum.Owner:
         return ValidationResult(False, "Invalid role!")
     return ValidationResult(True)
 
@@ -64,6 +65,36 @@ def validate_create_project_form(project_name : str, project_desc : str):
         return res
     if not (res := validate_string_size(project_name, "project_description", "Project description")).valid:
         return res
+    return ValidationResult(True)
+
+def validate_create_task_form(task_name : str, task_desc : str, task_priority : str, task_date : str, task_time : str, task_members : list[str]):
+    if not check_csrf_token():
+        return ValidationResult(False, "Invalid csrf token!")
+    if not (res := validate_string_size(task_name, "task_name", "Task name")).valid:
+        return res
+    if not (res := validate_string_size(task_desc, "task_description", "Task description")).valid:
+        return res
+    try:
+        priority_int = int(task_priority)
+        if not task_priority_enum.has_value(priority_int):
+            return ValidationResult(False, "Invalid task priority!")
+    except ValueError:
+        return ValidationResult(False, "Invalid task priority!")
+    if task_date != "" or task_time != "":
+        try:
+            deadline = datetime.strptime(f"{task_date} {task_time}", '%Y-%m-%d %H:%M')
+            if deadline.date() < datetime.now().date():
+                return ValidationResult(False, "Deadline cannot be set to the past!")
+        except ValueError:
+            return ValidationResult(False, "Invalid deadline!")
+    for member in task_members:
+        try:
+            id = int(member)
+            print(id)
+            if not get_group_role(g.group_id, id):
+                return ValidationResult(False, "Invalid user assigned!")
+        except ValueError:
+            return ValidationResult(False, "Invalid user assigned!")
     return ValidationResult(True)
 
 def validate_empty_form():

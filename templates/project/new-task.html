@@ -1,0 +1,102 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h1>Create New Task</h1>
+<hr>
+<form action="" method="POST">
+    <p>Task name *</p>
+    <input type="text" name="name-stored" maxlength="{{MAX_INPUT_SIZES['task_name']}}" required> <br>
+    <p>Task details</p>
+    <textarea style="width: 100%; height: 10em;" name="desc-stored" rows="10" cols="50" maxlength="{{MAX_INPUT_SIZES['task_description']}}"></textarea>
+    <br> <br>
+    <label for="priority-stored">Priority *</label>
+    <select name="priority-stored" required>
+    {% for priority in g.priorities %}
+        <option value="{{priority.value}}">{{priority.name}}</option>
+    {% endfor %}
+    </select>
+    <br><br>
+    <label>Deadline:</label>
+    <input id="date" type="date" name="date-stored" min="{{g.date}}">
+    <input id="time" type="time" name="time-stored">
+    <button type="button" onclick="clear_selected_datetime()">Clear</button>
+    <br><br>
+    <label>Assign Members:</label>
+    <select id="member-select">
+        {% for member in g.members %}
+        <option value="{{member.id}}">{{member.username}}</option>
+        {% endfor %}
+    </select>
+    <button type="button" onclick="add_member()">Add</button>
+    <br><br>
+    <div id="member-view"></div>
+    <br>
+    <input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
+    <button type="submit" class="button-green">Create</button>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            {% if category == 'bad-form' %}
+                <p class="error" style="color:red"> {{message}} </p>
+            {% endif %}
+        {% endfor %}
+    {% endwith %}
+</form>
+
+{% endblock %}
+{% block scripts %}
+<script>
+const date_element = document.getElementById("date");
+const time_element = document.getElementById("time");
+function clear_selected_datetime(){
+    date_element.value = "";
+    time_element.value = "";
+}
+
+const id_to_name = {};
+const member_select = document.getElementById("member-select");
+const member_view = document.getElementById("member-view");
+for(let i = 0; i < member_select.children.length; i++) {
+    let option = member_select.children[i];
+    id_to_name[option.value] = option.innerHTML;
+}
+
+let added = new Set();
+if ("members-stored[]" in stored_data){
+    stored_data["members-stored[]"].forEach(val => {
+        if(val in id_to_name) added.add(val)
+    });
+    refresh_member_view();
+}
+function add_member(){
+    let id = member_select.value;
+    added.add(id)
+    refresh_member_view();
+}
+function remove_member(button){
+    let id = button.value;
+    added.delete(id);
+    refresh_member_view();
+}
+function refresh_member_view(){
+    member_view.innerHTML = "";
+    added.forEach(id => {
+        let input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "members-stored[]";
+        input.value = id;
+        member_view.appendChild(input);
+        let button = document.createElement("button");
+        button.type = "button";
+        button.value = id;
+        button.addEventListener('click', () =>  remove_member(button));
+        button.classList.add("selected-member");
+        button.innerHTML = id_to_name[id] + "<span>❌</span>";
+        member_view.appendChild(button);
+    });
+    for (let i = 0; i < member_select.children.length; i++) {
+        let option = member_select.children[i];
+        option.disabled = added.has(option.value);
+    }
+}
+</script>
+{% endblock %}

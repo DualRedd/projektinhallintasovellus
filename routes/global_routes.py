@@ -10,7 +10,7 @@ def inject_config_data():
 def inject_stored_data():
     res = {}
     for key in session:
-        if key.endswith('-stored'):
+        if "-stored" in key:
             res[key] = session[key]
     return {"stored_data": res}
 
@@ -26,12 +26,16 @@ def form_response_storage(response):
     if (300 <= response.status_code < 400):
         # if this is a redirect, store form values
         for key in request.form:
-            if key.endswith("-stored"): session[key] = request.form[key]
+            if "-stored" not in key: continue
+            if key.endswith("[]"):
+                session[key] = request.form.getlist(key)
+            else:
+                session[key] = request.form[key]
     else:
         # if this is not a redirect, remove stored form values
         to_remove = []
         for key in session:
-            if key.endswith("-stored"): to_remove.append(key)
+            if "-stored" in key: to_remove.append(key)
         for key in to_remove:
             session.pop(key)
     return response

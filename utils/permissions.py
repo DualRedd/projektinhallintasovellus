@@ -1,9 +1,9 @@
 from functools import wraps
 from flask import Response, request, redirect, render_template, g
-from enums.RoleEnum import RoleEnum
+from enums.enums import role_enum
 
-def permissions(require_login : bool = False, require_min_role : RoleEnum = None,
-                        require_max_role : RoleEnum = None):
+def permissions(require_login : bool = False, require_min_role : role_enum = None,
+                        require_max_role : role_enum = None):
     def decorator(f):
         @wraps(f)
         def wrapped(*args, **kwargs):
@@ -14,8 +14,8 @@ def permissions(require_login : bool = False, require_min_role : RoleEnum = None
         return wrapped
     return decorator
 
-def get_page_permission_response(require_login : bool = False, require_min_role : RoleEnum = None,
-                                 require_max_role : RoleEnum = None) -> Response | str | None:
+def get_page_permission_response(require_login : bool = False, require_min_role : role_enum = None,
+                                 require_max_role : role_enum = None) -> Response | str | None:
     if require_login and not g.username:
         return redirect("/login")
     if require_min_role or require_max_role:

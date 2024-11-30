@@ -18,6 +18,9 @@ body {
 body, textarea, input {
     font-family: Arial, Helvetica, sans-serif;
 }
+button {
+    cursor: pointer;
+}
 
 /* HEADER */
 header {
@@ -100,7 +103,6 @@ header nav span a, header nav span span {
 
 /* BUTTONS */
 .button-green {
-    cursor: pointer;
     background-color: #1f883d;
     border: 1px solid grey;
     border-radius: 5px;
@@ -113,7 +115,6 @@ header nav span a, header nav span span {
     background-color: #1c7736;
 }
 .button-green-inverted {
-    cursor: pointer;
     background-color: white;
     border: 1px solid #1f883d;
     border-radius: 5px;
@@ -128,7 +129,6 @@ header nav span a, header nav span span {
     color: white;
 }
 .button-red {
-    cursor: pointer;
     background-color: #961818;
     border: 1px solid grey;
     border-radius: 5px;
@@ -141,7 +141,6 @@ header nav span a, header nav span span {
     background-color: #6e1414;
 }
 .button-red-inverted {
-    cursor: pointer;
     border: 1px solid #961818;
     border-radius: 5px;
     padding: 0.4em 0.7em;
@@ -155,7 +154,6 @@ header nav span a, header nav span span {
     color: white;
 }
 .button-grey {
-    cursor: pointer;
     background-color: #ebebeb;
     border: 1px solid grey;
     border-radius: 5px;
@@ -166,41 +164,6 @@ header nav span a, header nav span span {
 }
 .button-grey:hover {
     background-color: #dddddd;
-}
-
-
-/* OTHER */
-
-.editable-data-field{
-    white-space: pre-wrap;
-    word-wrap: break-word;
-    margin: 1em 0px;
-}
-.editable-data-field span{
-    display: inline-block;
-    box-sizing: border-box;
-    color: var(--secondary-text);
-    border: 1px solid rgb(198, 198, 198);
-    border-radius: 4px;
-    padding: 0.5em;
-    background-color: white;
-    font-size: small;
-    max-width: 100%;
-}
-
-form textarea, form input{
-    border: 1px solid rgb(198, 198, 198);
-    border-radius: 4px;
-    padding: 0.5em;
-    background-color: white;
-    font-size: small;
-}
-
-textarea{
-    resize: none;
-    box-sizing: border-box;
-    width: 100%;
-    height: 10em;
 }
 
 
@@ -285,4 +248,81 @@ textarea{
 
 .task-details {
     display: none;
+}
+
+/* Create task form */
+#member-view {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0.5em 0;
+    gap: 0.5em;
+}
+.selected-member {
+    position: relative;
+    border: 1px solid grey;
+    border-radius: 10px;
+    color: var(--primary-text);
+    font-size: small;
+    padding: 0.7em;
+    margin-right: 0.5em;
+}
+.selected-member:hover {
+    background-color: lightcoral;
+    padding-right: 2em;
+}
+.selected-member span {
+    display: none;
+    position: absolute;
+    top: 0.6em;
+    right: 0.3em;
+    padding-left: 0.2em;
+    font-size: 1em;
+}
+.selected-member:hover span {
+    display: inline;
+}
+
+
+/* OTHER */
+
+.header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    align-content: center;
+}
+.header-flex a {
+    margin-right: 3%;
+}
+
+.editable-data-field{
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    margin: 1em 0px;
+}
+.editable-data-field span{
+    display: inline-block;
+    box-sizing: border-box;
+    color: var(--secondary-text);
+    border: 1px solid rgb(198, 198, 198);
+    border-radius: 4px;
+    padding: 0.5em;
+    background-color: white;
+    font-size: small;
+    max-width: 100%;
+}
+
+form textarea, form input{
+    border: 1px solid rgb(198, 198, 198);
+    border-radius: 4px;
+    padding: 0.5em;
+    background-color: white;
+    font-size: small;
+}
+
+textarea{
+    resize: none;
+    box-sizing: border-box;
+    width: 100%;
+    height: 10em;
 }

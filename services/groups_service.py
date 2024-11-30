@@ -1,7 +1,7 @@
 from sqlalchemy.sql import text
 from app import db
 from services.auth_service import get_user
-from enums.RoleEnum import RoleEnum
+from enums.enums import role_enum
 
 def get_groups(username : str):
     result = db.session.execute(text("SELECT G.id, G.name, G.description, GR.role FROM group_roles GR \
@@ -42,13 +42,13 @@ def get_group_invitees(group_id : int):
                                     "), {"group_id":group_id}).fetchall()
     return result
 
-def get_group_role(group_id : int, username : str) -> RoleEnum | None:
+def get_group_role(group_id : int, user_id : int) -> role_enum | None:
     result = db.session.execute(text("SELECT GR.role FROM group_roles GR \
                                     JOIN users U ON U.id = GR.user_id AND U.visible = TRUE \
                                     JOIN groups G ON G.id = GR.group_id AND G.visible = TRUE \
-                                    WHERE GR.group_id = :group_id AND U.username = :username \
-                                    "), {"group_id":group_id, "username":username}).fetchone()
-    return RoleEnum[result[0]] if result else None
+                                    WHERE GR.group_id = :group_id AND U.id = :user_id \
+                                    "), {"group_id":group_id, "user_id":user_id}).fetchone()
+    return role_enum[result[0]] if result else None
 
 def create_group(group_name : str, group_desc : str = "") -> int:
     group_id = db.session.execute(text("INSERT INTO groups (name, description) VALUES (:group_name, :group_desc) RETURNING id"),
@@ -66,7 +66,7 @@ def delete_group(group_id : int):
                             {"group_id":group_id})
     db.session.commit()
 
-def create_group_member(group_id : int, user_id : int, role : RoleEnum):
+def create_group_member(group_id : int, user_id : int, role : role_enum):
     db.session.execute(text("INSERT INTO group_roles (group_id, user_id, role) VALUES (:group_id, :user_id, :role)"),
                             {"group_id":group_id, "user_id":user_id, "role":role.name})
     db.session.commit()
@@ -81,7 +81,7 @@ def get_group_invite(group_id : int, invitee_id : int):
                                     {"group_id":group_id, "invitee_id":invitee_id}).fetchone()
     return result
 
-def create_group_invite(group_id : int, invitee_id : int, role : RoleEnum):
+def create_group_invite(group_id : int, invitee_id : int, role : role_enum):
     db.session.execute(text("INSERT INTO group_invites (group_id, invitee_id, role) VALUES (:group_id, :invitee_id, :role)"),
                             {"group_id":group_id, "invitee_id":invitee_id, "role":role.name})
     db.session.commit()

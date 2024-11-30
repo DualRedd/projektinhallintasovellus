@@ -19,14 +19,14 @@ CREATE TABLE group_roles (
     id SERIAL PRIMARY KEY,
     group_id INTEGER REFERENCES groups,
     user_id INTEGER REFERENCES users,
-    role TEXT NOT NULL -- meaning defined in RoleEnum.py file
+    role TEXT NOT NULL -- meaning defined in enums.py file
 );
 
 CREATE TABLE group_invites (
     id SERIAL PRIMARY KEY,
     group_id INTEGER REFERENCES groups,
     invitee_id INTEGER REFERENCES users,
-    role TEXT NOT NULL -- meaning defined in RoleEnum.py file
+    role TEXT NOT NULL -- meaning defined in enums.py file
 );
 
 CREATE TABLE projects (
@@ -41,12 +41,13 @@ CREATE TABLE projects (
 
 CREATE TABLE tasks (
     id SERIAL PRIMARY KEY,
+    created_by_id INTEGER REFERENCES users,
     project_id INTEGER REFERENCES projects,
     title TEXT,
     description TEXT,
-    state TEXT DEFAULT 'Pending', -- meaning defined in TaskStateEnum.py file
-    priority INTEGER DEFAULT 1,
-    deadline TIMESTAMP WITH TIME ZONE,
+    state TEXT DEFAULT 'Pending', -- meaning defined in enums.py file
+    priority TEXT DEFAULT 'Normal', -- meaning defined in enums.py file
+    deadline TIMESTAMP,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     visible BOOLEAN NOT NULL DEFAULT TRUE
 );

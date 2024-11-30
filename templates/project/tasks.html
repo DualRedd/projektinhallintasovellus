@@ -1,8 +1,13 @@
 {% extends "layout.html" %}
 {% block content %}
 
-<h1>My Tasks</h1>
-<hr>
+<div class="header-flex">
+    <h1>My Tasks</h1>
+    <a href="/group/{{g.group_id}}/project/{{g.project_id}}/tasks/new">
+        <button class="button-grey">Create New Task</button>
+    </a>
+</div>
+<hr style="margin-top:0;">
 
 <div class="tasks-container">
     <div class="task-item">
@@ -38,7 +43,7 @@
             <div>Pending</div>
             <div style="grid-row: span 2;">DualRed, testi, testi, testi, testi, testi, testi, testi</div>
 
-            <div style="grid-column: span 4;">descritiondescritiondescritiondescritiondescritiondescritiondescritiondescritiondescritiondescritiondescrition</div>
+            <div style="grid-column: 2 / 6;">descritiondescritiondescritiondescritiondescritiondescritiondescritiondescritiondescritiondescritiondescrition</div>
         </div>
     </div>
 </div>
