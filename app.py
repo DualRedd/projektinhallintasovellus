@@ -6,6 +6,12 @@ from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)   
 app.secret_key = getenv("SECRET_KEY")
 
+# Debug mode
+debug = getenv("DEBUG")
+if debug and bool(debug):
+    app.config['DEBUG'] = True
+    app.config['TEMPLATES_AUTO_RELOAD'] = True
+
 # Database setup
 app.config["SQLALCHEMY_DATABASE_URI"] = getenv("DATABASE_URL")
 db = SQLAlchemy(app)
