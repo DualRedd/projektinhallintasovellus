@@ -4,12 +4,12 @@ from flask import session, request, render_template, redirect, flash, g
 from datetime import datetime
 # Internal services
 from services.groups_service import get_group_role, get_group_members
-from services.tasks_service import create_task, create_task_assignment, get_tasks_dicts
-from utils.permissions import permissions
+from services.tasks_service import create_task, create_task_assignment, get_tasks_dicts, update_task_state
+from utils.permissions import permissions, get_page_permission_response
 from utils.tools import remove_line_breaks
 import utils.input_validation as input
 # Enums
-from enums.enums import role_enum, task_priority_enum
+from enums.enums import role_enum, task_priority_enum, task_state_enum
 
 projects_bp = Blueprint('projects', __name__)
 
@@ -21,6 +21,8 @@ def get_project_data():
         g.project_id = request.view_args["project_id"]
         g.sidebar = 2
         g.role = get_group_role(g.group_id, g.user_id)
+    if "task_id" in request.view_args:
+        g.task_id = request.view_args["task_id"]
 
 @projects_bp.route("/group/<int:group_id>/project/<int:project_id>", methods=["GET"])
 def route_base(group_id, project_id):
@@ -33,6 +35,7 @@ def route_base(group_id, project_id):
 @permissions(require_login=True, require_min_role=role_enum.Observer)
 def route_tasks(group_id, project_id):
     g.all_tasks = get_tasks_dicts(g.project_id)
+    g.can_edit_tasks = g.role.value >= role_enum.Collaborator.value
     g.current_page = 'tasks'
     return render_template("project/tasks.html")
 
@@ -42,7 +45,6 @@ def route_tasks_new(group_id, project_id):
     if request.method == "GET":
         g.date = datetime.now().strftime('%Y-%m-%d')
         g.time = datetime.now().strftime('%H:%M')
-        g.priorities = [priority for priority in task_priority_enum]
         g.members = get_group_members(g.group_id)
         g.current_page = 'tasks'
         return render_template("project/new-task.html")
@@ -64,6 +66,17 @@ def route_tasks_new(group_id, project_id):
     else:
         flash(result.error, "bad-form")
         return redirect(f"/group/{g.group_id}/project/{g.project_id}/tasks/new")
+
+@projects_bp.route("/group/<int:group_id>/project/<int:project_id>/task/<int:task_id>/edit-state", methods=["POST"])
+@permissions(require_login=True, require_min_role=role_enum.Observer)
+def route_tasks_edit_state(group_id, project_id, task_id):
+    if g.role == role_enum.Observer: # observers can only change state of tasks they are assigned to
+        if (res := get_page_permission_response(require_task_membership=True)) is not None: return res
+    state_str = request.form["state"]
+    result = input.validate_task_state_form(state_str)
+    if result.valid:
+        update_task_state(task_id, task_state_enum(state_str))
+    return redirect(request.referrer or f"/group/{g.group_id}/project/{g.project_id}/tasks")
 
 #------------#
 # STATS PAGE #

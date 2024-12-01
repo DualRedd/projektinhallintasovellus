@@ -2,6 +2,7 @@ from sqlalchemy.sql import text
 from datetime import datetime
 from app import db
 from utils.tools import query_res_to_dict
+from enums.enums import task_state_enum
 
 def create_task(user_id : int, project_id : int, title : str, desc : str, priority : str, deadline : datetime) -> int:
     if deadline is not None: deadline = deadline.strftime('%Y-%m-%d %H:%M:%S')
@@ -15,6 +16,18 @@ def create_task(user_id : int, project_id : int, title : str, desc : str, priori
 def create_task_assignment(task_id : int, user_id : int):
     task_id = db.session.execute(text("INSERT INTO task_assignments (task_id, user_id) VALUES (:task_id, :user_id) RETURNING id"),
                                     {"task_id":task_id, "user_id":user_id}).fetchone()[0]
+    db.session.commit()
+
+def exists_task_assignment(task_id : int, user_id : int) -> bool:
+    result = db.session.execute(text("SELECT task_id, user_id FROM task_assignments WHERE task_id = :task_id AND user_id = :user_id"),
+                                    {"task_id":task_id, "user_id":user_id}).fetchone()
+    db.session.commit()
+    print(result)
+    return result is not None
+
+def update_task_state(task_id : int, state : task_state_enum):
+    task_id = db.session.execute(text("UPDATE tasks SET state=:state WHERE id=:task_id;"),
+                                    {"state":state.value, "task_id":task_id})
     db.session.commit()
 
 def get_task_members(task_id : int) -> list[dict]:

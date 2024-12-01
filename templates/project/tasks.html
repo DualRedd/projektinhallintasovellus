@@ -15,14 +15,14 @@
         <div>Title</div>
         <div>Priority</div>
         <div>Deadline</div>
-        <div>Status</div>
+        <div>State</div>
         <div>Assigned Members</div>
     </div>
     {% for task in g.all_tasks %}
     {% if task["members"]|user_in_task(g.username) %}
     <div class="task-item">
         <div class="task-summary">
-            <button>></button>
+            <button class="detail-toggle">></button>
             <div>{{task["title"]}}</div>
             <div>{{task["priority"]}}</div>
             <div>{{task["deadline"]}}</div>
@@ -32,15 +32,40 @@
             {% else %}<div>None</div>{% endif %}
         </div>
         <div class="task-details">
-            <button>v</button>
+            <button onclick="resetStateEditMode(this)" class="detail-toggle">v</button>
             <div>{{task["title"]}}</div>
             <div>{{task["priority"]}}</div>
             <div>{{task["deadline"]}}</div>
-            <div>{{task["state"]}}</div>
+
+            <div class="state-field">{{task["state"]}}</div>
+            <form action="/group/{{g.group_id}}/project/{{g.project_id}}/task/{{task['id']}}/edit-state" method="POST" style="display: none;">
+                <select name="state" data-value="{{task['state']}}">
+                {% for state in g.states %}
+                    <option value="{{state.value}}" {% if state.value == task["state"] %}selected{% endif %}>{{state.value}}</option>
+                {% endfor %}
+                </select>
+                <input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
+            </form>
+
             {% if task["members"] %}
             <div>{% for user in task["members"] %}{{user["username"]}}{% if not loop.last %}, {% endif %}{% endfor %}</div>
             {% else %}<div>None</div>{% endif %}
-            <div style="grid-column: 2 / 6;">{{task["description"]}}</div>
+            <div class="secondary-text" style="grid-column: 2 / 6;">{{task["description"]}}</div>
+
+            <div class="buttons-1" style="grid-column: 2 / 7;">
+                {% if task["members"]|user_in_task(g.username) %}
+                <button onclick="enableStateEditMode(this)" class="button-grey button-small">Change State</button>
+                {% endif %}
+                {% if g.can_edit_tasks  %}
+                <a href="/group/{{g.group_id}}/project/{{g.project_id}}/task/{{task['id']}}/edit">
+                <button class="button-grey button-small">Edit Task</button></a>
+                {% endif %}
+            </div>
+            
+            <div class="buttons-2" style="grid-column: 2 / 7;display:none">
+                <button onclick="submitStateForm(this)" class="button-green button-small" style="font-size: 70%;">Confirm</button>
+                <button onclick="resetStateEditMode(this)" class="button-red button-small" style="font-size: 70%;">Cancel</button>
+            </div>
         </div>
     </div>
     {% endif %}
@@ -55,13 +80,13 @@
         <div>Title</div>
         <div>Priority</div>
         <div>Deadline</div>
-        <div>Status</div>
+        <div>State</div>
         <div>Assigned Members</div>
     </div>
     {% for task in g.all_tasks %}
     <div class="task-item">
         <div class="task-summary">
-            <button>></button>
+            <button class="detail-toggle">></button>
             <div>{{task["title"]}}</div>
             <div>{{task["priority"]}}</div>
             <div>{{task["deadline"]}}</div>
@@ -71,15 +96,40 @@
             {% else %}<div>None</div>{% endif %}
         </div>
         <div class="task-details">
-            <button>v</button>
+            <button onclick="resetStateEditMode(this)" class="detail-toggle">v</button>
             <div>{{task["title"]}}</div>
             <div>{{task["priority"]}}</div>
             <div>{{task["deadline"]}}</div>
-            <div>{{task["state"]}}</div>
+
+            <div class="state-field">{{task["state"]}}</div>
+            <form action="/group/{{g.group_id}}/project/{{g.project_id}}/task/{{task['id']}}/edit-state" method="POST" style="display: none;">
+                <select name="state" data-value="{{task['state']}}">
+                {% for state in g.states %}
+                    <option value="{{state.value}}" {% if state.value == task["state"] %}selected{% endif %}>{{state.value}}</option>
+                {% endfor %}
+                </select>
+                <input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
+            </form>
+
             {% if task["members"] %}
             <div>{% for user in task["members"] %}{{user["username"]}}{% if not loop.last %}, {% endif %}{% endfor %}</div>
             {% else %}<div>None</div>{% endif %}
-            <div style="grid-column: 2 / 6;">{{task["description"]}}</div>
+            <div class="secondary-text" style="grid-column: 2 / 6;">{{task["description"]}}</div>
+
+            <div class="buttons-1" style="grid-column: 2 / 7;">
+                {% if task["members"]|user_in_task(g.username) %}
+                <button onclick="enableStateEditMode(this)" class="button-grey button-small">Change State</button>
+                {% endif %}
+                {% if g.can_edit_tasks  %}
+                <a href="/group/{{g.group_id}}/project/{{g.project_id}}/task/{{task['id']}}/edit">
+                <button class="button-grey button-small">Edit Task</button></a>
+                {% endif %}
+            </div>
+            
+            <div class="buttons-2" style="grid-column: 2 / 7;display:none">
+                <button onclick="submitStateForm(this)" class="button-green button-small" style="font-size: 70%;">Confirm</button>
+                <button onclick="resetStateEditMode(this)" class="button-red button-small" style="font-size: 70%;">Cancel</button>
+            </div>
         </div>
     </div>
     {% endfor %}
@@ -88,7 +138,7 @@
 {% endblock %}
 {% block scripts %}
 <script>
-document.querySelectorAll('.task-summary button').forEach(button => {
+document.querySelectorAll('.task-summary button.detail-toggle').forEach(button => {
   button.addEventListener('click', function () {
     const summary = this.parentElement;
     const details = summary.nextElementSibling;
@@ -96,7 +146,7 @@ document.querySelectorAll('.task-summary button').forEach(button => {
     details.style.display = 'contents';
   });
 });
-document.querySelectorAll('.task-details button').forEach(button => {
+document.querySelectorAll('.task-details button.detail-toggle').forEach(button => {
   button.addEventListener('click', function () {
     const details = this.parentElement;
     const summary = details.previousElementSibling;
@@ -104,5 +154,29 @@ document.querySelectorAll('.task-details button').forEach(button => {
     details.style.display = 'none';
   });
 });
+
+function enableStateEditMode(button){
+    console.log("HELLO");
+    const parent = button.closest(".task-details");
+    parent.querySelector(".state-field").style.display = "none";
+    parent.querySelector("form").style.display = "block";
+    button.parentElement.style.display = "none";
+    button.parentElement.nextElementSibling.style.display = "block";
+}
+function resetStateEditMode(button){
+    const parent = button.closest(".task-details");
+    parent.querySelector(".buttons-1").style.display = "block";
+    parent.querySelector(".buttons-2").style.display = "none";
+    parent.querySelector(".state-field").style.display = "block";
+    parent.querySelector("form").style.display = "none";
+    const select = parent.querySelector("form select");
+    const optionToSelect = select.querySelector("option[value='" + select.dataset.value + "']");
+    optionToSelect.selected = true;
+}
+function submitStateForm(button){
+    const parent = button.closest(".task-details");
+    parent.querySelector("form").submit();
+}
+
 </script>
 {% endblock %}

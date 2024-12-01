@@ -166,6 +166,11 @@ header nav span a, header nav span span {
     background-color: #dddddd;
 }
 
+.button-small {
+    font-weight: normal;
+    font-size: 70%;
+}
+
 
 /* CARDS */
 
@@ -229,8 +234,8 @@ header nav span a, header nav span span {
 }
 .task-item {
     display: grid;
-    grid-template-columns: 1.5em minmax(4em, 7fr) 5em 8.5em 5em minmax(4em, 5fr);
-    align-items: flex-start;
+    grid-template-columns: 1.4em minmax(4em, 7fr) 5em 8.5em 6em minmax(4em, 5fr);
+    align-items: center;
     gap: 0.5em 1em;
     line-height: 1;
     padding: 0.5em 0;

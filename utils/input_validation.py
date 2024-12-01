@@ -3,7 +3,7 @@ from datetime import datetime
 from flask import session, request, g
 from services.auth_service import user_exists, authenticate_user
 from services.groups_service import get_group_role, get_group_invite
-from enums.enums import role_enum, task_priority_enum
+from enums.enums import role_enum, task_priority_enum, task_state_enum
 from config import config
 
 class ValidationResult:
@@ -95,6 +95,13 @@ def validate_create_task_form(task_name : str, task_desc : str, task_priority : 
                 return ValidationResult(False, "Invalid user assigned!")
         except ValueError:
             return ValidationResult(False, "Invalid user assigned!")
+    return ValidationResult(True)
+
+def validate_task_state_form(state_str : str):
+    if not check_csrf_token():
+        return ValidationResult(False, "Invalid csrf token!")
+    if not task_state_enum.has_value(state_str):
+        return ValidationResult(False, "Invalid task state!")
     return ValidationResult(True)
 
 def validate_empty_form():

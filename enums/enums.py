@@ -17,7 +17,7 @@ class task_state_enum(Enum):
     Archived = 'Archived'
 
     @classmethod
-    def has_value(cls, value : int):
+    def has_value(cls, value : str):
         return value in cls._value2member_map_
 
 class task_priority_enum(Enum):
