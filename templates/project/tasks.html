@@ -35,11 +35,13 @@
     <div class="task-item">
         <div class="task-summary">
             <button>></button>
-            <div class="truncate-2" data-original="{{task['title']}}">{{task["title"]}}</div>
+            <div>{{task["title"]}}</div>
             <div>{{task["priority"]}}</div>
             <div>{{task["deadline"]}}</div>
             <div>{{task["state"]}}</div>
-            <div>NULL</div>
+            {% if task["members"] %}
+            <div>{% for user in task["members"] %}{{user["username"]}}{% if not loop.last %}, {% endif %}{% endfor %}</div>
+            {% else %}<div>None</div>{% endif %}
         </div>
         <div class="task-details">
             <button>v</button>

@@ -97,7 +97,7 @@ header nav span a, header nav span span {
 .content {
     margin: 10px auto;
     width: 80%;
-    max-width: 60em;
+    max-width: 80em;
     padding: 2em;
 }
 
@@ -229,7 +229,7 @@ header nav span a, header nav span span {
 }
 .task-item {
     display: grid;
-    grid-template-columns: 1fr 7fr 3fr 5fr 3fr 5fr;
+    grid-template-columns: 1.5em minmax(4em, 7fr) 5em 8.5em 5em minmax(4em, 5fr);
     align-items: flex-start;
     gap: 0.5em 1em;
     line-height: 1;
@@ -240,7 +240,7 @@ header nav span a, header nav span span {
     font-weight: bold;
 }
 .task-item div {
-    overflow: auto;
+    overflow: hidden;
     overflow-wrap: break-word;
 }
 .task-summary {

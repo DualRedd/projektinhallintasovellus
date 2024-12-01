@@ -4,9 +4,9 @@ from flask import session, request, render_template, redirect, flash, g
 from datetime import datetime
 # Internal services
 from services.groups_service import get_group_role, get_group_members
-from services.tasks_service import create_task, create_task_assignment, get_tasks
+from services.tasks_service import create_task, create_task_assignment, get_tasks_dicts
 from utils.permissions import permissions
-from utils.tools import remove_line_breaks, query_res_to_dict
+from utils.tools import remove_line_breaks
 import utils.input_validation as input
 # Enums
 from enums.enums import role_enum, task_priority_enum
@@ -32,12 +32,7 @@ def route_base(group_id, project_id):
 @projects_bp.route("/group/<int:group_id>/project/<int:project_id>/tasks", methods=["GET"])
 @permissions(require_login=True, require_min_role=role_enum.Observer)
 def route_tasks(group_id, project_id):
-    g.all_tasks = query_res_to_dict(get_tasks(g.project_id))
-    for task in g.all_tasks:
-        if task["deadline"]: 
-            task["deadline"] = task["deadline"].strftime('%d.%m.%Y %H:%M')
-        else:
-            task["deadline"] = "Not Set"
+    g.all_tasks = get_tasks_dicts(g.project_id)
     g.current_page = 'tasks'
     return render_template("project/tasks.html")
 
