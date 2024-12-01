@@ -6,14 +6,14 @@ Projektien ja tehtävien seurantaa.
 - Ryhmän omistajat voivat luoda ja hallinnoida projekteja.
 - Projektit voivat koostua useista tehtävistä.
 - Tehtäviä voi jakaa tiimin jäsenille ja asettaa deadlinet.
-- Omalla sivulla näkyy omat ryhmät ja tehtävät.
-- Omat tehtävät voi merkitä keskeneräiseksi/valmiiksi (mahdollisesti muita tiloja).
-- Hakutoimintoja: esim. voi hakea ryhmän tietyn jäsenen kaikki tehtävät
-- Voi järjestää tehtäviä määräpäivän mukaan
+- Ryhmän sivulla näkyy koottuna eri projektien tehtävät.
+- Projektisivulla näkyy koottuna kyseisen projektin tehtävät sekä tilastoja projektiin liittyen.
+- Tehtävät voi merkitä esim. keskeneräiseksi tai valmiiksi.
+- Tehtävien hakutoiminnot, joilla voi rajata ja järjestää ryhmän/projektin tehtävät.
+- Eri tärkeysasteita tehtäville
 
 Mahdolllisia lisäyksiä:
 - Mahdollisuus kommentoida tehtäviä ja/tai lähettää viestiä tiimin vetäjälle.
-- Eri tärkeysasteita tehtäville
 - Kalenterinäkymä
 
 
@@ -42,7 +42,19 @@ Mahdolllisia lisäyksiä:
 # Sovelluksen nykytilanne
 
 - Sovelluksella on sivu uuden käyttäjän luomiselle sekä kirjautumiselle.
-- Sovellukseen kirjauduttua etusivulla näkyy ryhmät joihin kuuluu sekä mahdolliset ryhmäkutsut.
+- Kirjauduttua etusivulla näkyy ryhmät joihin kuuluu sekä mahdolliset ryhmäkutsut.
 - Etusivulla on myös linkki uuden ryhmän luomiseen.
-- Ryhmän omistajat voivat kutsua uusia jäseniä ja asettaa heidän roolinsa
+- Ryhmän omistajat voivat kutsua uusia jäseniä ja asettaa heidän roolinsa.
+- Ryhmän asetuksista voi muuttaa nimeä ja kuvausta sekä poistaa ryhmän (vain ryhmän omistaja) tai poistua ryhmästä.
+- Ryhmän projektisivulla voi luoda uusia projekteja.
+- Projektien sisällä voi luoda tehtäviä sekä muokata tehtävien tilaa.
+
+# Viimeiset puuttuvat ominaisuudet
+
+- Tehtävien koonti ryhmän sivuille.
+- Projektien arkistointi, statistiikat sekä asetukset.
+- Tehtävien muokkaaminen.
+- Tehtävien haku- ja järjestystoiminnot.
+- Ryhmän jäsenten poistaminen sekä roolien muokkaaminen.
+- Mahdollinen profiilisivu (ei kovin tärkeä).
 
