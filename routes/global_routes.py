@@ -48,3 +48,8 @@ def cache_control_headers(response):
         response.headers['Pragma'] = 'no-cache'
         response.headers['Expires'] = '-1'
     return response
+
+# Template filters
+@app.template_filter("user_in_task")
+def is_user_in_task(members : list[dict], username : str):
+    return any(member["username"] == username for member in members)
