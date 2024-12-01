@@ -15,3 +15,10 @@ def create_task_assignment(task_id : int, user_id : int):
     task_id = db.session.execute(text("INSERT INTO task_assignments (task_id, user_id) VALUES (:task_id, :user_id) RETURNING id"),
                                     {"task_id":task_id, "user_id":user_id}).fetchone()[0]
     db.session.commit()
+
+def get_tasks(project_id : int):
+    result = db.session.execute(text("SELECT id, title, description, state, priority, deadline FROM tasks \
+                                    WHERE project_id = :project_id AND visible = TRUE"),
+                                    {"project_id":project_id}).fetchall()
+    db.session.commit()
+    return result

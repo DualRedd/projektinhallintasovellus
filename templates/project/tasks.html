@@ -14,42 +14,45 @@
         <div></div>
         <div>Title</div>
         <div>Priority</div>
-        <div>Due Date</div>
+        <div>Deadline</div>
         <div>Status</div>
         <div>Assigned Members</div>
-    </div>
-    <div class="task-item">
-        <button>e</button>
-        <div>Tehtävä 1</div>
-        <div>1</div>
-        <div>1.12.2024</div>
-        <div>In Progress</div>
-        <div>DualRed</div>
-    </div>
-    <div class="task-item">
-        <div class="task-summary">
-            <button>e</button>
-            <div>Tehtävä 2</div>
-            <div>3</div>
-            <div>6.12.2024</div>
-            <div>Pending</div>
-            <div>DualRed, testi, testi, testi, testi, testi, testi, testi</div>
-        </div>
-        <div class="task-details">
-            <button>e</button>
-            <div>Tehtävä 2</div>
-            <div>3</div>
-            <div>6.12.2024</div>
-            <div>Pending</div>
-            <div style="grid-row: span 2;">DualRed, testi, testi, testi, testi, testi, testi, testi</div>
-
-            <div style="grid-column: 2 / 6;">descritiondescritiondescritiondescritiondescritiondescritiondescritiondescritiondescritiondescritiondescrition</div>
-        </div>
     </div>
 </div>
 
 <h1>All Tasks</h1>
 <hr>
+<div class="tasks-container">
+    <div class="task-item table-title">
+        <div></div>
+        <div>Title</div>
+        <div>Priority</div>
+        <div>Deadline</div>
+        <div>Status</div>
+        <div>Assigned Members</div>
+    </div>
+    {% for task in g.all_tasks %}
+    <div class="task-item">
+        <div class="task-summary">
+            <button>></button>
+            <div class="truncate-2" data-original="{{task['title']}}">{{task["title"]}}</div>
+            <div>{{task["priority"]}}</div>
+            <div>{{task["deadline"]}}</div>
+            <div>{{task["state"]}}</div>
+            <div>NULL</div>
+        </div>
+        <div class="task-details">
+            <button>v</button>
+            <div>{{task["title"]}}</div>
+            <div>{{task["priority"]}}</div>
+            <div>{{task["deadline"]}}</div>
+            <div>{{task["state"]}}</div>
+            <div style="grid-row: span 2;">NULL</div>
+            <div style="grid-column: 2 / 6;">{{task["description"]}}</div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
 
 {% endblock %}
 {% block scripts %}
@@ -70,6 +73,5 @@ document.querySelectorAll('.task-details button').forEach(button => {
     details.style.display = 'none';
   });
 });
-
 </script>
 {% endblock %}

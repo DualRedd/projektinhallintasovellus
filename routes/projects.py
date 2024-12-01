@@ -4,9 +4,9 @@ from flask import session, request, render_template, redirect, flash, g
 from datetime import datetime
 # Internal services
 from services.groups_service import get_group_role, get_group_members
-from services.tasks_service import create_task, create_task_assignment
+from services.tasks_service import create_task, create_task_assignment, get_tasks
 from utils.permissions import permissions
-from utils.tools import remove_line_breaks
+from utils.tools import remove_line_breaks, query_res_to_dict
 import utils.input_validation as input
 # Enums
 from enums.enums import role_enum, task_priority_enum
@@ -32,6 +32,12 @@ def route_base(group_id, project_id):
 @projects_bp.route("/group/<int:group_id>/project/<int:project_id>/tasks", methods=["GET"])
 @permissions(require_login=True, require_min_role=role_enum.Observer)
 def route_tasks(group_id, project_id):
+    g.all_tasks = query_res_to_dict(get_tasks(g.project_id))
+    for task in g.all_tasks:
+        if task["deadline"]: 
+            task["deadline"] = task["deadline"].strftime('%d.%m.%Y %H:%M')
+        else:
+            task["deadline"] = "Not Set"
     g.current_page = 'tasks'
     return render_template("project/tasks.html")
 
@@ -59,7 +65,7 @@ def route_tasks_new(group_id, project_id):
         task_id = create_task(g.user_id, g.project_id, task_name, task_desc, task_priority, task_deadline)
         for member in task_members:
             create_task_assignment(task_id, int(member))
-        return redirect(f"/group/{g.group_id}/project/{g.project_id}")
+        return redirect(f"/group/{g.group_id}/project/{g.project_id}/tasks")
     else:
         flash(result.error, "bad-form")
         return redirect(f"/group/{g.group_id}/project/{g.project_id}/tasks/new")

@@ -197,7 +197,7 @@ header nav span a, header nav span span {
     box-sizing: border-box;
     color: var(--secondary-text);
     height: 100%;
-    line-height: 1em;
+    line-height: 1;
     max-height: 4em;
     overflow: hidden;
     overflow-wrap: break-word;
@@ -224,33 +224,40 @@ header nav span a, header nav span span {
 }
 
 /* TASK ROW LAYOUT */
-
 .tasks-container {
     padding: 2% 3%;
-    gap: 1em;
 }
-
 .task-item {
     display: grid;
-    grid-template-columns: 1fr 4fr 4fr 4fr 4fr 4fr;
+    grid-template-columns: 1fr 7fr 3fr 5fr 3fr 5fr;
+    align-items: flex-start;
+    gap: 0.5em 1em;
+    line-height: 1;
     padding: 0.5em 0;
     border-bottom: 1px solid grey;
 }
-
+.table-title{
+    font-weight: bold;
+}
 .task-item div {
     overflow: auto;
     overflow-wrap: break-word;
 }
-
 .task-summary {
     display: contents;
 }
-
+.task-summary div {
+    max-height: 2em;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
 .task-details {
     display: none;
+    overflow-wrap:anywhere;
 }
 
-/* Create task form */
+/* CREATE TASK FORM */
 #member-view {
     display: flex;
     flex-wrap: wrap;
