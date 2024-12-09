@@ -23,37 +23,38 @@
     <div class="task-item">
         <div class="task-summary">
             <button class="detail-toggle">></button>
-            <div>{{task["title"]}}</div>
-            <div>{{task["priority"]}}</div>
-            <div>{{task["deadline"]}}</div>
-            <div>{{task["state"]}}</div>
-            {% if task["members"] %}
-            <div>{% for user in task["members"] %}{{user["username"]}}{% if not loop.last %}, {% endif %}{% endfor %}</div>
+            <div>{{task.title}}</div>
+            <div>{{task.priority.display_name}}</div>
+            <div>{{task.deadline}}</div>
+            <div>{{task.state.display_name}}</div>
+            {% if task.members %}
+            <div>{% for user in task.members %}{{user.username}}{% if not loop.last %}, {% endif %}{% endfor %}</div>
             {% else %}<div>None</div>{% endif %}
         </div>
         <div class="task-details">
             <button onclick="resetStateEditMode(this)" class="detail-toggle">v</button>
-            <div>{{task["title"]}}</div>
-            <div>{{task["priority"]}}</div>
-            <div>{{task["deadline"]}}</div>
+            <div>{{task.title}}</div>
+            <div>{{task.priority.display_name}}</div>
+            <div>{{task.deadline}}</div>
 
-            <div class="state-field">{{task["state"]}}</div>
-            <form action="/group/{{g.group_id}}/project/{{g.project_id}}/task/{{task['id']}}/edit-state" method="POST" style="display: none;">
-                <select name="state" data-value="{{task['state']}}">
+            <div class="state-field">{{task.state.display_name}}</div>
+            <form action="/group/{{g.group_id}}/project/{{g.project_id}}/task/{{task.id}}/edit-state" method="POST" style="display: none;">
+                <select name="state" data-value="{{task.state.value}}">
                 {% for state in g.states %}
-                    <option value="{{state.value}}" {% if state.value == task["state"] %}selected{% endif %}>{{state.value}}</option>
+                    <option value="{{state.value}}" {% if state.value == task.state.value %}selected disabled{% endif %}>{{state.display_name}}</option>
                 {% endfor %}
                 </select>
                 <input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
             </form>
 
-            {% if task["members"] %}
-            <div>{% for user in task["members"] %}{{user["username"]}}{% if not loop.last %}, {% endif %}{% endfor %}</div>
+            {% if task.members %}
+            <div>{% for user in task.members %}{{user.username}}{% if not loop.last %}, {% endif %}{% endfor %}</div>
             {% else %}<div>None</div>{% endif %}
+
             <div class="secondary-text" style="grid-column: 2 / 6;">{{task["description"]}}</div>
 
             <div class="buttons-1" style="grid-column: 2 / 7;">
-                {% if task["members"]|user_in_task(g.username) %}
+                {% if g.can_edit_tasks or task.members|user_in_task(g.username) %}
                 <button onclick="enableStateEditMode(this)" class="button-grey button-small">Change State</button>
                 {% endif %}
                 {% if g.can_edit_tasks  %}
@@ -87,37 +88,38 @@
     <div class="task-item">
         <div class="task-summary">
             <button class="detail-toggle">></button>
-            <div>{{task["title"]}}</div>
-            <div>{{task["priority"]}}</div>
-            <div>{{task["deadline"]}}</div>
-            <div>{{task["state"]}}</div>
-            {% if task["members"] %}
-            <div>{% for user in task["members"] %}{{user["username"]}}{% if not loop.last %}, {% endif %}{% endfor %}</div>
+            <div>{{task.title}}</div>
+            <div>{{task.priority.display_name}}</div>
+            <div>{{task.deadline}}</div>
+            <div>{{task.state.display_name}}</div>
+            {% if task.members %}
+            <div>{% for user in task.members %}{{user.username}}{% if not loop.last %}, {% endif %}{% endfor %}</div>
             {% else %}<div>None</div>{% endif %}
         </div>
         <div class="task-details">
             <button onclick="resetStateEditMode(this)" class="detail-toggle">v</button>
-            <div>{{task["title"]}}</div>
-            <div>{{task["priority"]}}</div>
-            <div>{{task["deadline"]}}</div>
+            <div>{{task.title}}</div>
+            <div>{{task.priority.display_name}}</div>
+            <div>{{task.deadline}}</div>
 
-            <div class="state-field">{{task["state"]}}</div>
-            <form action="/group/{{g.group_id}}/project/{{g.project_id}}/task/{{task['id']}}/edit-state" method="POST" style="display: none;">
-                <select name="state" data-value="{{task['state']}}">
+            <div class="state-field">{{task.state.display_name}}</div>
+            <form action="/group/{{g.group_id}}/project/{{g.project_id}}/task/{{task.id}}/edit-state" method="POST" style="display: none;">
+                <select name="state" data-value="{{task.state.value}}">
                 {% for state in g.states %}
-                    <option value="{{state.value}}" {% if state.value == task["state"] %}selected{% endif %}>{{state.value}}</option>
+                    <option value="{{state.value}}" {% if state.value == task.state.value %}selected disabled{% endif %}>{{state.display_name}}</option>
                 {% endfor %}
                 </select>
                 <input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
             </form>
 
-            {% if task["members"] %}
-            <div>{% for user in task["members"] %}{{user["username"]}}{% if not loop.last %}, {% endif %}{% endfor %}</div>
+            {% if task.members %}
+            <div>{% for user in task.members %}{{user.username}}{% if not loop.last %}, {% endif %}{% endfor %}</div>
             {% else %}<div>None</div>{% endif %}
+
             <div class="secondary-text" style="grid-column: 2 / 6;">{{task["description"]}}</div>
 
             <div class="buttons-1" style="grid-column: 2 / 7;">
-                {% if task["members"]|user_in_task(g.username) %}
+                {% if g.can_edit_tasks or task.members|user_in_task(g.username) %}
                 <button onclick="enableStateEditMode(this)" class="button-grey button-small">Change State</button>
                 {% endif %}
                 {% if g.can_edit_tasks  %}
@@ -133,6 +135,79 @@
         </div>
     </div>
     {% endfor %}
+</div>
+
+{% endblock %}
+{% block sidebar_right %}
+
+<h3 style="margin:0.6em 0"><i class="fa fa-sort" style="padding-right: 0.4em;"></i>Sort By</h3>
+<div class="draggable-container">
+    <div class="draggable-item" draggable="true">
+        <i class="fa fa-bars"></i>
+        <span>Deadline</span>
+    </div>
+    <div class="draggable-item" draggable="true">
+        <i class="fa fa-bars"></i>
+        <span>Priority</span>
+    </div>
+    <div class="draggable-item" draggable="true">
+        <i class="fa fa-bars"></i>
+        <span>State</span>
+    </div>
+    <div class="draggable-item" draggable="true">
+        <i class="fa fa-bars"></i>
+        <span>Name</span>
+    </div>
+</div>
+
+<h3 style="margin-bottom:0.6em"><i class="fa fa-sliders" style="padding-right: 0.4em;"></i>Filters</h3>
+<div class="dropdown">
+    <div class="dropdown-header">
+        <button class="dropdown-toggle"><i class="fa fa-fw fa-lg fa-caret-right"></i></button>
+        <span>State</span>
+    </div>
+    <div class="dropdown-item-container" style="display: none;">
+        {% for state in g.states %}
+        <div class="dropdown-item-checkbox">
+            <label>
+                <input type="checkbox" name="state-filter[]" value="state.value" checked>
+                {{state.value}}
+            </label>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+<div class="dropdown">
+    <div class="dropdown-header">
+        <button class="dropdown-toggle"><i class="fa fa-fw fa-lg fa-caret-right"></i></button>
+        <span>Priority</span>
+    </div>
+    <div class="dropdown-item-container" style="display: none;">
+        {% for priority in g.priorities %}
+        <div class="dropdown-item-checkbox">
+            <label>
+                <input type="checkbox" name="priority-filter[]" value="{{priority.value}}" checked>
+                {{priority.name}}
+            </label>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+<div class="dropdown">
+    <div class="dropdown-header">
+        <button class="dropdown-toggle"><i class="fa fa-fw fa-lg fa-caret-right"></i></button>
+        <span>Members</span>
+    </div>
+    <div class="dropdown-item-container" style="display: none;">
+        {% for member in g.group_members %}
+        <div class="dropdown-item-checkbox">
+            <label>
+                <input type="checkbox" name="user-filter[]" value="{{member.id}}" checked>
+                {{member.username}}
+            </label>
+        </div>
+        {% endfor %}
+    </div>
 </div>
 
 {% endblock %}
@@ -178,5 +253,54 @@ function submitStateForm(button){
     parent.querySelector("form").submit();
 }
 
+const container = document.querySelector('.draggable-container');
+container.addEventListener('dragstart', element => {
+    if (element.target.classList.contains('draggable-item')) {
+        element.target.classList.add('dragging');
+    }
+});
+container.addEventListener('dragend', element => {
+    if (element.target.classList.contains('draggable-item')) {
+        element.target.classList.remove('dragging');
+    }
+});
+container.addEventListener('dragover', element => {
+    const draggingElement = document.querySelector('.dragging');
+    const nextElement = getElementBelowDrag(container, element.clientY);
+    if (nextElement == null) {
+        container.appendChild(draggingElement);
+    } else {
+        container.insertBefore(draggingElement, nextElement);
+    }
+});
+
+// Helper function to get the nearest element below the dragged position
+function getElementBelowDrag(container, y) {
+    const draggableElements = [...container.querySelectorAll('.draggable-item:not(.dragging)')];
+    return draggableElements.reduce((closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = y - (box.top + box.height / 2);
+        
+        if (offset < 0 && offset > closest.offset) {
+            return { offset: offset, element: child };
+        } else {
+            return closest;
+        }
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
+}
+
+document.querySelectorAll('.dropdown-toggle').forEach(button => {
+  button.addEventListener('click', function () {
+    const items = button.parentElement.nextElementSibling;
+    if (items.style.display == 'none') {
+        items.style.display = 'block';
+    } else {
+        items.style.display = 'none';
+    }
+    const icon = button.querySelector("i");
+    icon.classList.toggle("fa-caret-right");
+    icon.classList.toggle("fa-caret-down");
+  });
+});
 </script>
 {% endblock %}

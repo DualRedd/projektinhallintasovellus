@@ -11,7 +11,7 @@
         <div class="card-button">
             <a href="/group/{{group.id}}/dashboard"><button class="button-green-inverted">Enter</button></a>
         </div>
-        <div class="card-item secondary-text" style="justify-self:end;align-self:end;">{{group.role|replace('_','-')}}</div>
+        <div class="card-item secondary-text" style="justify-self:end;align-self:end;">{{group.role.display_name}}</div>
     </div>
 {% endfor %}
 {% if not g.groups %}
@@ -32,7 +32,7 @@
         <div class="card-button">
             <a href="/join/{{invite.group_id}}"><button class="button-green-inverted">Join</button></a>
         </div>
-        <div class="card-item secondary-text" style="justify-self:end;align-self:end;">{{invite.role|replace('_','-')}}</div>
+        <div class="card-item secondary-text" style="justify-self:end;align-self:end;">{{invite.role.display_name}}</div>
     </div>
 {% endfor %}
 {% if not g.invites %}

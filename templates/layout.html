@@ -8,6 +8,7 @@
     <meta name="author" content="Jonni Haapiainen">
     <title>{% block title %}Project Management App{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     {% block head %}{% endblock %}
 </head>
 
@@ -32,7 +33,7 @@
     
     <div class="page-container">
         {% if g.sidebar == 1 %}
-        <aside class="sidebar">
+        <aside class="sidebar-left">
             <ul>
                 <li><a href="/group/{{g.group_id}}/dashboard" class="{% if g.current_page == 'dashboard' %}sidebar-active{% else %}sidebar-deactive{% endif %}">Dashboard</a></li>
                 <li><a href="/group/{{g.group_id}}/projects" class="{% if g.current_page == 'projects' %}sidebar-active{% else %}sidebar-deactive{% endif %}">Projects</a></li>
@@ -42,7 +43,7 @@
             </ul>
         </aside>
         {% elif g.sidebar == 2 %}
-        <aside class="sidebar">
+        <aside class="sidebar-left">
             <ul>
                 <li><a href="/group/{{g.group_id}}/project/{{g.project_id}}/tasks" class="{% if g.current_page == 'tasks' %}sidebar-active{% else %}sidebar-deactive{% endif %}">Tasks</a></li>
                 <li><a href="/group/{{g.group_id}}/project/{{g.project_id}}/stats" class="{% if g.current_page == 'stats' %}sidebar-active{% else %}sidebar-deactive{% endif %}">Statistics</a></li>
@@ -55,6 +56,14 @@
                 {% block content %}{% endblock %}
             </div>
         </main>
+        {% if g.sidebar_right == 1 %}
+        <aside class="sidebar-right sidebar-open">
+            <button class="sidebar-toggle"><i class="fa fa-search fa-2x"></i></button>
+            <div class="sidebar-right-content">
+            {% block sidebar_right %}{% endblock %}
+            </div>
+        </aside>
+        {% endif %}
     </div>
 
     <script>
@@ -64,12 +73,15 @@
                 element.remove();
             });null
         }
-
         const stored_data = {{stored_data|tojson|safe}};
         document.querySelectorAll("form input, form textarea, form select").forEach(element => {
             if(element.name in stored_data){
                 element.value = stored_data[element.name];
             }
+        });
+        document.querySelector(".sidebar-toggle").addEventListener("click", function () {
+            const sidebar = document.querySelector(".sidebar-right");
+            sidebar.classList.toggle("sidebar-open");
         });
     </script>
     {% block scripts %}{% endblock %}

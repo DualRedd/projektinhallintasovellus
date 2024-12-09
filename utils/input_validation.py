@@ -54,7 +54,8 @@ def validate_group_invite_form(group_id : int, invitee, role_value_str : int) ->
         role_value = int(role_value_str)
     except ValueError:
         return ValidationResult(False, "Invalid role!")
-    if not role_enum.has_value(role_value) or role_enum(role_value) == role_enum.Owner:
+    role = role_enum.get_by_value(role_value)
+    if not role or role == role_enum.Owner:
         return ValidationResult(False, "Invalid role!")
     return ValidationResult(True)
 
@@ -67,7 +68,7 @@ def validate_create_project_form(project_name : str, project_desc : str):
         return res
     return ValidationResult(True)
 
-def validate_create_task_form(task_name : str, task_desc : str, task_priority : str, task_date : str, task_time : str, task_members : list[str]):
+def validate_create_task_form(task_name : str, task_desc : str, task_priority_str : str, task_date : str, task_time : str, task_members : list[str]):
     if not check_csrf_token():
         return ValidationResult(False, "Invalid csrf token!")
     if not (res := validate_string_size(task_name, "task_name", "Task name")).valid:
@@ -75,8 +76,9 @@ def validate_create_task_form(task_name : str, task_desc : str, task_priority : 
     if not (res := validate_string_size(task_desc, "task_description", "Task description")).valid:
         return res
     try:
-        priority_int = int(task_priority)
-        if not task_priority_enum.has_value(priority_int):
+        print(task_priority_str)
+        priority_int = int(task_priority_str)
+        if not task_priority_enum.get_by_value(priority_int):
             return ValidationResult(False, "Invalid task priority!")
     except ValueError:
         return ValidationResult(False, "Invalid task priority!")
@@ -90,7 +92,6 @@ def validate_create_task_form(task_name : str, task_desc : str, task_priority : 
     for member in task_members:
         try:
             id = int(member)
-            print(id)
             if not get_group_role(g.group_id, id):
                 return ValidationResult(False, "Invalid user assigned!")
         except ValueError:
@@ -100,7 +101,11 @@ def validate_create_task_form(task_name : str, task_desc : str, task_priority : 
 def validate_task_state_form(state_str : str):
     if not check_csrf_token():
         return ValidationResult(False, "Invalid csrf token!")
-    if not task_state_enum.has_value(state_str):
+    try:
+        state_int = int(state_str)
+        if not task_state_enum.get_by_value(state_int):
+            return ValidationResult(False, "Invalid task state!")
+    except ValueError:
         return ValidationResult(False, "Invalid task state!")
     return ValidationResult(True)
 

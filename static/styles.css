@@ -1,7 +1,7 @@
 :root {
     --primary-text: #333333;
     --secondary-text: #414349;
-    --primary-background: #f3f4f6c5;
+    --primary-background: #ffffff;
     --error-color: #EF4444;
     --success-color: #10B981;
 }
@@ -54,19 +54,19 @@ header nav span a, header nav span span {
 }
 
 /* SIDERBAR */
-.sidebar {
+.sidebar-left {
     background-color: #87b2f8;
-    width: 160px;
+    width: 10em;
     overflow-y: auto;
 }
 
-.sidebar ul {
+.sidebar-left ul {
     list-style-type: none;
     padding: 0;
     margin: 10px 0px;
 }
 
-.sidebar a {
+.sidebar-left a {
     color: white;
     text-decoration: none;
     font-size: large;
@@ -86,11 +86,133 @@ header nav span a, header nav span span {
     background-color: #316c9e;
 }
 
+.sidebar-right {
+    background-color: #f3f3f3;
+    position: relative;
+    right: 0;
+    background-color: #f3f3f3;
+    width: 0em;
+    transition: width 0.3s ease-out;
+}
+.sidebar-open {
+    width: 14em;
+}
+.sidebar-right-content{
+    overflow-y: auto;
+    overflow-x: hidden;
+    text-wrap:nowrap;
+    box-sizing: border-box;
+    max-height: 94vh;
+    padding: 1em 1.5em;
+}
+.sidebar-toggle{
+    background-color: var(--primary-background);
+    position: absolute;
+    left: -4em;
+    top: 2em;
+    width: 4em;
+    height: 4em;
+    border-right: none;
+    border-bottom-left-radius: 1em;
+    border-top-left-radius: 1em;
+    border-width: 1px;
+}
+
+.draggable-container {
+    display: flex;
+    position: relative;
+    flex-direction: column;
+}
+.draggable-container::before{
+    content: '';
+    position: absolute;
+    height: 6em;
+    left: 4px;
+    bottom: 10px; 
+    border-left: 3px solid black;
+}
+.draggable-container::after{
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 1px;    
+    border-style: solid;
+    border-width: 8px 5px 0 5px;
+    border-color: black transparent transparent transparent;
+    transform: translateY(-50%);
+}
+.draggable-item {
+    padding: 0.3em;
+    margin-left: 1em;
+    cursor: grab;
+}
+.draggable-item i {
+    padding-right: 0.4em;
+}
+.draggable-item.dragging {
+    opacity: 0.5;
+    background-color: #d3d3d3;
+}
+
+
+.dropdown-header{
+    display: flex;
+    align-items: center;
+    padding: 0.25em 0;
+}
+.dropdown-toggle{
+    background-color: inherit;
+    border: none;
+    padding: 0;
+}
+.dropdown-header span{
+    padding-left: 0.1em;
+}
+.dropdown-item-checkbox{
+    padding: 0.25em 0;
+    margin-left: 1.5em;
+}
+.dropdown-item-checkbox label{
+    display: grid;
+    grid-template-columns: 1em auto;
+    column-gap: 0.5em;
+}
+.dropdown-item-checkbox label input {
+    -webkit-appearance: none;
+    appearance: none;
+    background-color: #fff;
+    margin: 0;
+    font: inherit;
+    width: 1.05em;
+    height: 1.05em;
+    border: 0.1em solid black;
+    border-radius: 0.2em;
+    display: grid;
+    place-content: center;
+}
+.dropdown-item-checkbox label input::before {
+    content: "";
+    width: 0.65em;
+    height: 0.65em;
+    transform: scale(0);
+    transition: 0.06s transform ease-in-out;
+    box-shadow: inset 1em 1em black;
+    clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+    background-color: CanvasText;
+}
+.dropdown-item-checkbox label input:checked:before {
+    transform: scale(1);
+}
+.dropdown-item-checkbox label input:focus {
+    outline: max(2px, 0.01em) solid black;
+    outline-offset: max(2px, 0.01em);
+}
+
 /* MAIN CONTENT */
 .main {
     flex-grow: 1;
     overflow-y: auto;
-    width: 160px;
+    width: 10em;
     background-color: var(--primary-background);
 }
 
@@ -115,7 +237,7 @@ header nav span a, header nav span span {
     background-color: #1c7736;
 }
 .button-green-inverted {
-    background-color: white;
+    background-color: var(--primary-background);
     border: 1px solid #1f883d;
     border-radius: 5px;
     padding: 0.4em 0.7em;
@@ -141,6 +263,7 @@ header nav span a, header nav span span {
     background-color: #6e1414;
 }
 .button-red-inverted {
+    background-color: var(--primary-background);
     border: 1px solid #961818;
     border-radius: 5px;
     padding: 0.4em 0.7em;
@@ -154,7 +277,7 @@ header nav span a, header nav span span {
     color: white;
 }
 .button-grey {
-    background-color: #ebebeb;
+    background-color: var(--primary-background);
     border: 1px solid grey;
     border-radius: 5px;
     padding: 0.4em 0.7em;
@@ -237,7 +360,7 @@ header nav span a, header nav span span {
     grid-template-columns: 1.4em minmax(4em, 7fr) 5em 8.5em 6em minmax(4em, 5fr);
     align-items: center;
     gap: 0.5em 1em;
-    line-height: 1;
+    line-height: 1.2;
     padding: 0.5em 0;
     border-bottom: 1px solid grey;
 }
@@ -270,6 +393,7 @@ header nav span a, header nav span span {
     gap: 0.5em;
 }
 .selected-member {
+    background-color: var(--primary-background);
     position: relative;
     border: 1px solid grey;
     border-radius: 10px;

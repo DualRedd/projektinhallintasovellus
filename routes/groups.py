@@ -49,7 +49,7 @@ def route_create():
 def route_join(group_id):
     invite = get_group_invite(g.group_id, g.user_id)
     if invite:
-        create_group_member(g.group_id, g.user_id, role_enum[invite.role])
+        create_group_member(g.group_id, g.user_id, role_enum.get_by_value(int(invite.role)))
         delete_group_invite(g.group_id, g.user_id)
         return redirect(f"/group/{g.group_id}/dashboard")
     return redirect("/")
@@ -128,7 +128,7 @@ def route_members_add(group_id):
     invitee = get_user(username)
     result = input.validate_group_invite_form(g.group_id, invitee, role_value_str)
     if result.valid:
-        create_group_invite(g.group_id, invitee.id, role_enum(int(role_value_str)))
+        create_group_invite(g.group_id, invitee.id, role_enum.get_by_value(int(role_value_str)))
     else:
         flash(result.error, "bad-form")
     return redirect(f"/group/{g.group_id}/members")

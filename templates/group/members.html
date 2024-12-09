@@ -4,7 +4,7 @@
 <h3>Members:</h2>
 <hr>
 {% for member in g.group_members %}
-<p class="secondary-text"> {{member.username}} - {{member.role|replace('_','-')}} </p>
+<p class="secondary-text"> {{member.username}} - {{member.role.display_name}} </p>
 <hr>
 {% endfor %}
 
@@ -12,7 +12,7 @@
 <h3>Invited:</h2>
 <hr>
 {% for invitee in g.group_invitees %}
-<p class="secondary-text"> {{invitee.username}} - {{invitee.role|replace('_','-')}} </p>
+<p class="secondary-text"> {{invitee.username}} - {{invitee.role.display_name}} </p>
 <hr>
 {% endfor %}
 {% endif %}

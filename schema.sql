@@ -45,8 +45,8 @@ CREATE TABLE tasks (
     project_id INTEGER REFERENCES projects,
     title TEXT,
     description TEXT,
-    state TEXT DEFAULT 'Pending', -- meaning defined in enums.py file
-    priority TEXT DEFAULT 'Normal', -- meaning defined in enums.py file
+    state TEXT DEFAULT 0, -- meaning defined in enums.py file
+    priority TEXT DEFAULT 0, -- meaning defined in enums.py file
     deadline TIMESTAMP,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     visible BOOLEAN NOT NULL DEFAULT TRUE

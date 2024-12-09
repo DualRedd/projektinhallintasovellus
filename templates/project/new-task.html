@@ -12,7 +12,7 @@
     <label for="priority-stored">Priority *</label>
     <select name="priority-stored" required>
     {% for priority in g.priorities %}
-        <option value="{{priority.value}}">{{priority.name}}</option>
+        <option value="{{priority.value}}">{{priority.display_name}}</option>
     {% endfor %}
     </select>
     <br><br>

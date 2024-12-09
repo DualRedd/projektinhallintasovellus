@@ -4,7 +4,7 @@ config = {
         "password": 50,
         "group_name": 30,
         "group_description": 500,
-        "project_name": 30,
+        "project_name": 50,
         "project_description": 500,
         "task_name": 30,
         "task_description": 500
