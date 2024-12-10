@@ -10,6 +10,11 @@ class role_enum(Enum):
         self._value_ = value
         self.display_name = display_name
 
+    def __lt__(self, other):
+        if isinstance(other, role_enum):
+            return self.value < other.value
+        raise TypeError(f"'<' not supported between {type(self)} and {type(other)}")
+
     @classmethod
     def get_by_value(cls, value):
         for item in cls:
@@ -27,6 +32,11 @@ class task_state_enum(Enum):
         self._value_ = value
         self.display_name = display_name
 
+    def __lt__(self, other):
+        if isinstance(other, task_state_enum):
+            return self.value < other.value
+        raise TypeError(f"'<' not supported between {type(self)} and {type(other)}")
+
     @classmethod
     def get_by_value(cls, value):
         for item in cls:
@@ -43,6 +53,11 @@ class task_priority_enum(Enum):
     def __init__(self, value, display_name):
         self._value_ = value
         self.display_name = display_name
+
+    def __lt__(self, other):
+        if isinstance(other, task_priority_enum):
+            return self.value < other.value
+        raise TypeError(f"'<' not supported between {type(self)} and {type(other)}")
 
     @classmethod
     def get_by_value(cls, value):

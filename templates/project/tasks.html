@@ -18,24 +18,24 @@
         <div>State</div>
         <div>Assigned Members</div>
     </div>
-    {% for task in g.all_tasks %}
+    {% for task in g.tasks %}
     {% if task["members"]|user_in_task(g.username) %}
     <div class="task-item">
         <div class="task-summary">
-            <button class="detail-toggle">></button>
+            <button class="detail-toggle"><i class="fa fa-fw fa-caret-right" style="font-size: 1.5em;"></i></button>
             <div>{{task.title}}</div>
             <div>{{task.priority.display_name}}</div>
-            <div>{{task.deadline}}</div>
+            <div>{{task.deadline|format_datetime}}</div>
             <div>{{task.state.display_name}}</div>
             {% if task.members %}
             <div>{% for user in task.members %}{{user.username}}{% if not loop.last %}, {% endif %}{% endfor %}</div>
             {% else %}<div>None</div>{% endif %}
         </div>
         <div class="task-details">
-            <button onclick="resetStateEditMode(this)" class="detail-toggle">v</button>
+            <button onclick="resetStateEditMode(this)" class="detail-toggle"><i class="fa fa-fw fa-caret-down" style="font-size: 1.5em;"></i></button>
             <div>{{task.title}}</div>
             <div>{{task.priority.display_name}}</div>
-            <div>{{task.deadline}}</div>
+            <div>{{task.deadline|format_datetime}}</div>
 
             <div class="state-field">{{task.state.display_name}}</div>
             <form action="/group/{{g.group_id}}/project/{{g.project_id}}/task/{{task.id}}/edit-state" method="POST" style="display: none;">
@@ -84,23 +84,23 @@
         <div>State</div>
         <div>Assigned Members</div>
     </div>
-    {% for task in g.all_tasks %}
+    {% for task in g.tasks %}
     <div class="task-item">
         <div class="task-summary">
-            <button class="detail-toggle">></button>
+            <button class="detail-toggle"><i class="fa fa-fw fa-caret-right" style="font-size: 1.5em;"></i></button>
             <div>{{task.title}}</div>
             <div>{{task.priority.display_name}}</div>
-            <div>{{task.deadline}}</div>
+            <div>{{task.deadline|format_datetime}}</div>
             <div>{{task.state.display_name}}</div>
             {% if task.members %}
             <div>{% for user in task.members %}{{user.username}}{% if not loop.last %}, {% endif %}{% endfor %}</div>
             {% else %}<div>None</div>{% endif %}
         </div>
         <div class="task-details">
-            <button onclick="resetStateEditMode(this)" class="detail-toggle">v</button>
+            <button onclick="resetStateEditMode(this)" class="detail-toggle"><i class="fa fa-fw fa-caret-down" style="font-size: 1.5em;"></i></button>
             <div>{{task.title}}</div>
             <div>{{task.priority.display_name}}</div>
-            <div>{{task.deadline}}</div>
+            <div>{{task.deadline|format_datetime}}</div>
 
             <div class="state-field">{{task.state.display_name}}</div>
             <form action="/group/{{g.group_id}}/project/{{g.project_id}}/task/{{task.id}}/edit-state" method="POST" style="display: none;">
@@ -139,79 +139,138 @@
 
 {% endblock %}
 {% block sidebar_right %}
+{% set search = request.args.get('search', '0') == '1' %}
+<form id="search-form" style="display:contents;">
 
-<h3 style="margin:0.6em 0"><i class="fa fa-sort" style="padding-right: 0.4em;"></i>Sort By</h3>
+<h3 style="margin:0.6em 0"><i class="fa fa-sort" style="padding-right: 0.4em;"></i>Sort</h3>
+
+<input type="hidden" name="search" value="1">
 <div class="draggable-container">
     <div class="draggable-item" draggable="true">
+        <input type="hidden" name="sort" value="deadline">
         <i class="fa fa-bars"></i>
         <span>Deadline</span>
     </div>
     <div class="draggable-item" draggable="true">
+        <input type="hidden" name="sort" value="priority">
         <i class="fa fa-bars"></i>
         <span>Priority</span>
     </div>
     <div class="draggable-item" draggable="true">
+        <input type="hidden" name="sort" value="state">
         <i class="fa fa-bars"></i>
         <span>State</span>
     </div>
     <div class="draggable-item" draggable="true">
+        <input type="hidden" name="sort" value="title">
         <i class="fa fa-bars"></i>
-        <span>Name</span>
+        <span>Title</span>
     </div>
 </div>
 
 <h3 style="margin-bottom:0.6em"><i class="fa fa-sliders" style="padding-right: 0.4em;"></i>Filters</h3>
+
 <div class="dropdown">
-    <div class="dropdown-header">
-        <button class="dropdown-toggle"><i class="fa fa-fw fa-lg fa-caret-right"></i></button>
-        <span>State</span>
-    </div>
+    <button type="button" onclick="toggleDropdown(this)" class="dropdown-toggle">
+        <i class="fa fa-fw fa-lg fa-caret-right"></i>
+        <span>Deadline</span>
+    </button>
     <div class="dropdown-item-container" style="display: none;">
+        <div class="dropdown-item-date">
+            <label>
+                Start date:<br>
+                <input type="date" id="date-min" name="date-min" value="{{request.args.get('date-min','')}}">
+            </label>
+        </div>
+        <div class="dropdown-item-date">
+            <label>
+                End date:<br>
+                <input type="date" id="date-max" name="date-max" value="{{request.args.get('date-max','')}}">
+            </label>
+        </div>
+    </div>
+</div>
+<div class="dropdown">
+    <button type="button" onclick="toggleDropdown(this)" class="dropdown-toggle">
+        <i class="fa fa-fw fa-lg fa-caret-right"></i>
+        <span>State</span>
+    </button>
+    <div class="dropdown-item-container" style="display: none;">
+        {% set active_states = request.args.getlist('state') %}
         {% for state in g.states %}
         <div class="dropdown-item-checkbox">
             <label>
-                <input type="checkbox" name="state-filter[]" value="state.value" checked>
-                {{state.value}}
+                <input type="checkbox" name="state" value="{{state.value}}" 
+                    {% if not search or state.value|string in active_states %}checked{% endif %}>
+                <div>{{state.display_name}}</div>
             </label>
         </div>
         {% endfor %}
     </div>
 </div>
 <div class="dropdown">
-    <div class="dropdown-header">
-        <button class="dropdown-toggle"><i class="fa fa-fw fa-lg fa-caret-right"></i></button>
+    <button type="button" onclick="toggleDropdown(this)" class="dropdown-toggle">
+        <i class="fa fa-fw fa-lg fa-caret-right"></i>
         <span>Priority</span>
-    </div>
+    </button>
     <div class="dropdown-item-container" style="display: none;">
+        {% set active_priorities = request.args.getlist('priority') %}
         {% for priority in g.priorities %}
         <div class="dropdown-item-checkbox">
             <label>
-                <input type="checkbox" name="priority-filter[]" value="{{priority.value}}" checked>
-                {{priority.name}}
+                <input type="checkbox" name="priority" value="{{priority.value}}"
+                    {% if not search or priority.value|string in active_priorities %}checked{% endif %}>
+                <div>{{priority.display_name}}</div>
             </label>
         </div>
         {% endfor %}
     </div>
 </div>
 <div class="dropdown">
-    <div class="dropdown-header">
-        <button class="dropdown-toggle"><i class="fa fa-fw fa-lg fa-caret-right"></i></button>
+    <button type="button" onclick="toggleDropdown(this)" class="dropdown-toggle">
+        <i class="fa fa-fw fa-lg fa-caret-right"></i>
         <span>Members</span>
-    </div>
+    </button>
     <div class="dropdown-item-container" style="display: none;">
+        {% set member_type = request.args.get('member-type', 'all') %}
+        <div class="dropdown-item-select">
+            <span>Must include:</span>
+            <select name="member-type">
+                <option value="all" {% if member_type == 'all' %}selected{% endif %}>All</option>
+                <option value="any" {% if member_type == 'any' %}selected{% endif %}>Any</option>
+                <option value="exact" {% if member_type == 'exact' %}selected{% endif %}>Exact</option>
+            </select>
+        </div>
+        {% set active_members = request.args.getlist('member') %}
         {% for member in g.group_members %}
         <div class="dropdown-item-checkbox">
             <label>
-                <input type="checkbox" name="user-filter[]" value="{{member.id}}" checked>
-                {{member.username}}
+                <input type="checkbox" name="member" value="{{member.id}}"
+                    {% if search and member.id|string in active_members %}checked{% endif %}>
+                <div>{{member.username}}</div>
             </label>
         </div>
         {% endfor %}
     </div>
 </div>
 
+<div style="margin: 0.5em;">
+    <button type="button" onclick="submitSearchForm()" class="button-grey">Apply</button>
+    <a href="/group/{{g.group_id}}/project/{{g.project_id}}/tasks"><button type="button" onclick="saveUIState()" class="button-red-inverted">Reset</button></a>
+</div>
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+        {% if category == 'bad-search' %}
+            <p class="error" style="color:red"> {{message}} </p>
+        {% endif %}
+    {% endfor %}
+{% endwith %}
+
+</form>
+
 {% endblock %}
 {% block scripts %}
+{{ super() }}
 <script>
 document.querySelectorAll('.task-summary button.detail-toggle').forEach(button => {
   button.addEventListener('click', function () {
@@ -253,6 +312,8 @@ function submitStateForm(button){
     parent.querySelector("form").submit();
 }
 
+
+
 const container = document.querySelector('.draggable-container');
 container.addEventListener('dragstart', element => {
     if (element.target.classList.contains('draggable-item')) {
@@ -288,10 +349,16 @@ function getElementBelowDrag(container, y) {
         }
     }, { offset: Number.NEGATIVE_INFINITY }).element;
 }
+function orderDragElements(order){
+    const dragElements = [...container.querySelectorAll('.draggable-item')];
+    for(let i = 0; i < order.length; i++){
+        const dragElement = dragElements.find(item => item.querySelector("input").value === order[i]);
+        container.appendChild(dragElement);
+    }
+}
 
-document.querySelectorAll('.dropdown-toggle').forEach(button => {
-  button.addEventListener('click', function () {
-    const items = button.parentElement.nextElementSibling;
+function toggleDropdown(button){
+    const items = button.nextElementSibling;
     if (items.style.display == 'none') {
         items.style.display = 'block';
     } else {
@@ -300,7 +367,39 @@ document.querySelectorAll('.dropdown-toggle').forEach(button => {
     const icon = button.querySelector("i");
     icon.classList.toggle("fa-caret-right");
     icon.classList.toggle("fa-caret-down");
-  });
-});
+}
+
+const searchForm = document.getElementById("search-form");
+function saveUIState(){
+    let dropdownState = [];
+    searchForm.querySelectorAll(".dropdown").forEach(element => {
+        dropdownState.push(element.querySelector(".dropdown-item-container").style.display);
+    });
+    sessionStorage.setItem("dropdownState", JSON.stringify(dropdownState));
+    sessionStorage.setItem("sidebarActivate", true);
+}
+function submitSearchForm(){
+    saveUIState();
+    searchForm.submit();
+}
+
+const dragElementOrder = {{request.args.getlist("sort")|tojson}};
+orderDragElements(dragElementOrder);
+const dropdownState = JSON.parse(sessionStorage.getItem("dropdownState"));
+if(dropdownState !== null){
+    sessionStorage.removeItem("dropdownState")
+    dropdowns = searchForm.querySelectorAll(".dropdown");
+    for(let i = 0; i < dropdowns.length; i++){
+        if(dropdownState[i] == 'block'){
+            toggleDropdown(dropdowns[i].querySelector("button"));
+        }
+    }
+}
+const openSidebar =  sessionStorage.getItem("sidebarActivate");
+if(openSidebar !== null){
+    sessionStorage.removeItem("sidebarActivate")
+    toggleRightSidebar(true);
+}
+
 </script>
 {% endblock %}

@@ -56,13 +56,15 @@
                 {% block content %}{% endblock %}
             </div>
         </main>
-        {% if g.sidebar_right == 1 %}
-        <aside class="sidebar-right sidebar-open">
-            <button class="sidebar-toggle"><i class="fa fa-search fa-2x"></i></button>
-            <div class="sidebar-right-content">
-            {% block sidebar_right %}{% endblock %}
-            </div>
-        </aside>
+        {% if g.sidebar_right %}
+        <div class="sidebar-right-container sidebar-animate">
+            <aside class="sidebar-right">
+                <button onclick="toggleRightSidebar()" class="sidebar-toggle"><i class="fa fa-search fa-2x"></i></button>
+                <div class="sidebar-right-content">
+                {% block sidebar_right %}{% endblock %}
+                </div>
+            </aside>
+        </div>
         {% endif %}
     </div>
 
@@ -73,15 +75,17 @@
                 element.remove();
             });null
         }
+        function toggleRightSidebar(instant = false){
+            const sidebar = document.querySelector(".sidebar-right-container");
+            if(instant) sidebar.classList.remove("sidebar-animate");
+            sidebar.classList.toggle("sidebar-open");
+            if(instant) setTimeout(() => sidebar.classList.add("sidebar-animate"), 1);
+        }
         const stored_data = {{stored_data|tojson|safe}};
         document.querySelectorAll("form input, form textarea, form select").forEach(element => {
             if(element.name in stored_data){
                 element.value = stored_data[element.name];
             }
-        });
-        document.querySelector(".sidebar-toggle").addEventListener("click", function () {
-            const sidebar = document.querySelector(".sidebar-right");
-            sidebar.classList.toggle("sidebar-open");
         });
     </script>
     {% block scripts %}{% endblock %}

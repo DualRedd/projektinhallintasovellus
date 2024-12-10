@@ -6,7 +6,7 @@ from datetime import datetime
 from services.groups_service import get_group_role, get_group_members
 from services.tasks_service import create_task, create_task_assignment, get_tasks, update_task_state
 from utils.permissions import permissions, get_page_permission_response
-from utils.tools import remove_line_breaks
+from utils.tools import remove_line_breaks, get_task_sorting_key
 import utils.input_validation as input
 # Enums
 from enums.enums import role_enum, task_priority_enum, task_state_enum
@@ -34,12 +34,34 @@ def route_base(group_id, project_id):
 @projects_bp.route("/group/<int:group_id>/project/<int:project_id>/tasks", methods=["GET"])
 @permissions(require_login=True, require_min_role=role_enum.Observer)
 def route_tasks(group_id, project_id):
-    g.all_tasks = get_tasks(g.project_id)
-    print(g.all_tasks[0]["state"].value)
-    g.can_edit_tasks = g.role.value >= role_enum.Collaborator.value
-    g.group_members = get_group_members(g.group_id)
     g.sidebar_right = 1
+    g.group_members = get_group_members(g.group_id)
+    g.can_edit_tasks = g.role.value >= role_enum.Collaborator.value
     g.current_page = 'tasks'
+    sorting = ["deadline", "priority", "state", "title"]
+
+    if request.args.get("search", "0") == "1":
+        sorting = request.args.getlist("sort")
+        min_date_str = request.args.get("date-min", "")
+        max_date_str = request.args.get("date-max", "")
+        states = request.args.getlist("state")
+        priorities = request.args.getlist("priority")
+        members = request.args.getlist("member")
+        member_query_type = request.args.get('member-type')
+        result = input.validate_project_task_search_form(sorting, min_date_str, max_date_str, states, priorities, members, member_query_type)
+        print(result.valid)
+        if result.valid:
+            min_date = datetime.strptime(min_date_str, '%Y-%m-%d') if min_date_str != "" else None
+            max_date = datetime.strptime(max_date_str, '%Y-%m-%d') if max_date_str != "" else None
+            g.tasks = get_tasks(g.project_id, states, priorities, list(map(int,members)), member_query_type, min_date, max_date)
+        else:
+            print("ERROR!")
+            flash(result.error, "bad-search")
+            return redirect(f"/group/{g.group_id}/project/{g.project_id}/tasks")
+    else:
+        g.tasks = get_tasks(g.project_id)
+
+    g.tasks.sort(key=lambda task: get_task_sorting_key(task, sorting))
     return render_template("project/tasks.html")
 
 @projects_bp.route("/group/<int:group_id>/project/<int:project_id>/tasks/new", methods=["GET", "POST"])

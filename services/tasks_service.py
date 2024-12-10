@@ -21,7 +21,6 @@ def create_task_assignment(task_id : int, user_id : int):
 def exists_task_assignment(task_id : int, user_id : int) -> bool:
     result = db.session.execute(text("SELECT task_id, user_id FROM task_assignments WHERE task_id = :task_id AND user_id = :user_id"),
                                     {"task_id":task_id, "user_id":user_id}).fetchone()
-    db.session.commit()
     return result is not None
 
 def update_task_state(task_id : int, state : task_state_enum):
@@ -37,16 +36,34 @@ def get_task_members(task_id : int) -> list[dict]:
                                     {"task_id":task_id}).fetchall()
     return [{"id":int(row.id), "username":row.username} for row in result]
 
-def get_tasks(project_id : int) -> list[dict]:
-    result = db.session.execute(text("SELECT id, title, description, state, priority, deadline FROM tasks \
-                                    WHERE project_id = :project_id AND visible = TRUE \
-                                    ORDER BY id"),
-                                    {"project_id":project_id}).fetchall()
-    db.session.commit()
+def get_tasks(project_id : int, states : list[str] = None, priorities : list[str] = None, members : list[int] = None,
+              member_query_type : str = None, min_date : datetime = None, max_date : datetime = None):
+    result = db.session.execute(text(f"SELECT T.id, T.title, T.description, \
+                                            T.state, T.priority, T.deadline, \
+                                            JSON_AGG ( \
+                                                JSON_BUILD_OBJECT( \
+                                                    'id', U.id, \
+                                                    'username', U.username \
+                                                ) \
+                                            ) AS members \
+                                    FROM tasks T \
+                                    LEFT JOIN task_assignments TA ON T.id = TA.task_id \
+                                    LEFT JOIN users U ON TA.user_id = U.id AND U.visible = TRUE \
+                                    WHERE T.project_id = :project_id \
+                                        AND T.visible = TRUE \
+                                        {'AND T.deadline >= :min_date' if min_date else ''} \
+                                        {'AND T.deadline <= :max_date' if max_date else ''} \
+                                        {'AND T.state = ANY(:states)' if states else ''} \
+                                        {'AND T.priority = ANY(:priorities)' if priorities else ''} \
+                                    GROUP BY T.id \
+                                    {'HAVING ARRAY_AGG(TA.user_id) && :members' if member_query_type == 'any' else ''} \
+                                    {'HAVING ARRAY_AGG(TA.user_id) @> :members' if member_query_type == 'all' else ''} \
+                                    {'HAVING ARRAY_AGG(TA.user_id) @> :members AND ARRAY_AGG(TA.user_id) <@ :members' if member_query_type == 'exact' else ''} \
+                                    ORDER BY T.id"),
+                                    {"project_id":project_id, "min_date":min_date, "max_date":max_date,
+                                     "states":states, "priorities":priorities, "members":members}).fetchall()
     result = query_res_to_dict(result)
     for task in result:
-        task["deadline"] = task["deadline"].strftime('%d.%m.%Y %H:%M') if task["deadline"] else "Not Set"
-        task["members"] = get_task_members(task["id"])
         task["state"] = task_state_enum.get_by_value(int(task["state"]))
         task["priority"] = task_priority_enum.get_by_value(int(task["priority"]))
     return result

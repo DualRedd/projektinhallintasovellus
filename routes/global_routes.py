@@ -56,3 +56,7 @@ def cache_control_headers(response):
 @app.template_filter("user_in_task")
 def is_user_in_task(members : list[dict], username : str):
     return any(member["username"] == username for member in members)
+
+@app.template_filter('format_datetime')
+def format_datetime(value, format='%d.%m.%Y %H:%M'):
+    return value.strftime(format) if value is not None else "None"

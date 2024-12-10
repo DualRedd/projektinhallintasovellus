@@ -1,7 +1,7 @@
 :root {
     --primary-text: #333333;
     --secondary-text: #414349;
-    --primary-background: #ffffff;
+    --primary-background: #fcfcfc;
     --error-color: #EF4444;
     --success-color: #10B981;
 }
@@ -86,21 +86,31 @@ header nav span a, header nav span span {
     background-color: #316c9e;
 }
 
+
+.sidebar-right-container{
+    width: 0em;
+    position: relative;
+}
 .sidebar-right {
     background-color: #f3f3f3;
-    position: relative;
-    right: 0;
+    position: absolute;
+    right: -14em;
+    height: 94vh;
     background-color: #f3f3f3;
-    width: 0em;
-    transition: width 0.3s ease-out;
+    width: 14em;
+}
+.sidebar-animate, .sidebar-animate aside {
+    transition: all 0.3s ease-out;
 }
 .sidebar-open {
     width: 14em;
 }
+.sidebar-open aside {
+    transform: translateX(-14em);
+}
 .sidebar-right-content{
     overflow-y: auto;
     overflow-x: hidden;
-    text-wrap:nowrap;
     box-sizing: border-box;
     max-height: 94vh;
     padding: 1em 1.5em;
@@ -155,18 +165,20 @@ header nav span a, header nav span span {
 }
 
 
-.dropdown-header{
+.dropdown-toggle{
     display: flex;
     align-items: center;
     padding: 0.25em 0;
-}
-.dropdown-toggle{
     background-color: inherit;
     border: none;
-    padding: 0;
+    width: 100%;
 }
-.dropdown-header span{
+.dropdown-toggle span{
     padding-left: 0.1em;
+    font-size: medium;
+}
+.dropdown-toggle:focus{
+    background-color: rgb(228, 228, 228);
 }
 .dropdown-item-checkbox{
     padding: 0.25em 0;
@@ -174,8 +186,13 @@ header nav span a, header nav span span {
 }
 .dropdown-item-checkbox label{
     display: grid;
-    grid-template-columns: 1em auto;
+    grid-template-columns: 1em 1fr;
     column-gap: 0.5em;
+}
+.dropdown-item-checkbox label div{
+    max-width: 100%;
+    word-wrap: break-word;
+    overflow: hidden;
 }
 .dropdown-item-checkbox label input {
     -webkit-appearance: none;
@@ -208,6 +225,21 @@ header nav span a, header nav span span {
     outline-offset: max(2px, 0.01em);
 }
 
+.dropdown-item-select{
+    margin-left: 1.5em;
+}
+.dropdown-item-select span{
+    font-size: 90%;
+}
+
+.dropdown-item-date{
+    margin-left: 1.5em;
+}
+.dropdown-item-date label{
+    display: block;
+    padding: 0.25em 0;
+}
+
 /* MAIN CONTENT */
 .main {
     flex-grow: 1;
@@ -237,7 +269,7 @@ header nav span a, header nav span span {
     background-color: #1c7736;
 }
 .button-green-inverted {
-    background-color: var(--primary-background);
+    background-color: inherit;
     border: 1px solid #1f883d;
     border-radius: 5px;
     padding: 0.4em 0.7em;
@@ -263,7 +295,7 @@ header nav span a, header nav span span {
     background-color: #6e1414;
 }
 .button-red-inverted {
-    background-color: var(--primary-background);
+    background-color: inherit;
     border: 1px solid #961818;
     border-radius: 5px;
     padding: 0.4em 0.7em;
@@ -277,7 +309,7 @@ header nav span a, header nav span span {
     color: white;
 }
 .button-grey {
-    background-color: var(--primary-background);
+    background-color: inherit;
     border: 1px solid grey;
     border-radius: 5px;
     padding: 0.4em 0.7em;
@@ -366,6 +398,10 @@ header nav span a, header nav span span {
 }
 .table-title{
     font-weight: bold;
+}
+.detail-toggle{
+    background-color: var(--primary-background);
+    border: none;
 }
 .task-item div {
     overflow: hidden;

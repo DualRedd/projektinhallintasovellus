@@ -109,6 +109,47 @@ def validate_task_state_form(state_str : str):
         return ValidationResult(False, "Invalid task state!")
     return ValidationResult(True)
 
+def validate_project_task_search_form(sorting : list[str], min_date_str : str, max_date_str : str, states : list[str],
+                                      priorities : list[str], members : list[str], member_query_type : str):
+    if len(sorting) != 4:
+        return ValidationResult(False, "Invalid sort options!")
+    for sort_str in sorting:
+        if sort_str not in ["deadline", "priority", "state", "title"]:
+            return ValidationResult(False, "Invalid sort options!")
+    try:
+        if min_date_str != "": datetime.strptime(min_date_str, '%Y-%m-%d')
+    except ValueError:
+        return ValidationResult(False, "Invalid start date!")
+    try:
+        if max_date_str != "": datetime.strptime(max_date_str, '%Y-%m-%d')
+    except ValueError:
+        return ValidationResult(False, "Invalid end date!")
+    for state_str in states:
+        try:
+            state = int(state_str)
+            if task_state_enum.get_by_value(state) is None:
+                return ValidationResult(False, "Invalid state provided!")
+        except ValueError:
+            return ValidationResult(False, "Invalid state provided!")
+    for priority_str in priorities:
+        try:
+            priority = int(priority_str)
+            if task_priority_enum.get_by_value(priority) is None:
+                return ValidationResult(False, "Invalid priority provided!")
+        except ValueError:
+            return ValidationResult(False, "Invalid priority provided!")
+    for member_str in members:
+        try:
+            int(member_str)
+            # don't check each individual member, that would be a lot of queries in the worst case
+            # non-existing members should not be searched for anyway when using the ui
+        except ValueError:
+            return ValidationResult(False, "Invalid state provided!")
+    if member_query_type not in ["any", "all", "exact"]:
+        return ValidationResult(False, "Invalid member filter type!")
+    return ValidationResult(True)
+
+
 def validate_empty_form():
     if not check_csrf_token():
         return ValidationResult(False, "Invalid csrf token!")
