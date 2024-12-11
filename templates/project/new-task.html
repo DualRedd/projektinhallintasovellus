@@ -1,9 +1,11 @@
 {% extends "layout.html" %}
+
 {% block content %}
+{% include "project/header.html" %}
 
 <h1>Create New Task</h1>
-<hr>
-<form action="" method="POST">
+
+<form action="{{url_for('tasks.route_new', group_id=g.group_id, project_id=g.project_id, referrer=request.args.get('referrer', 'my'))}}" method="POST">
     <p>Task name *</p>
     <input type="text" name="name-stored" maxlength="{{MAX_INPUT_SIZES['task_name']}}" required> <br>
     <p>Task details</p>

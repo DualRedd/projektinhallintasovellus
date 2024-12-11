@@ -1,6 +1,6 @@
 # standard imports
 from flask import Blueprint
-from flask import session, request, render_template, redirect, flash, g
+from flask import session, request, render_template, redirect, flash, url_for, g
 # Internal services
 from services.auth_service import create_user, login
 from services.groups_service import get_user
@@ -19,9 +19,10 @@ def route_login():
         result = validate_login_form(username, password)
         if not result.valid:
             flash(result.error, "bad-form")
-            return redirect("/login")
-        login(username, get_user(username).id)
-        return redirect("/")
+            return redirect(url_for("auth.route_login"))
+        else:
+            login(username, get_user(username).id)
+            return redirect(url_for("base.route_index"))
 
 @auth_bp.route("/create-user", methods=["GET", "POST"])
 def route_create_user():
@@ -35,13 +36,14 @@ def route_create_user():
         result = validate_create_user_form(username, password, password_check)
         if not result.valid:
             flash(result.error, "bad-form")
-            return redirect("/create-user")
-        user_id = create_user(username, password)
-        login(username, user_id)
-        return redirect("/")
+            return redirect(url_for("auth.route_create_user"))
+        else:
+            user_id = create_user(username, password)
+            login(username, user_id)
+            return redirect(url_for("base.route_index"))
 
 @auth_bp.route("/logout")
 def route_logout():
     if "username" in session: session.pop("username")
     if "user_id" in session: session.pop("user_id")
-    return redirect("/login")
+    return redirect(url_for("auth.route_login"))

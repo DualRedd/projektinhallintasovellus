@@ -1,0 +1,137 @@
+{% set search = request.args.get('search', '0') == '1' %}
+
+<button class="search-sidebar-x" onclick="toggleRightSidebar()"><i class="fa-regular fa-circle-xmark fa-2xl"></i></button>
+
+<form id="search-form" style="display:contents;">
+
+<h3 style="margin:0.6em 0"><i class="fa fa-sort" style="padding-right: 0.4em;"></i>Sort</h3>
+
+<input type="hidden" name="search" value="1">
+<div class="draggable-container">
+    <div class="draggable-item" draggable="true">
+        <input type="hidden" name="sort" value="deadline">
+        <i class="fa fa-bars"></i>
+        <span>Deadline</span>
+    </div>
+    <div class="draggable-item" draggable="true">
+        <input type="hidden" name="sort" value="priority">
+        <i class="fa fa-bars"></i>
+        <span>Priority</span>
+    </div>
+    <div class="draggable-item" draggable="true">
+        <input type="hidden" name="sort" value="state">
+        <i class="fa fa-bars"></i>
+        <span>State</span>
+    </div>
+    <div class="draggable-item" draggable="true">
+        <input type="hidden" name="sort" value="title">
+        <i class="fa fa-bars"></i>
+        <span>Title</span>
+    </div>
+</div>
+
+<h3 style="margin-bottom:0.6em"><i class="fa fa-sliders" style="padding-right: 0.4em;"></i>Filters</h3>
+
+<div class="dropdown">
+    <button type="button" onclick="toggleDropdown(this)" class="dropdown-toggle">
+        <i class="dropdown-icon fa fa-fw fa-lg fa-caret-right"></i>
+        <span>Deadline</span>
+    </button>
+    <div class="dropdown-item-container" style="display: none;">
+        <div class="dropdown-item-date">
+            <label>
+                Start date:<br>
+                <input type="date" id="date-min" name="date-min" value="{{request.args.get('date-min','')}}">
+            </label>
+        </div>
+        <div class="dropdown-item-date">
+            <label>
+                End date:<br>
+                <input type="date" id="date-max" name="date-max" value="{{request.args.get('date-max','')}}">
+            </label>
+        </div>
+    </div>
+</div>
+<div class="dropdown">
+    <button type="button" onclick="toggleDropdown(this)" class="dropdown-toggle">
+        <i class="dropdown-icon fa fa-fw fa-lg fa-caret-right"></i>
+        <span>State</span>
+    </button>
+    <div class="dropdown-item-container" style="display: none;">
+        {% set active_states = request.args.getlist('state') %}
+        {% for state in g.states %}
+        <div class="dropdown-item-checkbox">
+            <label>
+                <input type="checkbox" name="state" value="{{state.value}}" 
+                    {% if not search or state.value|string in active_states %}checked{% endif %}>
+                <div>{{state.display_name}}</div>
+            </label>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+<div class="dropdown">
+    <button type="button" onclick="toggleDropdown(this)" class="dropdown-toggle">
+        <i class="dropdown-icon fa fa-fw fa-lg fa-caret-right"></i>
+        <span>Priority</span>
+    </button>
+    <div class="dropdown-item-container" style="display: none;">
+        {% set active_priorities = request.args.getlist('priority') %}
+        {% for priority in g.priorities %}
+        <div class="dropdown-item-checkbox">
+            <label>
+                <input type="checkbox" name="priority" value="{{priority.value}}"
+                    {% if not search or priority.value|string in active_priorities %}checked{% endif %}>
+                <div>{{priority.display_name}}</div>
+            </label>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+<div class="dropdown">
+    <button type="button" onclick="toggleDropdown(this)" class="dropdown-toggle">
+        <i class="dropdown-icon fa fa-fw fa-lg fa-caret-right"></i>
+        <span>Members</span>
+    </button>
+    <div class="dropdown-item-container" style="display: none;">
+        {% set member_type = request.args.get('member-type', 'all') %}
+        <div class="dropdown-item-select">
+            <span>Must include:</span>
+            <select name="member-type">
+                <option value="all" {% if member_type == 'all' %}selected{% endif %}>All</option>
+                <option value="any" {% if member_type == 'any' %}selected{% endif %}>Any</option>
+                <option value="exact" {% if member_type == 'exact' %}selected{% endif %}>Exact</option>
+            </select>
+        </div>
+        {% set active_members = request.args.getlist('member') %}
+        {% for member in g.group_members %}
+            {% if g.current_page != 'project/my-tasks' or member.id != g.user_id %}
+                <div class="dropdown-item-checkbox">
+                    <label>
+                        <input type="checkbox" name="member" value="{{member.id}}"
+                            {% if search and member.id|string in active_members %}checked{% endif %}>
+                        <div>{{member.username}}</div>
+                    </label>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>
+
+<div style="margin: 0.5em;">
+    <button type="button" onclick="submitSearchForm()" class="button-grey">Apply</button>
+    {% if g.current_page == 'project/my-tasks' %}
+    <a href="{{url_for('projects.route_my_tasks', group_id=g.group_id, project_id=g.project_id)}}"><button type="button" onclick="saveUIState()" class="button-red-inverted">Reset</button></a>
+    {% elif g.current_page == 'project/all-tasks' %}
+    <a href="{{url_for('projects.route_all_tasks', group_id=g.group_id, project_id=g.project_id)}}"><button type="button" onclick="saveUIState()" class="button-red-inverted">Reset</button></a>
+    {% endif %}
+</div>
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+        {% if category == 'bad-search' %}
+            <p class="error" style="color:red"> {{message}} </p>
+        {% endif %}
+    {% endfor %}
+{% endwith %}
+
+</form>

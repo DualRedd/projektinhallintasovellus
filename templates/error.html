@@ -2,5 +2,5 @@
 {% block content %}
 <h1>{{g.error_code}}</h1>
 <p style="color:red">{{g.error_message}}</p>
-<a href="/"> Home </a>
+<a href="{{url_for('base.route_index')}}"> Home </a>
 {% endblock %}

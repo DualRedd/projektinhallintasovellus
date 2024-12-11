@@ -9,18 +9,18 @@
         <div class="card-title all-column-item">{{project.name}}</div>
         <div class="card-desc all-column-item">{{project.description}}</div>
         <div class="card-button all-column-item">
-            <a href="/group/{{g.group_id}}/project/{{project.id}}">
-                <button class="button-green-inverted">View</button>
+            <a href="{{url_for('projects.route_my_tasks', group_id=g.group_id, project_id=project.id)}}">
+                <button onclick="sessionStorage.setItem('project-dropdown-state', true);" class="button-green-inverted">View</button>
             </a>
-        </div>  
+        </div>
     </div>
 {% endfor %}
 {% if not g.projects %}
 <div class="empty-placeholder all-column-item"> No active projects! </div>
 {% endif %}
 {% if g.can_create_project %}
-<a href="/group/{{g.group_id}}/projects/new" class="all-column-item">
-    <button class="button-grey">Create New Project</button>
+<a href="{{url_for('projects.route_new', group_id=g.group_id)}}" class="all-column-item">
+    <button class="button-grey button-box-shadow">Create New Project</button>
 </a>
 {% endif %}
 </div>

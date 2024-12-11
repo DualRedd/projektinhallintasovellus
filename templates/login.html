@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
 <h2> Login </h2>
-<form action="/login" method="POST">
+<form action="{{url_for('auth.route_login')}}" method="POST">
     <p> Username: </p>
     <input type="text" name="username-stored" maxlength="{{MAX_INPUT_SIZES['username']}}" required>
     <p> Password: </p>
@@ -16,6 +16,6 @@
             {% endif %}
         {% endfor %}
     {% endwith %}
-    <p> No account? <a href="/create-user"> Create one! </a></p>
+    <p> No account? <a href="{{url_for('auth.route_create_user')}}"> Create one! </a></p>
 </form>
 {% endblock %}

@@ -6,7 +6,7 @@ from services.groups_service import get_groups, get_invites
 from utils.permissions import get_page_permission_response
 from utils.permissions import permissions
 
-base_bp = Blueprint('index', __name__)
+base_bp = Blueprint('base', __name__)
 
 @base_bp.route("/")
 @permissions(require_login=True)

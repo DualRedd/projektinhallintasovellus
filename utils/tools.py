@@ -16,9 +16,9 @@ def get_task_sorting_key(task, sorting : list[str]):
         if sort_str == "deadline":
             key.append(task["deadline"] if task["deadline"] else datetime.max)
         elif sort_str == "priority":
-            key.append(task["priority"])
+            key.append(-task["priority"].value)
         elif sort_str == "state":
-            key.append(task["state"])
+            key.append(task["state"].value)
         elif sort_str == "title":
             key.append(task["title"])
         else:   

@@ -1,0 +1,19 @@
+
+<div id="project-header">
+    <p class="secondary-text">Project</p>
+    <h1>{{g.project_details.name}}</h1>
+    <a href="{{url_for('projects.route_my_tasks', group_id=g.group_id, project_id=g.project_id)}}">
+        <button class="{% if g.current_page == 'project/my-tasks' %}active-button{% endif %}">My tasks</button>
+    </a>
+    <a href="{{url_for('projects.route_all_tasks', group_id=g.group_id, project_id=g.project_id)}}">
+        <button class="{% if g.current_page == 'project/all-tasks' %}active-button{% endif %}">All tasks</button>
+    </a>
+    <a href="{{url_for('projects.route_stats', group_id=g.group_id, project_id=g.project_id)}}">
+        <button class="{% if g.current_page == 'project/stats' %}active-button{% endif %}">Statistics</button>
+    </a>
+    <a href="{{url_for('projects.route_settings', group_id=g.group_id, project_id=g.project_id)}}">
+        <button class="{% if g.current_page == 'project/settings' %}active-button{% endif %}">Settings</button>
+    </a>
+    <hr>
+</div>
+

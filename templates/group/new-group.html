@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
-<form action="/create-group" method="POST">
+<form action="{{url_for('groups.route_create')}}" method="POST">
     <p>Group name:</p>
     <input type="text" name="name-stored" maxlength="{{MAX_INPUT_SIZES['group_name']}}" required> <br>
     <p>Group description:</p>

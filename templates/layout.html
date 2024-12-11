@@ -1,6 +1,5 @@
 <!doctype html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,8 +7,7 @@
     <meta name="author" content="Jonni Haapiainen">
     <title>{% block title %}Project Management App{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    {% block head %}{% endblock %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
 </head>
 
 <body>
@@ -18,38 +16,21 @@
             <span class="left-align">
                 <span> Project Management App </span>
                 {% if 'username' in session %}
-                <a href="/">Home</a>
-                <!--<a href="/">My Groups</a>-->
+                <a href="{{url_for('base.route_index')}}">Home</a>
                 {% endif %}
             </span>
             <span class="right-align">
                 {% if 'username' in session %}
-                <a href="/user/{{session['username']}}">{{session['username']}}</a> -
-                <a href="/logout">Logout</a>
+                <a href="/user/{{session['username']}}-TODO">{{session['username']}}</a> -
+                <a href="{{url_for('auth.route_logout')}}">Logout</a>
                 {% endif %}
             </span>
         </nav>
     </header>
     
     <div class="page-container">
-        {% if g.sidebar == 1 %}
-        <aside class="sidebar-left">
-            <ul>
-                <li><a href="/group/{{g.group_id}}/dashboard" class="{% if g.current_page == 'dashboard' %}sidebar-active{% else %}sidebar-deactive{% endif %}">Dashboard</a></li>
-                <li><a href="/group/{{g.group_id}}/projects" class="{% if g.current_page == 'projects' %}sidebar-active{% else %}sidebar-deactive{% endif %}">Projects</a></li>
-                <li><a href="/group/{{g.group_id}}/tasks" class="{% if g.current_page == 'tasks' %}sidebar-active{% else %}sidebar-deactive{% endif %}">Tasks</a></li>
-                <li><a href="/group/{{g.group_id}}/members" class="{% if g.current_page == 'members' %}sidebar-active{% else %}sidebar-deactive{% endif %}">Members</a></li>
-                <li><a href="/group/{{g.group_id}}/settings" class="{% if g.current_page == 'settings' %}sidebar-active{% else %}sidebar-deactive{% endif %}">Settings</a></li>
-            </ul>
-        </aside>
-        {% elif g.sidebar == 2 %}
-        <aside class="sidebar-left">
-            <ul>
-                <li><a href="/group/{{g.group_id}}/project/{{g.project_id}}/tasks" class="{% if g.current_page == 'tasks' %}sidebar-active{% else %}sidebar-deactive{% endif %}">Tasks</a></li>
-                <li><a href="/group/{{g.group_id}}/project/{{g.project_id}}/stats" class="{% if g.current_page == 'stats' %}sidebar-active{% else %}sidebar-deactive{% endif %}">Statistics</a></li>
-                <li><a href="/group/{{g.group_id}}/project/{{g.project_id}}/settings" class="{% if g.current_page == 'settings' %}sidebar-active{% else %}sidebar-deactive{% endif %}">Settings</a></li>
-            </ul>
-        </aside>
+        {% if g.sidebar %}
+            {% include "primary-sidebar.html" %}
         {% endif %}
         <main class="main">
             <div class="content">
@@ -59,7 +40,6 @@
         {% if g.sidebar_right %}
         <div class="sidebar-right-container sidebar-animate">
             <aside class="sidebar-right">
-                <button onclick="toggleRightSidebar()" class="sidebar-toggle"><i class="fa fa-search fa-2x"></i></button>
                 <div class="sidebar-right-content">
                 {% block sidebar_right %}{% endblock %}
                 </div>
@@ -75,12 +55,33 @@
                 element.remove();
             });null
         }
+
         function toggleRightSidebar(instant = false){
             const sidebar = document.querySelector(".sidebar-right-container");
             if(instant) sidebar.classList.remove("sidebar-animate");
             sidebar.classList.toggle("sidebar-open");
             if(instant) setTimeout(() => sidebar.classList.add("sidebar-animate"), 1);
         }
+
+        function toggleDropdown(button){
+            const dropdown = button.closest(".dropdown");
+            const itemContainer = dropdown.querySelector(".dropdown-item-container");
+            if (itemContainer.style.display === 'none') {
+                itemContainer.style.display = 'block';
+            } else {
+                itemContainer.style.display = 'none';
+            }
+            const icon = dropdown.querySelector(".dropdown-icon");
+            icon.classList.toggle("fa-caret-right");
+            icon.classList.toggle("fa-caret-down");
+            return itemContainer.style.display === 'block';
+        }
+        function toggleProjectDropdown(){
+            let state = toggleDropdown(document.getElementById("project-dropdown-toggle"));
+            sessionStorage.setItem("project-dropdown-state", state);
+        }
+        if(sessionStorage.getItem("project-dropdown-state") === 'true') toggleProjectDropdown();
+
         const stored_data = {{stored_data|tojson|safe}};
         document.querySelectorAll("form input, form textarea, form select").forEach(element => {
             if(element.name in stored_data){

@@ -53,8 +53,8 @@ def get_tasks(project_id : int, states : list[str] = None, priorities : list[str
                                         AND T.visible = TRUE \
                                         {'AND T.deadline >= :min_date' if min_date else ''} \
                                         {'AND T.deadline <= :max_date' if max_date else ''} \
-                                        {'AND T.state = ANY(:states)' if states else ''} \
-                                        {'AND T.priority = ANY(:priorities)' if priorities else ''} \
+                                        {'AND T.state = ANY(:states)' if states is not None else ''} \
+                                        {'AND T.priority = ANY(:priorities)' if priorities is not None else ''} \
                                     GROUP BY T.id \
                                     {'HAVING ARRAY_AGG(TA.user_id) && :members' if member_query_type == 'any' else ''} \
                                     {'HAVING ARRAY_AGG(TA.user_id) @> :members' if member_query_type == 'all' else ''} \

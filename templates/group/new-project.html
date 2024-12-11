@@ -3,7 +3,7 @@
 
 <h1>Create New Project</h1>
 <hr>
-<form action="" method="POST">
+<form action="{{url_for('projects.route_new', group_id=g.group_id)}}" method="POST">
     <p>Project name:</p>
     <input type="text" name="name-stored" maxlength="{{MAX_INPUT_SIZES['project_name']}}" required> <br>
     <p>Project description:</p>

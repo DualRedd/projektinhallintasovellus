@@ -1,0 +1,93 @@
+{% extends "layout.html" %}
+
+{% block content %}
+{% include "project/header.html" %}
+
+<div class="header-flex">
+    <h1>My tasks</h1>
+    <div class="flex-horizontal">
+        <a href="{{url_for('tasks.route_new', group_id=g.group_id, project_id=g.project_id, referrer='my')}}">
+            <button class="button-grey button-box-shadow no-wrap">
+                <i class="fa fa-plus" style="margin-right:0.5em;"></i>New Task
+            </button>
+        </a>
+        <button class="button-grey button-box-shadow no-wrap" onclick="toggleRightSidebar()">
+            <i class="fa fa-search" style="margin-right:0.5em;"></i>Search
+        </button>
+    </div>
+</div>
+<hr style="margin-top:0;">
+
+<div class="tasks-container">
+    <div class="task-item table-title">
+        <div></div>
+        <div>Title</div>
+        <div>Priority</div>
+        <div>Deadline</div>
+        <div>State</div>
+        <div>Assigned Members</div>
+    </div>
+    {% for task in g.tasks %}
+    <div class="task-item">
+        <div class="task-summary">
+            <button class="detail-toggle"><i class="fa fa-fw fa-caret-right" style="font-size: 1.5em;"></i></button>
+            <div>{{task.title}}</div>
+            <div>{{task.priority.display_name}}</div>
+            <div>{{task.deadline|format_datetime}}</div>
+            <div>{{task.state.display_name}}</div>
+            {% if task.members %}
+            <div>{% for user in task.members %}{{user.username}}{% if not loop.last %}, {% endif %}{% endfor %}</div>
+            {% else %}<div>None</div>{% endif %}
+        </div>
+        <div class="task-details">
+            <button onclick="resetStateEditMode(this)" class="detail-toggle"><i class="fa fa-fw fa-caret-down" style="font-size: 1.5em;"></i></button>
+            <div>{{task.title}}</div>
+            <div>{{task.priority.display_name}}</div>
+            <div>{{task.deadline|format_datetime}}</div>
+
+            <div class="state-field">{{task.state.display_name}}</div>
+            <form action="{{url_for('tasks.route_edit_state', group_id=g.group_id, project_id=g.project_id, task_id=task.id)}}" method="POST" style="display: none;">
+                <select name="state" data-value="{{task.state.value}}">
+                {% for state in g.states %}
+                    <option value="{{state.value}}" {% if state.value == task.state.value %}selected disabled{% endif %}>{{state.display_name}}</option>
+                {% endfor %}
+                </select>
+                <input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
+            </form>
+
+            {% if task.members %}
+            <div>{% for user in task.members %}{{user.username}}{% if not loop.last %}, {% endif %}{% endfor %}</div>
+            {% else %}<div>None</div>{% endif %}
+
+            <div class="secondary-text" style="grid-column: 2 / 6;">{{task["description"]}}</div>
+
+            <div class="buttons-1" style="grid-column: 2 / 7;">
+                {% if g.can_edit_tasks %}
+                <button onclick="enableStateEditMode(this)" class="button-grey button-small">Change State</button>
+                {% endif %}
+                {% if g.can_edit_tasks  %}
+                <a href="{{url_for('tasks.route_edit', group_id=g.group_id, project_id=g.project_id, task_id=task.id)}}">
+                <button class="button-grey button-small">Edit Task</button></a>
+                {% endif %}
+            </div>
+            
+            <div class="buttons-2" style="grid-column: 2 / 7;display:none">
+                <button onclick="submitStateForm(this)" class="button-green button-small" style="font-size: 70%;">Confirm</button>
+                <button onclick="resetStateEditMode(this)" class="button-red button-small" style="font-size: 70%;">Cancel</button>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    {% if not g.tasks %}
+    <div class="empty-placeholder all-column-item"> No tasks found! </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block sidebar_right %}
+{% include 'search-sidebar/content-block.html' %}
+{% endblock %}
+
+{% block scripts %}
+{% include 'search-sidebar/script-block.html' %}
+{% endblock %}

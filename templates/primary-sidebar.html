@@ -1,0 +1,54 @@
+<aside class="sidebar-left">
+<ul>
+    <a href="{{url_for('groups.route_dashboard', group_id=g.group_id)}}">
+        <div class="relative">
+            <button class="sidebar-button {% if g.current_page == 'dashboard' %}sidebar-button-active{% endif %}">
+                <div class="sidebar-icon flex-horizontal"><i class="fa fa-fw fa-lg fa-chart-simple"></i></div>
+                <span>Dashboard</span>
+            </button>
+        </div>
+    </a>
+    <div class="dropdown">
+        <div class="relative">
+            <button id="project-dropdown-toggle" type="button" onclick="toggleProjectDropdown()" class="sidebar-icon-button">
+                <i class="dropdown-icon fa fa-fw fa-lg fa-caret-right"></i>
+            </button>
+            <a href="{{url_for('groups.route_projects', group_id=g.group_id)}}">
+            <button class="sidebar-button {% if g.current_page == 'projects' %}sidebar-button-active{% endif %}">
+                <span>Projects</span>
+            </button> </a>
+        </div>
+        <div class="dropdown-item-container" style="display: none;">
+            {% for project in g.projects %}
+            <a href="{{url_for('projects.route_my_tasks', group_id=g.group_id, project_id=project.id)}}">
+                <button class="{% if g.project_id == project.id %}sidebar-button-active{% endif %} dropdown-item-project">{{project.name}}</button>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+    <a href="{{url_for('groups.route_tasks', group_id=g.group_id)}}">
+        <div class="relative">
+            <button class="sidebar-button {% if g.current_page == 'tasks' %}sidebar-button-active{% endif %}">
+                <div class="sidebar-icon flex-horizontal"><i class="fa fa-fw fa-lg fa-list-check"></i></div>
+                <span>Tasks</span>
+            </button>
+        </div>
+    </a>
+    <a href="{{url_for('groups.route_members', group_id=g.group_id)}}">
+        <div class="relative">
+            <button class="sidebar-button {% if g.current_page == 'members' %}sidebar-button-active{% endif %}">
+                <div style="padding-left: 0.65em;" class="sidebar-icon flex-horizontal"><i class="fa fa-fw fa-1x fa-user-group"></i></div>
+                <span>Members</span>
+            </button>
+        </div>
+    </a>
+    <a href="{{url_for('groups.route_settings', group_id=g.group_id)}}">
+        <div class="relative">
+            <button class="sidebar-button {% if g.current_page == 'settings' %}sidebar-button-active{% endif %}">
+                <div class="sidebar-icon flex-horizontal"><i class="fa fa-fw fa-lg fa-gear"></i></div>
+                <span>Settings</span>
+            </button>
+        </div>
+    </a>
+</ul>
+</aside>

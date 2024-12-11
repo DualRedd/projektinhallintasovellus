@@ -9,7 +9,7 @@
         <div class="card-title all-column-item">{{group.name}}</div>
         <div class="card-desc all-column-item">{{group.description}}</div>
         <div class="card-button">
-            <a href="/group/{{group.id}}/dashboard"><button class="button-green-inverted">Enter</button></a>
+            <a href="{{url_for('groups.route_dashboard', group_id=group.id)}}"><button class="button-green-inverted">Enter</button></a>
         </div>
         <div class="card-item secondary-text" style="justify-self:end;align-self:end;">{{group.role.display_name}}</div>
     </div>
@@ -17,8 +17,8 @@
 {% if not g.groups %}
 <div class="empty-placeholder all-column-item"> No groups! Begin by creating or joining one! </div>
 {% endif %}
-<a href="/create-group" class="all-column-item">
-    <button class="button-grey">Create New Group</button>
+<a href="{{url_for('groups.route_create')}}" class="all-column-item">
+    <button class="button-grey button-box-shadow">Create New Group</button>
 </a>
 </div>
 
@@ -30,7 +30,7 @@
         <div class="card-title all-column-item">{{invite.group_name}}</div>
         <div class="card-desc all-column-item">{{invite.group_description}}</div>
         <div class="card-button">
-            <a href="/join/{{invite.group_id}}"><button class="button-green-inverted">Join</button></a>
+            <a href="{{url_for('groups.route_join', group_id=invite.group_id)}}"><button class="button-green-inverted">Join</button></a>
         </div>
         <div class="card-item secondary-text" style="justify-self:end;align-self:end;">{{invite.role.display_name}}</div>
     </div>

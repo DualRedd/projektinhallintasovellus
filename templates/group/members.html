@@ -19,7 +19,7 @@
 
 {% if g.can_invite %}
 <h3> Invite user: </h3>
-<form action="/group/{{g.group_id}}/members/add" method="POST">
+<form action="{{url_for('groups.route_members_add', group_id=g.group_id)}}" method="POST">
     <p> Username: </p>
     <input type="text" name="username-stored" maxlength="{{MAX_INPUT_SIZES['username']}}" required>
     <br> <br>
