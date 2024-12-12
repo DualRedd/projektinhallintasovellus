@@ -13,12 +13,22 @@ def update_project(project_id : int, project_name : str, project_desc : str = ""
                             {"project_name":project_name, "project_desc":project_desc, "project_id":project_id})
     db.session.commit()
 
+def update_project_archive_state(project_id : int, state : bool):
+    db.session.execute(text("UPDATE projects SET archived = :state WHERE id = :project_id"),
+                            {"state":state, "project_id":project_id})
+    db.session.commit()
+
+def delete_soft_project(project_id : int):
+    db.session.execute(text("UPDATE projects SET visible = FALSE WHERE id = :project_id"),
+                            {"project_id":project_id})
+    db.session.commit()
+
 def get_projects(group_id : int, archived : bool = False):
     projects = db.session.execute(text("SELECT id, name, description FROM projects WHERE group_id = :group_id AND archived = :archived AND visible = TRUE ORDER BY id"),
                                         {"group_id":group_id, "archived":archived}).fetchall()
     return projects
 
 def get_project_details(project_id : int):
-    details = db.session.execute(text("SELECT id, name, description FROM projects WHERE id = :project_id AND visible = TRUE"),
+    details = db.session.execute(text("SELECT id, name, description, archived FROM projects WHERE id = :project_id AND visible = TRUE"),
                                         {"project_id":project_id}).fetchone()
     return details

@@ -49,6 +49,13 @@ def validate_project_details_form(project_name : str, project_desc : str) -> Val
         return res
     return ValidationResult(True)
 
+def validate_project_archive_form(state : str):
+    if not check_csrf_token():
+        return ValidationResult(False, "Invalid csrf token!")
+    if state not in ["false", "true"]:
+        return ValidationResult(False)
+    return ValidationResult(True)
+
 def validate_group_invite_form(group_id : int, invitee, role_value_str : int) -> ValidationResult:
     if not check_csrf_token():
         return ValidationResult(False, "Invalid csrf token!")

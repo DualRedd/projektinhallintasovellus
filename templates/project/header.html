@@ -1,11 +1,14 @@
 
 <div id="project-header">
-    <p id="project-header-title" class="secondary-text">Project</p>
+    <p id="project-header-title" class="secondary-text">
+        {% if g.project_details.archived %}<span>Archived</span>{% endif %}
+        <span>Project</span>
+    </p>
     <h1>{{g.project_details.name}}</h1>
     <p id="project-header-desc" class="secondary-text">
         {% if g.project_details.description.strip() != '' %}{{g.project_details.description}}{% else %}No description{% endif %}
     </p>
-    
+
     <a href="{{url_for('projects.route_my_tasks', group_id=g.group_id, project_id=g.project_id)}}">
         <button class="{% if g.current_page == 'project/my-tasks' %}active-button{% endif %}">My tasks</button>
     </a>

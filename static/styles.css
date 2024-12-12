@@ -449,7 +449,7 @@ header nav span a, header nav span span {
 }
 
 .button-box-shadow {
-    box-shadow: 1px 1px 0px black;
+    box-shadow: 1px 1px 0px;
 }
 .button-small {
     font-weight: normal;

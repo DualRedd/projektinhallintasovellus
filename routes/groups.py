@@ -76,7 +76,8 @@ def route_dashboard(group_id):
 @permissions(require_login=True, require_min_role=role_enum.Observer)
 def route_projects(group_id):
     g.can_create_project = g.role.value >= role_enum.Manager.value
-    g.projects = get_projects(g.group_id)
+    g.active_projects = get_projects(g.group_id)
+    g.archived_projects = get_projects(g.group_id, archived=True)
     g.current_page = 'projects'
     return render_template("group/projects.html")
 

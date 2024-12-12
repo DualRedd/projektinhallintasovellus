@@ -4,7 +4,7 @@
 <h1>Active Projects</h1>
 <hr>
 <div class="card-holder">
-{% for project in g.projects %}
+{% for project in g.active_projects %}
     <div class="card">
         <div class="card-title all-column-item">{{project.name}}</div>
         <div class="card-desc all-column-item">{{project.description}}</div>
@@ -15,7 +15,7 @@
         </div>
     </div>
 {% endfor %}
-{% if not g.projects %}
+{% if not g.active_projects %}
 <div class="empty-placeholder all-column-item"> No active projects! </div>
 {% endif %}
 {% if g.can_create_project %}
@@ -27,5 +27,21 @@
 
 <h1>Archived Projects</h1>
 <hr>
+<div class="card-holder">
+{% for project in g.archived_projects %}
+    <div class="card">
+        <div class="card-title all-column-item">{{project.name}}</div>
+        <div class="card-desc all-column-item">{{project.description}}</div>
+        <div class="card-button all-column-item">
+            <a href="{{url_for('projects.route_my_tasks', group_id=g.group_id, project_id=project.id)}}">
+                <button onclick="sessionStorage.setItem('project-dropdown-state', true);" class="button-green-inverted">View</button>
+            </a>
+        </div>
+    </div>
+{% endfor %}
+{% if not g.archived_projects %}
+<div class="empty-placeholder all-column-item"> No archived projects! </div>
+{% endif %}
+</div>
 
 {% endblock %}

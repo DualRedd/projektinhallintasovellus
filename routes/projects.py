@@ -5,6 +5,7 @@ from datetime import datetime
 # Internal services
 from services.groups_service import get_group_role, get_group_members
 from services.projects_service import create_project, update_project, get_project_details, get_projects
+from services.projects_service import update_project_archive_state, delete_soft_project
 from services.tasks_service import get_tasks
 from utils.permissions import permissions
 from utils.tools import remove_line_breaks, get_task_sorting_key
@@ -136,3 +137,26 @@ def route_settings_details(group_id, project_id):
         flash(result.error, "bad-form")
         session["edit-mode-stored"] = True # flag to open edit mode after redirect
     return redirect(url_for("projects.route_settings", group_id=g.group_id, project_id=g.project_id))
+
+@projects_bp.route("/group/<int:group_id>/project/<int:project_id>/settings/archive", methods=["POST"])
+@permissions(require_login=True, require_min_role=role_enum.Manager)
+def route_settings_archive(group_id, project_id):
+    state = request.form["state"]
+    result = input.validate_project_archive_form(state)
+    if result.valid:
+        update_project_archive_state(g.project_id, True if state == "true" else False)
+    else:
+        flash(result.error, "bad-form2")
+    return redirect(url_for("projects.route_settings", group_id=g.group_id, project_id=g.project_id))
+
+
+@projects_bp.route("/group/<int:group_id>/project/<int:project_id>/settings/delete-project", methods=["POST"])
+@permissions(require_login=True, require_min_role=role_enum.Manager)
+def route_settings_delete_project(group_id, project_id):
+    result = input.validate_empty_form()
+    if result.valid:
+        delete_soft_project(g.project_id)
+        return redirect(url_for("groups.route_projects", group_id=g.group_id))
+    else:
+        flash(result.error, "bad-form2")
+        return redirect(url_for("projects.route_settings", group_id=g.group_id, project_id=g.project_id))
