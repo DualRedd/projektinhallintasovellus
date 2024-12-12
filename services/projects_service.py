@@ -8,8 +8,13 @@ def create_project(group_id : int, name : str, desc : str = "") -> int:
     db.session.commit()
     return project_id
 
+def update_project(project_id : int, project_name : str, project_desc : str = ""):
+    db.session.execute(text("UPDATE projects SET name = :project_name, description = :project_desc WHERE id = :project_id"),
+                            {"project_name":project_name, "project_desc":project_desc, "project_id":project_id})
+    db.session.commit()
+
 def get_projects(group_id : int, archived : bool = False):
-    projects = db.session.execute(text("SELECT id, name, description FROM projects WHERE group_id = :group_id AND archived = :archived AND visible = TRUE"),
+    projects = db.session.execute(text("SELECT id, name, description FROM projects WHERE group_id = :group_id AND archived = :archived AND visible = TRUE ORDER BY id"),
                                         {"group_id":group_id, "archived":archived}).fetchall()
     return projects
 

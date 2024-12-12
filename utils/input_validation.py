@@ -40,6 +40,15 @@ def validate_group_details_form(group_name : str, group_desc : str) -> Validatio
         return res
     return ValidationResult(True)
 
+def validate_project_details_form(project_name : str, project_desc : str) -> ValidationResult:
+    if not check_csrf_token():
+        return ValidationResult(False, "Invalid csrf token!")
+    if not (res := validate_string_size(project_name, "project_name", "Project name")).valid:
+        return res
+    if not (res := validate_string_size(project_desc, "project_description", "Project description")).valid:
+        return res
+    return ValidationResult(True)
+
 def validate_group_invite_form(group_id : int, invitee, role_value_str : int) -> ValidationResult:
     if not check_csrf_token():
         return ValidationResult(False, "Invalid csrf token!")

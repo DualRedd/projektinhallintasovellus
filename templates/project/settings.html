@@ -2,7 +2,56 @@
 {% block content %}
 {% include "project/header.html" %}
 
-<h1> Empty! </h1>
+<h1>General</h1>
+<hr>
+<div id="view-mode">
+    <p>Project name:</p>
+    <div class="editable-data-field"><span>{{g.project_details.name}}</span></div>
+    <p>Project description:</p>
+    <div class="editable-data-field"><span>{{g.project_details.description}}</span></div>
+    <button class="button-grey" onclick="toggle_edit_mode(true)">Edit</button>
+</div>
+<div id="edit-mode" style="display: none;"> 
+    <form action="{{url_for('projects.route_settings_details', group_id=g.group_id, project_id=g.project_id)}}" method="POST">
+        <p>Group name:</p>
+        <input type="text" name="name-stored" maxlength="{{MAX_INPUT_SIZES['project_name']}}">
+        <p>Group description:</p>
+        <textarea name="desc-stored" maxlength="{{MAX_INPUT_SIZES['project_description']}}"></textarea>
+        <br> <br>
+        <input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
+        <button type="button" class="button-red" onclick="toggle_edit_mode(false);remove_errors();">Cancel</button>
+        <button type="submit" class="button-green">Submit</button>
+        {% set messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            {% if category == 'bad-form' %}
+                <p class="error" style="color:red"> {{message}} </p>
+            {% endif %}
+        {% endfor %}
+    </form>
+</div>
+<br><br>
 
-
+{% endblock %}
+{% block scripts %}
+<script>
+    const viewMode = document.getElementById('view-mode');
+    const editMode = document.getElementById('edit-mode');
+    let group_name = "{{g.project_details.name}}";    
+    let group_desc = "{{g.project_details.description}}";
+    function toggle_edit_mode(editing = true) {
+        if (editing) {
+            viewMode.style.display = 'none';
+            editMode.style.display = 'block';
+            editMode.querySelector("form input[name='name-stored']").value = group_name;
+            editMode.querySelector("form textarea[name='desc-stored']").value = group_desc;
+        } else {
+            viewMode.style.display = 'block';
+            editMode.style.display = 'none';
+        }
+    }
+    if('edit-mode-stored' in stored_data){
+        viewMode.style.display = 'none';
+        editMode.style.display = 'block';
+    }
+</script>
 {% endblock %}

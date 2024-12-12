@@ -4,9 +4,9 @@ from flask import session, request, render_template, redirect, flash, url_for, g
 from datetime import datetime
 # Internal services
 from services.groups_service import get_group_role, get_group_members
-from services.projects_service import create_project, get_project_details, get_projects
-from services.tasks_service import create_task, create_task_assignment, get_tasks, update_task_state
-from utils.permissions import permissions, get_page_permission_response
+from services.projects_service import create_project, update_project, get_project_details, get_projects
+from services.tasks_service import get_tasks
+from utils.permissions import permissions
 from utils.tools import remove_line_breaks, get_task_sorting_key
 import utils.input_validation as input
 # Enums
@@ -21,6 +21,7 @@ def get_project_data():
     if "group_id" in request.view_args:
         g.group_id = request.view_args["group_id"]
         g.role = get_group_role(g.group_id, g.user_id)
+        if g.role: g.setting_access = g.role.value >= role_enum.Manager.value
         g.projects = get_projects(g.group_id)
     if "project_id" in request.view_args:
         g.project_id = request.view_args["project_id"]
@@ -47,7 +48,7 @@ def route_new(group_id):
     result = input.validate_create_project_form(project_name, project_desc)
     if result.valid:
         g.project_id = create_project(g.group_id, project_name, project_desc)
-        return redirect(url_for("projects.route_my_tasks", group_id=g.group_id, project_id=g.project_id))
+        return redirect(url_for("groups.route_projects", group_id=g.group_id, project_id=g.project_id))
     else:
         flash(result.error, "bad-form")
         return redirect(url_for("projects.route_new", group_id=g.group_id))
@@ -118,7 +119,20 @@ def route_stats(group_id, project_id):
 # SETTINGS PAGE #
 #---------------#
 @projects_bp.route("/group/<int:group_id>/project/<int:project_id>/settings", methods=["GET"])
-@permissions(require_login=True, require_min_role=role_enum.Observer)
+@permissions(require_login=True, require_min_role=role_enum.Manager)
 def route_settings(group_id, project_id):
     g.current_page = 'project/settings'
     return render_template("project/settings.html")
+
+@projects_bp.route("/group/<int:group_id>/project/<int:project_id>/settings/details", methods=["POST"])
+@permissions(require_login=True, require_min_role=role_enum.Manager)
+def route_settings_details(group_id, project_id):
+    project_name = request.form["name-stored"]
+    project_desc = remove_line_breaks(request.form["desc-stored"])
+    result = input.validate_project_details_form(project_name, project_desc)
+    if result.valid:
+        update_project(g.project_id, project_name, project_desc)
+    else:
+        flash(result.error, "bad-form")
+        session["edit-mode-stored"] = True # flag to open edit mode after redirect
+    return redirect(url_for("projects.route_settings", group_id=g.group_id, project_id=g.project_id))

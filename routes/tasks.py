@@ -5,9 +5,9 @@ from datetime import datetime
 # Internal services
 from services.groups_service import get_group_role, get_group_members
 from services.projects_service import get_projects, get_project_details
-from services.tasks_service import create_task, create_task_assignment, get_tasks, update_task_state
+from services.tasks_service import create_task, create_task_assignment, update_task_state
 from utils.permissions import permissions, get_page_permission_response
-from utils.tools import remove_line_breaks, get_task_sorting_key
+from utils.tools import remove_line_breaks
 import utils.input_validation as input
 # Enums
 from enums.enums import role_enum, task_priority_enum, task_state_enum

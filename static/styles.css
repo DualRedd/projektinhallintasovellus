@@ -35,6 +35,12 @@ body, textarea, input {
 button {
     cursor: pointer;
 }
+select {
+    background-color: inherit;
+    border: 1px solid grey;
+    border-radius: 4px;
+    padding: 0.1em;
+}
 
 /* HEADER */
 header {
@@ -101,7 +107,7 @@ header nav span a, header nav span span {
 #project-header {
     padding-bottom: 1em;
 }
-#project-header p{
+#project-header-title{
     margin: 0;
     font-size: small;
     margin-top: -0.8em;
@@ -109,6 +115,11 @@ header nav span a, header nav span span {
 #project-header h1{
     margin-top: 0.1em;
     margin-bottom: 0.3em;
+}
+#project-header-desc {
+    font-size: small;
+    margin-top: 0;
+    margin-bottom: 0.5em;
 }
 #project-header hr{
     border: none;
@@ -423,6 +434,17 @@ header nav span a, header nav span span {
     color: black;
 }
 .button-grey:hover {
+    background-color: #eeeeee;
+}
+.button-grey-small {
+    background-color: inherit;
+    border: 1px solid grey;
+    border-radius: 5px;
+    padding: 0.2em 0.5em;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    color: black;
+}
+.button-grey-small:hover {
     background-color: #eeeeee;
 }
 

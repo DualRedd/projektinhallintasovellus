@@ -21,7 +21,7 @@
     <label>Deadline:</label>
     <input id="date" type="date" name="date-stored" min="{{g.date}}">
     <input id="time" type="time" name="time-stored">
-    <button type="button" onclick="clear_selected_datetime()">Clear</button>
+    <button type="button" onclick="clear_selected_datetime()" class="button-grey-small button-box-shadow">Clear</button>
     <br><br>
     <label>Assign Members:</label>
     <select id="member-select">
@@ -29,7 +29,7 @@
         <option value="{{member.id}}">{{member.username}}</option>
         {% endfor %}
     </select>
-    <button type="button" onclick="add_member()">Add</button>
+    <button type="button" onclick="add_member()" class="button-grey-small button-box-shadow">Add</button>
     <br><br>
     <div id="member-view"></div>
     <br>
