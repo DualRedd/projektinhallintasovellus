@@ -71,8 +71,9 @@ def route_edit(group_id, project_id, task_id):
 def route_edit_state(group_id, project_id, task_id):
     if g.role == role_enum.Observer: # observers can only change state of tasks they are assigned to
         if (res := get_page_permission_response(require_task_membership=True)) is not None: return res
-    state_str = request.form["state"]
-    result = input.validate_task_state_form(state_str)
-    if result.valid:
-        update_task_state(task_id, task_state_enum.get_by_value(int(state_str)))
+    state_str = request.form.get("state", None)
+    if state_str is not None:
+        result = input.validate_task_state_form(state_str)
+        if result.valid:
+            update_task_state(task_id, task_state_enum.get_by_value(int(state_str)))
     return redirect(request.referrer or url_for("projects.route_my_tasks", group_id=g.group_id, project_id=g.project_id))
