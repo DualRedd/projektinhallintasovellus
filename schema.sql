@@ -19,14 +19,8 @@ CREATE TABLE group_roles (
     id SERIAL PRIMARY KEY,
     group_id INTEGER REFERENCES groups,
     user_id INTEGER REFERENCES users,
-    role TEXT NOT NULL -- meaning defined in enums.py file
-);
-
-CREATE TABLE group_invites (
-    id SERIAL PRIMARY KEY,
-    group_id INTEGER REFERENCES groups,
-    invitee_id INTEGER REFERENCES users,
-    role TEXT NOT NULL -- meaning defined in enums.py file
+    role TEXT NOT NULL, -- meaning defined in enums.py file
+    is_invitee BOOLEAN NOT NULL DEFAULT TRUE
 );
 
 CREATE TABLE projects (

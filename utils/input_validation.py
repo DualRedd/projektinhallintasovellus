@@ -2,7 +2,7 @@ import re
 from datetime import datetime
 from flask import session, request, g
 from services.auth_service import user_exists, authenticate_user
-from services.groups_service import get_group_role, get_group_invite
+from services.groups_service import get_group_role
 from enums.enums import role_enum, task_priority_enum, task_state_enum
 from config import config
 
@@ -63,7 +63,7 @@ def validate_group_invite_form(group_id : int, invitee, role_value_str : int) ->
         return ValidationResult(False, "No such user found!")
     if get_group_role(group_id, invitee.id):
         return ValidationResult(False, "The user is already a member of the group!")
-    if get_group_invite(group_id, invitee.id):
+    if get_group_role(group_id, invitee.id, is_invitee=True):
         return ValidationResult(False, "The user has already been invited!")
     # Check if role input is valid
     try:

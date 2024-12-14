@@ -6,7 +6,7 @@
     <meta name="description" content="A project management application.">
     <meta name="author" content="Jonni Haapiainen">
     <title>{% block title %}Project Management App{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="{{url_for('static', filename='styles.css')}}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
 </head>
 
@@ -21,7 +21,7 @@
             </span>
             <span class="right-align">
                 {% if 'username' in session %}
-                <a href="/user/{{session['username']}}-TODO">{{session['username']}}</a> -
+                <span>{{session['username']}}</span> -
                 <a href="{{url_for('auth.route_logout')}}">Logout</a>
                 {% endif %}
             </span>
@@ -29,9 +29,7 @@
     </header>
     
     <div class="page-container">
-        {% if g.sidebar %}
-            {% include "primary-sidebar.html" %}
-        {% endif %}
+        {% if g.sidebar %}{% include "primary-sidebar/content.html" %}{% endif %}
         <main class="main">
             <div class="content">
                 {% block content %}{% endblock %}
@@ -55,26 +53,6 @@
                 element.remove();
             });
         }
-
-        function toggleDropdown(button){
-            const dropdown = button.closest(".dropdown");
-            const itemContainer = dropdown.querySelector(".dropdown-item-container");
-            if (itemContainer.style.display === 'none') {
-                itemContainer.style.display = 'block';
-            } else {
-                itemContainer.style.display = 'none';
-            }
-            const icon = dropdown.querySelector(".dropdown-icon");
-            icon.classList.toggle("fa-caret-right");
-            icon.classList.toggle("fa-caret-down");
-            return itemContainer.style.display === 'block';
-        }
-        function toggleProjectDropdown(){
-            let state = toggleDropdown(document.getElementById("project-dropdown-toggle"));
-            sessionStorage.setItem("project-dropdown-state", state);
-        }
-        if(sessionStorage.getItem("project-dropdown-state") === 'true') toggleProjectDropdown();
-
         const stored_data = {{stored_data|tojson|safe}};
         document.querySelectorAll("form input, form textarea, form select").forEach(element => {
             if(element.name in stored_data){
@@ -82,6 +60,7 @@
             }
         });
     </script>
+    {% if g.sidebar %}{% include "primary-sidebar/scripts.html" %}{% endif %}
     {% block scripts %}{% endblock %}
 </body>
 

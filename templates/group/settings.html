@@ -1,7 +1,8 @@
 {% extends "layout.html" %}
-{% block content %}
 {% set messages = get_flashed_messages(with_categories=true) %}
-{% if g.details_access %}
+
+{% block content %}
+{% if g.role.value >= g.role_enum.Co_owner.value %}
 <h1>General</h1>
 <hr>
 <div id="view-mode">
@@ -33,7 +34,7 @@
 
 <h1>Group Actions</h1>
 <hr><br>
-{% if g.delete_access %}
+{% if g.role.value == g.role_enum.Owner.value %}
 <form action="{{url_for('groups.route_settings_delete_group', group_id=g.group_id)}}" method="POST">
     <input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
     <button class="button-red-inverted button-box-shadow" onclick="return confirm('Are you sure you want to delete this group?');">Delete Group Permanently</button>

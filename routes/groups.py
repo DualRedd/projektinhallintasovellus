@@ -2,11 +2,11 @@
 from flask import Blueprint
 from flask import session, request, render_template, redirect, flash, url_for, g
 # Internal services
-from services.groups_service import create_group, create_group_invite, create_group_member
-from services.groups_service import get_group_details, get_group_invitees, get_group_members, get_group_invite, get_group_role
-from services.groups_service import update_group
-from services.groups_service import delete_group, delete_group_invite, delete_group_member
-from services.projects_service import create_project, get_projects
+from services.groups_service import create_group, create_group_role
+from services.groups_service import get_group_details, get_group_members, get_group_role
+from services.groups_service import update_group, update_group_role
+from services.groups_service import delete_group, delete_group_role
+from services.projects_service import get_projects
 from services.auth_service import get_user
 from utils.permissions import permissions
 from utils.tools import remove_line_breaks
@@ -43,7 +43,7 @@ def route_create():
     result = input.validate_group_details_form(group_name, group_desc)
     if result.valid:
         g.group_id = create_group(group_name, group_desc)
-        create_group_member(g.group_id, g.user_id, role_enum.Owner)
+        create_group_role(g.group_id, g.user_id, role_enum.Owner, is_invitee=False)
         return redirect(url_for("groups.route_dashboard", group_id=g.group_id))
     else:
         flash(result.error, "bad-form")
@@ -52,10 +52,9 @@ def route_create():
 @groups_bp.route("/join/<int:group_id>", methods=["GET"])
 @permissions(require_login=True)
 def route_join(group_id):
-    invite = get_group_invite(g.group_id, g.user_id)
-    if invite:
-        delete_group_invite(g.group_id, g.user_id)
-        create_group_member(g.group_id, g.user_id, role_enum.get_by_value(int(invite.role)))
+    invite_role = get_group_role(g.group_id, g.user_id, is_invitee=True)
+    if invite_role:
+        update_group_role(g.group_id, g.user_id, invite_role, False)
         return redirect(url_for("groups.route_dashboard", group_id=g.group_id))
     return redirect(url_for("base.route_index"))
 
@@ -96,11 +95,8 @@ def route_tasks(group_id):
 @groups_bp.route("/group/<int:group_id>/members", methods=["GET"])
 @permissions(require_login=True, require_min_role=role_enum.Observer)
 def route_members(group_id):
-    # Co-owner is minimum required permission level for invites
-    g.can_invite = g.role.value >= role_enum.Co_owner.value
-    g.group_members = get_group_members(g.group_id)
-    g.group_invitees = get_group_invitees(g.group_id)
-    g.roles = [role for role in role_enum if role != role_enum.Owner]
+    g.members = get_group_members(g.group_id)
+    g.members.sort(key=lambda member: (member["is_invitee"], -member["role"].value))
     g.current_page = 'members'
     return render_template("group/members.html")
 
@@ -112,7 +108,7 @@ def route_members_add(group_id):
     invitee = get_user(username)
     result = input.validate_group_invite_form(g.group_id, invitee, role_value_str)
     if result.valid:
-        create_group_invite(g.group_id, invitee.id, role_enum.get_by_value(int(role_value_str)))
+        create_group_role(g.group_id, invitee.id, role_enum.get_by_value(int(role_value_str)), True)
     else:
         flash(result.error, "bad-form")
     return redirect(url_for("groups.route_members", group_id=g.group_id))
@@ -123,10 +119,6 @@ def route_members_add(group_id):
 @groups_bp.route("/group/<int:group_id>/settings", methods=["GET"])
 @permissions(require_login=True, require_min_role=role_enum.Observer)
 def route_settings(group_id):
-    # Co-owner is minimum required permission level to change group details
-    g.details_access = g.role.value >= role_enum.Co_owner.value
-    # Only the owner can delete the group
-    g.delete_access = g.role.value >= role_enum.Owner.value
     g.group_details = get_group_details(g.group_id)
     g.current_page = 'settings'
     return render_template("group/settings.html")
@@ -153,14 +145,14 @@ def route_settings_delete_group(group_id):
         return redirect("/")
     else:
         flash(result.error, "bad-form2")
-    return redirect(url_for("groups.route_settings", group_id=g.group_id))
+        return redirect(url_for("groups.route_settings", group_id=g.group_id))
 
 @groups_bp.route("/group/<int:group_id>/settings/leave-group", methods=["POST"])
 @permissions(require_login=True, require_min_role=role_enum.Observer, require_max_role=role_enum.Co_owner)
 def route_settings_leave_group(group_id):
     result = input.validate_empty_form()
     if result.valid:
-        delete_group_member(g.group_id, g.user_id)
+        delete_group_role(g.group_id, g.user_id)
         return redirect(url_for("base.route_index"))
     else:
         flash(result.error, "bad-form3")

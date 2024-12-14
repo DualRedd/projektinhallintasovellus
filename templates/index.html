@@ -25,14 +25,14 @@
 <h1> Invites </h1>
 <hr>
 <div class="card-holder">
-{% for invite in g.invites %}
+{% for group in g.invites %}
     <div class="card">
-        <div class="card-title all-column-item">{{invite.group_name}}</div>
-        <div class="card-desc all-column-item">{{invite.group_description}}</div>
+        <div class="card-title all-column-item">{{group.name}}</div>
+        <div class="card-desc all-column-item">{{group.description}}</div>
         <div class="card-button">
-            <a href="{{url_for('groups.route_join', group_id=invite.group_id)}}"><button class="button-green-inverted">Join</button></a>
+            <a href="{{url_for('groups.route_join', group_id=group.id)}}"><button class="button-green-inverted">Join</button></a>
         </div>
-        <div class="card-item secondary-text" style="justify-self:end;align-self:end;">{{invite.role.display_name}}</div>
+        <div class="card-item secondary-text" style="justify-self:end;align-self:end;">{{group.role.display_name}}</div>
     </div>
 {% endfor %}
 {% if not g.invites %}

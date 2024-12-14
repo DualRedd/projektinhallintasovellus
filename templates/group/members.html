@@ -1,45 +1,54 @@
 {% extends "layout.html" %}
+{% set messages = get_flashed_messages(with_categories=true) %}
 {% block content %}
 
-<h3>Members:</h2>
+<h1>Members</h1>
 <hr>
-{% for member in g.group_members %}
-<p class="secondary-text"> {{member.username}} - {{member.role.display_name}} </p>
-<hr>
-{% endfor %}
+<div class="member-container">
+    <div class="member-item table-title">
+        <div>Username</div>
+        <div>Role</div>
+        <div>Status</div>
+        <div>Actions</div>
+    </div>
+    {% for member in g.members %}
+    <div class="member-item">
+        <div class="secondary-text">{{member.username}}</div>
+        <div class="secondary-text">{{member.role.display_name}}</div>
+        {% if member.is_invitee %}
+        <div class="secondary-text">Invited</div>
+        {% else %}
+        <div class="secondary-text">Member</div>
+        {% endif %}
+    </div>
+    {% endfor %}
+    {% if g.role.value >= g.role_enum.Co_owner.value %}
 
-{% if g.group_invitees|length > 0 %}
-<h3>Invited:</h2>
-<hr>
-{% for invitee in g.group_invitees %}
-<p class="secondary-text"> {{invitee.username}} - {{invitee.role.display_name}} </p>
-<hr>
-{% endfor %}
-{% endif %}
-
-{% if g.can_invite %}
-<h3> Invite user: </h3>
-<form action="{{url_for('groups.route_members_add', group_id=g.group_id)}}" method="POST">
-    <p> Username: </p>
-    <input type="text" name="username-stored" maxlength="{{MAX_INPUT_SIZES['username']}}" required>
-    <br> <br>
-    <label for="role">Role:</label>
-    <select name="role-stored">
-        {% for role in g.roles %}
-        <option value="{{role.value}}">{{role.name|replace('_','-')}}</option>
-        {% endfor %}
-    </select>
-    <br><br>
-    <input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
-    <button type="submit" class="button-grey">Invite</button>
-    {% with messages = get_flashed_messages(with_categories=true) %}
+    <h3> Invite user: </h3>
+    <form action="{{url_for('groups.route_members_add', group_id=g.group_id)}}" method="POST">
+        <label> Username: </label>
+        <input type="text" name="username-stored" maxlength="{{MAX_INPUT_SIZES['username']}}" required>
+        <br> <br>
+        <label for="role">Role:</label>
+        <select name="role-stored">
+            {% for role in g.role_enum %}
+                {% if role != g.role_enum.Owner %}
+                <option value="{{role.value}}">{{role.name|replace('_','-')}}</option>
+                {% endif %}
+            {% endfor %}
+        </select>
+        <br><br>
+        <input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
+        <button type="submit" class="button-grey">Invite</button>
         {% for category, message in messages %}
             {% if category == 'bad-form' %}
                 <p class="error" style="color:red"> {{message}} </p>
             {% endif %}
         {% endfor %}
-    {% endwith %}
-</form>
-{% endif %}
+    </form>
+    {% endif %}
+</div>
+
+
 
 {% endblock %}

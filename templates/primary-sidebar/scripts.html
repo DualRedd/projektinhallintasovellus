@@ -1,0 +1,20 @@
+<script>
+function toggleDropdown(button){
+    const dropdown = button.closest(".dropdown");
+    const itemContainer = dropdown.querySelector(".dropdown-item-container");
+    if (itemContainer.style.display === 'none') {
+        itemContainer.style.display = 'block';
+    } else {
+        itemContainer.style.display = 'none';
+    }
+    const icon = dropdown.querySelector(".dropdown-icon");
+    icon.classList.toggle("fa-caret-right");
+    icon.classList.toggle("fa-caret-down");
+    return itemContainer.style.display === 'block';
+}
+function toggleProjectDropdown(){
+    let state = toggleDropdown(document.getElementById("project-dropdown-toggle"));
+    sessionStorage.setItem("project-dropdown-state", state);
+}
+if(sessionStorage.getItem("project-dropdown-state") === 'true') toggleProjectDropdown();
+</script>

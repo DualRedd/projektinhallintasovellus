@@ -486,8 +486,8 @@ header nav span a, header nav span span {
     box-sizing: border-box;
     color: var(--secondary-text);
     height: 100%;
-    line-height: 1;
-    max-height: 4em;
+    line-height: 1.2;
+    max-height: 4.8em;
     overflow: hidden;
     overflow-wrap: break-word;
 }
@@ -509,6 +509,20 @@ header nav span a, header nav span span {
     width: 100%;
     color: var(--secondary-text);
     font-size: large;
+}
+
+/* MEMBER ROW LAYOUT */
+.member-container {
+    padding: 1em 1.5em;
+}
+.member-item {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    align-items: center;
+    gap: 0.5em 1em;
+    line-height: 1.2;
+    padding: 0.5em 0;
+    border-bottom: 1px solid grey;
 }
 
 /* TASK ROW LAYOUT */
