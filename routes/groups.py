@@ -22,7 +22,7 @@ def get_group_data():
     if "group_id" in request.view_args:
         g.group_id = request.view_args["group_id"]
         g.sidebar = True
-        g.role = get_group_role(g.group_id, g.user_id)
+        g.role = get_group_role(g.group_id, g.user_id, is_invitee=False)
         g.projects = get_projects(g.group_id)
 
 @groups_bp.route("/group/<int:group_id>", methods=["GET"])
@@ -111,6 +111,32 @@ def route_members_add(group_id):
         create_group_role(g.group_id, invitee.id, role_enum.get_by_value(int(role_value_str)), True)
     else:
         flash(result.error, "bad-form")
+    return redirect(url_for("groups.route_members", group_id=g.group_id))
+
+@groups_bp.route("/group/<int:group_id>/members/remove", methods=["POST"])
+@permissions(require_login=True, require_min_role=role_enum.Co_owner)
+def route_members_remove(group_id):
+    username = request.form["username"]
+    user = get_user(username)
+    result = input.validate_remove_member_form(user)
+    if result.valid:
+        delete_group_role(g.group_id, user.id)
+    else:
+        flash(result.error, "bad-form")
+    return redirect(url_for("groups.route_members", group_id=g.group_id))
+
+@groups_bp.route("/group/<int:group_id>/members/alter-role", methods=["POST"])
+@permissions(require_login=True, require_min_role=role_enum.Co_owner)
+def route_members_alter_role(group_id):
+    username = request.form["username"]
+    role_value_str = request.form.get("role", None)
+    if role_value_str:
+        user = get_user(username)
+        result = input.validate_alter_role_form(user, role_value_str)
+        if result.valid:
+            update_group_role(g.group_id, user.id, role_enum.get_by_value(int(role_value_str)))
+        else:
+            flash(result.error, "bad-form")
     return redirect(url_for("groups.route_members", group_id=g.group_id))
 
 #---------------#

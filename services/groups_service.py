@@ -34,11 +34,12 @@ def get_group_details(group_id : int):
                                     "), {"group_id":group_id}).fetchone()
     return result
 
-def get_group_role(group_id : int, user_id : int, is_invitee : bool = False) -> role_enum | None:
-    result = db.session.execute(text("SELECT GR.role FROM group_roles GR \
+def get_group_role(group_id : int, user_id : int, is_invitee : bool = None) -> role_enum | None:
+    result = db.session.execute(text(f"SELECT GR.role FROM group_roles GR \
                                     JOIN users U ON U.id = GR.user_id AND U.visible = TRUE \
                                     JOIN groups G ON G.id = GR.group_id AND G.visible = TRUE \
-                                    WHERE GR.group_id = :group_id AND U.id = :user_id AND GR.is_invitee = :is_invitee"),
+                                    WHERE GR.group_id = :group_id AND U.id = :user_id \
+                                    {'AND GR.is_invitee = :is_invitee' if is_invitee else ''}"),
                                     {"group_id":group_id, "user_id":user_id, "is_invitee":is_invitee}).fetchone()
     return role_enum.get_by_value(int(result[0])) if result else None
 
@@ -63,8 +64,8 @@ def create_group_role(group_id : int, user_id : int, role : role_enum, is_invite
                             {"group_id":group_id, "user_id":user_id, "role":role.value, "is_invitee":is_invitee})
     db.session.commit()
 
-def update_group_role(group_id : int, user_id : int, role : role_enum, is_invitee : bool):
-    db.session.execute(text("UPDATE group_roles SET role = :role, is_invitee = :is_invitee WHERE group_id = :group_id AND user_id = :user_id"),
+def update_group_role(group_id : int, user_id : int, role : role_enum, is_invitee : bool = None):
+    db.session.execute(text(f"UPDATE group_roles SET role = :role{', is_invitee = :is_invitee' if is_invitee else ''} WHERE group_id = :group_id AND user_id = :user_id"),
                             {"group_id":group_id, "user_id":user_id, "role":role.value, "is_invitee":is_invitee})
     db.session.commit()
 

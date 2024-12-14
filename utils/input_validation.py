@@ -56,15 +56,50 @@ def validate_project_archive_form(state : str):
         return ValidationResult(False)
     return ValidationResult(True)
 
+def validate_remove_member_form(user):
+    if not check_csrf_token():
+        return ValidationResult(False, "Invalid csrf token!")
+    if not user:
+        return ValidationResult(False, "User not found!")
+    role = get_group_role(g.group_id, user.id)
+    if not role:
+        return ValidationResult(False, "User is not a member nor invited!")
+    if role == role_enum.Owner:
+        return ValidationResult(False, "Owner cannot be kicked!")
+    if role.value >= g.role.value:
+        return ValidationResult(False, "Invalid permissions!")
+    return ValidationResult(True)
+
+def validate_alter_role_form(user, role_value_str):
+    if not check_csrf_token():
+        return ValidationResult(False, "Invalid csrf token!")
+    if not user:
+        return ValidationResult(False, "User not found!")
+    role = get_group_role(g.group_id, user.id)
+    if not role:
+        return ValidationResult(False, "User is not a member nor invited!")
+    if role == role_enum.Owner:
+        return ValidationResult(False, "Owner's role cannot be changed!")
+    if role.value >= g.role.value:
+        return ValidationResult(False, "Invalid permissions!")
+    try:
+        role_value = int(role_value_str)
+    except ValueError:
+        return ValidationResult(False, "Invalid role!")
+    new_role = role_enum.get_by_value(role_value)
+    if not new_role or new_role == role_enum.Owner:
+        return ValidationResult(False, "Invalid role!")
+    if new_role.value >= g.role.value:
+        return ValidationResult(False, "Invalid permissions!")
+    return ValidationResult(True)
+
 def validate_group_invite_form(group_id : int, invitee, role_value_str : int) -> ValidationResult:
     if not check_csrf_token():
         return ValidationResult(False, "Invalid csrf token!")
     if not invitee:
         return ValidationResult(False, "No such user found!")
     if get_group_role(group_id, invitee.id):
-        return ValidationResult(False, "The user is already a member of the group!")
-    if get_group_role(group_id, invitee.id, is_invitee=True):
-        return ValidationResult(False, "The user has already been invited!")
+        return ValidationResult(False, "The user is already a member or invited!")
     # Check if role input is valid
     try:
         role_value = int(role_value_str)
@@ -108,7 +143,7 @@ def validate_task_data_form(task_name : str, task_desc : str, task_priority_str 
     for member in task_members:
         try:
             id = int(member)
-            if not get_group_role(g.group_id, id):
+            if not get_group_role(g.group_id, id, is_invitee=False):
                 return ValidationResult(False, "Invalid user assigned!")
         except ValueError:
             return ValidationResult(False, "Invalid user assigned!")

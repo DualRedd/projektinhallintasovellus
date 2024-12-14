@@ -6,19 +6,52 @@
 <hr>
 <div class="member-container">
     <div class="member-item table-title">
-        <div>Username</div>
+        <div>User</div>
         <div>Role</div>
         <div>Status</div>
         <div>Actions</div>
     </div>
     {% for member in g.members %}
     <div class="member-item">
-        <div class="secondary-text">{{member.username}}</div>
-        <div class="secondary-text">{{member.role.display_name}}</div>
+        <div class="secondary-text">{{member.username}}{% if member.username == g.username %} (me){% endif%}</div>
+        <div class="state-field secondary-text">{{member.role.display_name}}</div>
+        <form action="{{url_for('groups.route_members_alter_role', group_id=g.group_id)}}" method="POST" style="display: none;">
+            <select name="role" data-value="{{member.role.value}}">
+                {% for role in g.role_enum %}
+                    {% if role != g.role_enum.Owner and role.value < g.role.value %}
+                    <option value="{{role.value}}" {% if role.value == member.role.value %}selected disabled{% endif %}>{{role.display_name}}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+            <input type="hidden" name="username" value="{{member.username}}">
+            <input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
+        </form>
+
         {% if member.is_invitee %}
         <div class="secondary-text">Invited</div>
         {% else %}
         <div class="secondary-text">Member</div>
+        {% endif %}
+
+        {% if g.role.value >= g.role_enum.Co_owner.value and g.role.value > member.role.value %}
+        <div class="buttons-1 flex-horizontal">
+            <button class="button-grey-small button-box-shadow" onclick="enableStateEditMode(this)">Alter role</button>
+            <form action="{{url_for('groups.route_members_remove', group_id=g.group_id)}}" method="POST">
+                <input type="hidden" name="username" value="{{member.username}}">
+                <input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
+                {% if member.is_invitee %}
+                <button type="submit" class="button-red-inverted button-small button-box-shadow" onclick="return confirm('Are you sure you cancel the invite for {{member.username}}?')">Cancel invite</button>
+                {% else %}
+                <button type="submit" class="button-red-inverted button-small button-box-shadow" onclick="return confirm('Are you sure you want to kick {{member.username}}?')">Kick member</button>
+                {% endif %}
+            </form>
+        </div>
+        <div class="buttons-2 flex-horizontal" style="display:none;">
+            <button class="button-green button-box-shadow" onclick="submitStateForm(this)">Submit</button>
+            <button class="button-red button-box-shadow" onclick="resetStateEditMode(this)">Cancel</button>
+        </div>
+        {% else %}
+        <div class="secondary-text">No actions available</div>
         {% endif %}
     </div>
     {% endfor %}
@@ -33,7 +66,7 @@
         <select name="role-stored">
             {% for role in g.role_enum %}
                 {% if role != g.role_enum.Owner %}
-                <option value="{{role.value}}">{{role.name|replace('_','-')}}</option>
+                <option value="{{role.value}}">{{role.display_name}}</option>
                 {% endif %}
             {% endfor %}
         </select>
@@ -48,7 +81,31 @@
     </form>
     {% endif %}
 </div>
+{% endblock %}
 
-
+{% block scripts %}
+<script>
+function enableStateEditMode(button){
+    const parent = button.closest(".member-item");
+    parent.querySelector(".state-field").style.display = "none";
+    parent.querySelector("form").style.display = "block";
+    parent.querySelector(".buttons-1").style.display = "none";
+    parent.querySelector(".buttons-2").style.display = "block";
+}
+function resetStateEditMode(button){
+    const parent = button.closest(".member-item");
+    parent.querySelector(".state-field").style.display = "block";
+    parent.querySelector("form").style.display = "none";
+    parent.querySelector(".buttons-1").style.display = "";
+    parent.querySelector(".buttons-2").style.display = "none";
+    const select = parent.querySelector("form select");
+    const optionToSelect = select.querySelector("option[value='" + select.dataset.value + "']");
+    optionToSelect.selected = true;
+}
+function submitStateForm(button){
+    const parent = button.closest(".member-item");
+    parent.querySelector("form").submit();
+}
+</script>
 
 {% endblock %}

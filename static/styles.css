@@ -452,8 +452,8 @@ header nav span a, header nav span span {
     box-shadow: 1px 1px 0px;
 }
 .button-small {
+    padding: 0.2em 0.5em;
     font-weight: normal;
-    font-size: 70%;
 }
 
 
@@ -517,12 +517,18 @@ header nav span a, header nav span span {
 }
 .member-item {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-columns: minmax(5em, 8fr) minmax(5em, 3fr) minmax(4em, 3fr) minmax(12em, 4fr);
     align-items: center;
     gap: 0.5em 1em;
-    line-height: 1.2;
+    line-height: 1.8;
     padding: 0.5em 0;
     border-bottom: 1px solid grey;
+}
+.member-item div {
+    max-height: 2em;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 /* TASK ROW LAYOUT */
