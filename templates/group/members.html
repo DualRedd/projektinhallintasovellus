@@ -86,6 +86,7 @@
 {% block scripts %}
 <script>
 function enableStateEditMode(button){
+    document.querySelectorAll(".member-item .buttons-1").forEach(element => resetStateEditMode(element));
     const parent = button.closest(".member-item");
     parent.querySelector(".state-field").style.display = "none";
     parent.querySelector("form").style.display = "block";

@@ -74,15 +74,13 @@
                     <button onclick="enableStateEditMode(this)" class="button-grey button-small">Change State</button>
                     {% endif %}
                     {% if g.role.value >= g.role_enum.Collaborator.value  %}
-                    <!--<a href="{{url_for('tasks.route_edit', group_id=g.group_id, project_id=g.project_id, task_id=task.id)}}">
-                    <button class="button-grey button-small">Edit Task</button></a>-->
                     <button class="button-grey button-small" onclick="activateEditMode(this)">Edit Task</button>
                     {% endif %}
                 </div>
                 
                 <div class="buttons-2" style="grid-column: 2 / 7;display:none">
-                    <button onclick="submitStateForm(this)" class="button-green button-small" style="font-size: 70%;">Confirm</button>
-                    <button onclick="resetStateEditMode(this)" class="button-red button-small" style="font-size: 70%;">Cancel</button>
+                    <button onclick="submitStateForm(this)" class="button-green button-small">Confirm</button>
+                    <button onclick="resetStateEditMode(this)" class="button-red button-small">Cancel</button>
                 </div>
             </div>
         </div>
@@ -201,6 +199,7 @@ document.querySelectorAll('.task-details button.detail-toggle').forEach(button =
   });
 });
 function enableStateEditMode(button){
+    document.querySelectorAll(".task-details .buttons-1").forEach(element => resetStateEditMode(element));
     const parent = button.closest(".task-details");
     parent.querySelector(".state-field").style.display = "none";
     parent.querySelector("form").style.display = "block";
