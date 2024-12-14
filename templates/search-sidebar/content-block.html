@@ -7,26 +7,50 @@
 <h3 style="margin:0.6em 0"><i class="fa fa-sort" style="padding-right: 0.4em;"></i>Sort</h3>
 
 <input type="hidden" name="search" value="1">
-<div class="draggable-container">
-    <div class="draggable-item" draggable="true">
-        <input type="hidden" name="sort" value="deadline">
-        <i class="fa fa-bars"></i>
-        <span>Deadline</span>
+<div class="sort-options-container">
+    <div class="flex-vertical">
+        <div>1.</div>
+        <div>2.</div>
+        <div>3.</div>
+        <div>4.</div>
+        {% if g.current_page == 'tasks' %}
+        <div>5.</div>
+        {% endif %}
     </div>
-    <div class="draggable-item" draggable="true">
-        <input type="hidden" name="sort" value="priority">
-        <i class="fa fa-bars"></i>
-        <span>Priority</span>
-    </div>
-    <div class="draggable-item" draggable="true">
-        <input type="hidden" name="sort" value="state">
-        <i class="fa fa-bars"></i>
-        <span>State</span>
-    </div>
-    <div class="draggable-item" draggable="true">
-        <input type="hidden" name="sort" value="title">
-        <i class="fa fa-bars"></i>
-        <span>Title</span>
+    <div class="draggable-container">
+        <div class="draggable-item" draggable="true">
+            <input type="hidden" name="sort" value="deadline">
+            <i class="fa fa-bars"></i>
+            <span>Deadline</span>
+        </div>
+        <div class="draggable-item" draggable="true">
+            <input type="hidden" name="sort" value="priority">
+            <i class="fa fa-bars"></i>
+            <span>Priority</span>
+        </div>
+        <div class="draggable-item" draggable="true">
+            <input type="hidden" name="sort" value="state">
+            <i class="fa fa-bars"></i>
+            <span>State</span>
+        </div>
+        {% if g.current_page == 'tasks' %}
+        <div class="draggable-item" draggable="true">
+            <input type="hidden" name="sort" value="project">
+            <i class="fa fa-bars"></i>
+            <span>Project title</span>
+        </div>
+        <div class="draggable-item" draggable="true">
+            <input type="hidden" name="sort" value="title">
+            <i class="fa fa-bars"></i>
+            <span>Task title</span>
+        </div>
+        {% else %}
+        <div class="draggable-item" draggable="true">
+            <input type="hidden" name="sort" value="title">
+            <i class="fa fa-bars"></i>
+            <span>Title</span>
+        </div>
+        {% endif %}
     </div>
 </div>
 
@@ -124,14 +148,14 @@
     <a href="{{url_for('projects.route_my_tasks', group_id=g.group_id, project_id=g.project_id)}}"><button type="button" onclick="saveSidebar()" class="button-red-inverted">Reset</button></a>
     {% elif g.current_page == 'project/all-tasks' %}
     <a href="{{url_for('projects.route_all_tasks', group_id=g.group_id, project_id=g.project_id)}}"><button type="button" onclick="saveSidebar()" class="button-red-inverted">Reset</button></a>
+    {% elif g.current_page == 'tasks' %}
+    <a href="{{url_for('groups.route_tasks', group_id=g.group_id)}}"><button type="button" onclick="saveSidebar()" class="button-red-inverted">Reset</button></a>
     {% endif %}
 </div>
-{% with messages = get_flashed_messages(with_categories=true) %}
-    {% for category, message in messages %}
-        {% if category == 'bad-search' %}
-            <p class="error" style="color:red"> {{message}} </p>
-        {% endif %}
-    {% endfor %}
-{% endwith %}
+{% for category, message in messages %}
+    {% if category == 'bad-search' %}
+        <p class="error" style="color:red"> {{message}} </p>
+    {% endif %}
+{% endfor %}
 
 </form>

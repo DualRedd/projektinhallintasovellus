@@ -45,16 +45,16 @@ def get_task_members(task_id : int) -> list[dict]:
                                     {"task_id":task_id}).fetchall()
     return [{"id":int(row.id), "username":row.username} for row in result]
 
-def get_tasks(project_id : int, states : list[str] = None, priorities : list[str] = None, members : list[int] = None,
+def get_tasks_project(project_id : int, states : list[str] = None, priorities : list[str] = None, members : list[int] = None,
               member_query_type : str = None, min_date : datetime = None, max_date : datetime = None):
     result = db.session.execute(text(f"SELECT T.id, T.title, T.description, \
-                                            T.state, T.priority, T.deadline, \
-                                            JSON_AGG ( \
-                                                JSON_BUILD_OBJECT( \
-                                                    'id', U.id, \
-                                                    'username', U.username \
-                                                ) \
-                                            ) AS members \
+                                                T.state, T.priority, T.deadline, \
+                                                JSON_AGG ( \
+                                                    JSON_BUILD_OBJECT( \
+                                                        'id', U.id, \
+                                                        'username', U.username \
+                                                    ) \
+                                                ) AS members \
                                     FROM tasks T \
                                     LEFT JOIN task_assignments TA ON T.id = TA.task_id \
                                     LEFT JOIN users U ON TA.user_id = U.id AND U.visible = TRUE \
@@ -70,6 +70,39 @@ def get_tasks(project_id : int, states : list[str] = None, priorities : list[str
                                     {'HAVING ARRAY_AGG(TA.user_id) @> :members AND ARRAY_AGG(TA.user_id) <@ :members' if member_query_type == 'exact' else ''} \
                                     ORDER BY T.id"),
                                     {"project_id":project_id, "min_date":min_date, "max_date":max_date,
+                                     "states":states, "priorities":priorities, "members":members}).fetchall()
+    result = query_res_to_dict(result)
+    for task in result:
+        task["state"] = task_state_enum.get_by_value(int(task["state"]))
+        task["priority"] = task_priority_enum.get_by_value(int(task["priority"]))
+    return result
+
+def get_tasks_group(group_id : int, states : list[str] = None, priorities : list[str] = None, members : list[int] = None,
+              member_query_type : str = None, min_date : datetime = None, max_date : datetime = None):
+    result = db.session.execute(text(f"SELECT T.id, P.id AS project_id, T.title, P.name AS project_title, \
+                                                T.description, T.state, T.priority, T.deadline, \
+                                                JSON_AGG ( \
+                                                    JSON_BUILD_OBJECT( \
+                                                        'id', U.id, \
+                                                        'username', U.username \
+                                                    ) \
+                                                ) AS members \
+                                    FROM tasks T \
+                                    LEFT JOIN projects P ON P.id = T.project_id \
+                                    LEFT JOIN task_assignments TA ON T.id = TA.task_id \
+                                    LEFT JOIN users U ON TA.user_id = U.id AND U.visible = TRUE \
+                                    WHERE P.group_id = :group_id \
+                                        AND T.visible = TRUE \
+                                        {'AND T.deadline >= :min_date' if min_date else ''} \
+                                        {'AND T.deadline <= :max_date' if max_date else ''} \
+                                        {'AND T.state = ANY(:states)' if states is not None else ''} \
+                                        {'AND T.priority = ANY(:priorities)' if priorities is not None else ''} \
+                                    GROUP BY T.id, P.id \
+                                    {'HAVING ARRAY_AGG(TA.user_id) && :members' if member_query_type == 'any' else ''} \
+                                    {'HAVING ARRAY_AGG(TA.user_id) @> :members' if member_query_type == 'all' else ''} \
+                                    {'HAVING ARRAY_AGG(TA.user_id) @> :members AND ARRAY_AGG(TA.user_id) <@ :members' if member_query_type == 'exact' else ''} \
+                                    ORDER BY T.id"),
+                                    {"group_id":group_id, "min_date":min_date, "max_date":max_date,
                                      "states":states, "priorities":priorities, "members":members}).fetchall()
     result = query_res_to_dict(result)
     for task in result:

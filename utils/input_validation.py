@@ -167,6 +167,22 @@ def validate_project_task_search_form(sorting : list[str], min_date_str : str, m
     for sort_str in sorting:
         if sort_str not in ["deadline", "priority", "state", "title"]:
             return ValidationResult(False, "Invalid sort options!")
+    if (res := validate_common_search(min_date_str, max_date_str, states, priorities, members, member_query_type)) is not None:
+        return res
+    return ValidationResult(True)
+
+def validate_group_task_search_form(sorting : list[str], min_date_str : str, max_date_str : str, states : list[str],
+                                      priorities : list[str], members : list[str], member_query_type : str):
+    if len(sorting) != 5:
+        return ValidationResult(False, "Invalid sort options!")
+    for sort_str in sorting:
+        if sort_str not in ["deadline", "priority", "state", "project", "title"]:
+            return ValidationResult(False, "Invalid sort options!")
+    if (res := validate_common_search(min_date_str, max_date_str, states, priorities, members, member_query_type)) is not None:
+        return res
+    return ValidationResult(True)
+
+def validate_common_search(min_date_str : str, max_date_str : str, states : list[str], priorities : list[str], members : list[str], member_query_type : str):
     try:
         if min_date_str != "": datetime.strptime(min_date_str, '%Y-%m-%d')
     except ValueError:
@@ -193,13 +209,11 @@ def validate_project_task_search_form(sorting : list[str], min_date_str : str, m
         try:
             int(member_str)
             # don't check each individual member, that would be a lot of queries in the worst case
-            # non-existing members should not be searched for anyway when using the ui
         except ValueError:
             return ValidationResult(False, "Invalid state provided!")
     if member_query_type not in ["any", "all", "exact"]:
         return ValidationResult(False, "Invalid member filter type!")
     return ValidationResult(True)
-
 
 def validate_empty_form():
     if not check_csrf_token():

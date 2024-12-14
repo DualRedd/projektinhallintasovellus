@@ -21,6 +21,8 @@ def get_task_sorting_key(task, sorting : list[str]):
             key.append(task["state"].value)
         elif sort_str == "title":
             key.append(task["title"])
+        elif sort_str == "project":
+            key.append(task["project_title"])
         else:   
             raise ValueError(f"invalid sort string: '{sort_str}'")
     return key

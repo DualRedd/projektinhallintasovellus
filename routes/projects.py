@@ -6,7 +6,7 @@ from datetime import datetime
 from services.groups_service import get_group_role, get_group_members, get_group_details
 from services.projects_service import create_project, update_project, get_project_details, get_projects
 from services.projects_service import update_project_archive_state, delete_soft_project
-from services.tasks_service import get_tasks
+from services.tasks_service import get_tasks_project
 from utils.permissions import permissions
 from utils.tools import remove_line_breaks, get_task_sorting_key
 import utils.input_validation as input
@@ -99,12 +99,12 @@ def get_task_page() -> bool:
             min_date = datetime.strptime(min_date_str, '%Y-%m-%d') if min_date_str != "" else None
             max_date = datetime.strptime(max_date_str, '%Y-%m-%d') if max_date_str != "" else None
             if g.current_page == 'project/my-tasks' and member_query_type == 'exact': members.append(g.user_id)
-            g.tasks = get_tasks(g.project_id, states, priorities, list(map(int,members)), member_query_type, min_date, max_date)
+            g.tasks = get_tasks_project(g.project_id, states, priorities, list(map(int,members)), member_query_type, min_date, max_date)
         else:
             flash(result.error, "bad-search")
             return False
     else:
-        g.tasks = get_tasks(g.project_id)
+        g.tasks = get_tasks_project(g.project_id)
     g.tasks.sort(key=lambda task: get_task_sorting_key(task, sorting))
     return True
 

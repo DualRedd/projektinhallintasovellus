@@ -42,7 +42,7 @@
     </header>
     
     <div class="page-container">
-        {% if g.sidebar %}{% include "primary-sidebar/content.html" %}{% endif %}
+        {% if g.sidebar %}{% include "primary-sidebar/content-block.html" %}{% endif %}
         <main class="main">
             <div class="content">
                 {% block content %}{% endblock %}
@@ -73,7 +73,7 @@
             }
         });
     </script>
-    {% if g.sidebar %}{% include "primary-sidebar/scripts.html" %}{% endif %}
+    {% if g.sidebar %}{% include "primary-sidebar/scripts-block.html" %}{% endif %}
     {% block scripts %}{% endblock %}
 </body>
 

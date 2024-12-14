@@ -1,15 +1,17 @@
 # standard imports
 from flask import Blueprint
 from flask import session, request, render_template, redirect, flash, url_for, g
+from datetime import datetime
 # Internal services
 from services.groups_service import create_group, create_group_role
 from services.groups_service import get_group_details, get_group_members, get_group_role
 from services.groups_service import update_group, update_group_role
 from services.groups_service import delete_group, delete_group_role
 from services.projects_service import get_projects
+from services.tasks_service import get_tasks_group
 from services.auth_service import get_user
 from utils.permissions import permissions
-from utils.tools import remove_line_breaks
+from utils.tools import remove_line_breaks, get_task_sorting_key
 import utils.input_validation as input
 # Enums
 from enums.enums import role_enum
@@ -87,7 +89,31 @@ def route_projects(group_id):
 @permissions(require_login=True, require_min_role=role_enum.Observer)
 def route_tasks(group_id):
     g.current_page = 'tasks'
-    return render_template("error.html")
+    g.sidebar_right = 1
+    g.group_members = get_group_members(g.group_id)
+    sorting = ["deadline", "priority", "state", "project", "title"]
+
+    if request.args.get("search", "0") == "1":
+        sorting = request.args.getlist("sort")
+        min_date_str = request.args.get("date-min", "")
+        max_date_str = request.args.get("date-max", "")
+        states = request.args.getlist("state")
+        priorities = request.args.getlist("priority")
+        members = request.args.getlist("member")
+        member_query_type = request.args.get('member-type')
+        result = input.validate_group_task_search_form(sorting, min_date_str, max_date_str, states, priorities, members, member_query_type)
+        if result.valid:
+            min_date = datetime.strptime(min_date_str, '%Y-%m-%d') if min_date_str != "" else None
+            max_date = datetime.strptime(max_date_str, '%Y-%m-%d') if max_date_str != "" else None
+            if g.current_page == 'project/my-tasks' and member_query_type == 'exact': members.append(g.user_id)
+            g.tasks = get_tasks_group(g.group_id, states, priorities, list(map(int,members)), member_query_type, min_date, max_date)
+        else:
+            flash(result.error, "bad-search")
+            return redirect(url_for("groups.route_tasks", group_id=g.group_id))
+    else:
+        g.tasks = get_tasks_group(group_id)
+    g.tasks.sort(key=lambda task: get_task_sorting_key(task, sorting))
+    return render_template("group/all-tasks.html")
 
 #--------------#
 # MEMBERS PAGE #
