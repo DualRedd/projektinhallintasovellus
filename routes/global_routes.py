@@ -61,3 +61,7 @@ def is_user_in_task(members : list[dict], username : str):
 @app.template_filter('format_datetime')
 def format_datetime(value, format='%d.%m.%Y %H:%M'):
     return value.strftime(format) if value is not None else "None"
+
+@app.template_filter('user_ids')
+def get_user_ids_from_dict(users):
+    return [user["id"] for user in users]

@@ -4,18 +4,27 @@ from app import db
 from utils.tools import query_res_to_dict
 from enums.enums import task_state_enum, task_priority_enum
 
-def create_task(user_id : int, project_id : int, title : str, desc : str, priority : task_priority_enum, deadline : datetime) -> int:
+def create_task(project_id : int, title : str, desc : str, priority : task_priority_enum, deadline : datetime) -> int:
     if deadline is not None: deadline = deadline.strftime('%Y-%m-%d %H:%M:%S')
-    task_id = db.session.execute(text("INSERT INTO tasks (created_by_id, project_id, title, description, priority, deadline) \
-                                    VALUES (:user_id, :project_id, :title, :desc, :priority, :deadline) RETURNING id"),
-                                    {"user_id":user_id, "project_id":project_id, "project_name":project_id, "title":title, "desc":desc,
+    task_id = db.session.execute(text("INSERT INTO tasks (project_id, title, description, priority, deadline) \
+                                    VALUES (:project_id, :title, :desc, :priority, :deadline) RETURNING id"),
+                                    {"project_id":project_id, "title":title, "desc":desc,
                                     "priority":priority.value, "deadline":deadline}).fetchone()[0]
     db.session.commit()
     return task_id
 
-def create_task_assignment(task_id : int, user_id : int):
-    task_id = db.session.execute(text("INSERT INTO task_assignments (task_id, user_id) VALUES (:task_id, :user_id) RETURNING id"),
-                                    {"task_id":task_id, "user_id":user_id}).fetchone()[0]
+def update_task(task_id : int, title : str, desc : str, priority : task_priority_enum, deadline : datetime):
+    if deadline is not None: deadline = deadline.strftime('%Y-%m-%d %H:%M:%S')
+    db.session.execute(text("UPDATE tasks SET title = :title, description = :desc, priority = :priority,  \
+                            deadline = :deadline WHERE id = :task_id"),
+                            {"task_id":task_id, "title":title, "desc":desc, "priority":priority.value, "deadline":deadline})
+    db.session.commit()
+
+def set_task_assignments(task_id : int, user_ids : list[int]):
+    db.session.execute(text("DELETE FROM task_assignments WHERE task_id = :task_id"), {"task_id":task_id})
+    for user_id in user_ids:
+        db.session.execute(text("INSERT INTO task_assignments (task_id, user_id) VALUES (:task_id, :user_id)"),
+                                {"task_id":task_id, "user_id":user_id})
     db.session.commit()
 
 def exists_task_assignment(task_id : int, user_id : int) -> bool:

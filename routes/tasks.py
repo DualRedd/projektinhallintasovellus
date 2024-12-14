@@ -5,7 +5,7 @@ from datetime import datetime
 # Internal services
 from services.groups_service import get_group_role, get_group_members
 from services.projects_service import get_projects, get_project_details
-from services.tasks_service import create_task, create_task_assignment, update_task_state
+from services.tasks_service import create_task, set_task_assignments, update_task_state, update_task
 from utils.permissions import permissions, get_page_permission_response
 from utils.tools import remove_line_breaks
 import utils.input_validation as input
@@ -32,29 +32,42 @@ def get_task_data():
 @tasks_bp.route("/group/<int:group_id>/project/<int:project_id>/tasks/new", methods=["POST"])
 @permissions(require_login=True, require_min_role=role_enum.Collaborator)
 def route_new(group_id, project_id):
-    task_name = request.form["name-stored"]
+    task_name = request.form["title-stored"]
     task_desc = remove_line_breaks(request.form["desc-stored"])
     task_priority = request.form["priority-stored"]
     task_date = request.form["date-stored"]
     task_time = request.form["time-stored"]
     task_members = request.form.getlist("members-stored[]")
-    result = input.validate_create_task_form(task_name, task_desc, task_priority, task_date, task_time, task_members)
+    result = input.validate_task_data_form(task_name, task_desc, task_priority, task_date, task_time, task_members)
     if result.valid:
         task_priority = task_priority_enum.get_by_value(int(task_priority))
         task_deadline = datetime.strptime(f"{task_date} {task_time}", '%Y-%m-%d %H:%M') if task_date != '' or task_time != '' else None
-        task_id = create_task(g.user_id, g.project_id, task_name, task_desc, task_priority, task_deadline)
-        for member in task_members:
-            create_task_assignment(task_id, int(member))
+        task_id = create_task(g.project_id, task_name, task_desc, task_priority, task_deadline)
+        set_task_assignments(task_id, list(map(int,task_members)))
     else:
         flash(result.error, "bad-form")
-        session["bad-form-stored"] = 1 # flag to open form after redirect
+        session["bad-form-stored"] = -1 # flag to open correct form after redirect
     return redirect(request.referrer)
 
-# TODO:
-@tasks_bp.route("/group/<int:group_id>/project/<int:project_id>/task/<int:task_id>/edit", methods=["GET", "POST"])
+@tasks_bp.route("/group/<int:group_id>/project/<int:project_id>/task/<int:task_id>/edit", methods=["POST"])
 @permissions(require_login=True, require_min_role=role_enum.Collaborator)
 def route_edit(group_id, project_id, task_id):
-    return render_template("error.html")
+    task_name = request.form["title-stored"]
+    task_desc = remove_line_breaks(request.form["desc-stored"])
+    task_priority = request.form["priority-stored"]
+    task_date = request.form["date-stored"]
+    task_time = request.form["time-stored"]
+    task_members = request.form.getlist("members-stored[]")
+    result = input.validate_task_data_form(task_name, task_desc, task_priority, task_date, task_time, task_members)
+    if result.valid:
+        task_priority = task_priority_enum.get_by_value(int(task_priority))
+        task_deadline = datetime.strptime(f"{task_date} {task_time}", '%Y-%m-%d %H:%M') if task_date != '' or task_time != '' else None
+        update_task(g.task_id, task_name, task_desc, task_priority, task_deadline)
+        set_task_assignments(task_id, list(map(int,task_members)))
+    else:
+        flash(result.error, "bad-form")
+        session["bad-form-stored"] = g.task_id # flag to open correct form after redirect
+    return redirect(request.referrer or url_for("projects.route_my_tasks", group_id=g.group_id, project_id=g.project_id))
 
 @tasks_bp.route("/group/<int:group_id>/project/<int:project_id>/task/<int:task_id>/edit-state", methods=["POST"])
 @permissions(require_login=True, require_min_role=role_enum.Observer)
@@ -65,5 +78,5 @@ def route_edit_state(group_id, project_id, task_id):
     if state_str is not None:
         result = input.validate_task_state_form(state_str)
         if result.valid:
-            update_task_state(task_id, task_state_enum.get_by_value(int(state_str)))
+            update_task_state(g.task_id, task_state_enum.get_by_value(int(state_str)))
     return redirect(request.referrer or url_for("projects.route_my_tasks", group_id=g.group_id, project_id=g.project_id))

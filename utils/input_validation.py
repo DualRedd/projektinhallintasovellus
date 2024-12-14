@@ -84,7 +84,7 @@ def validate_create_project_form(project_name : str, project_desc : str):
         return res
     return ValidationResult(True)
 
-def validate_create_task_form(task_name : str, task_desc : str, task_priority_str : str, task_date : str, task_time : str, task_members : list[str]):
+def validate_task_data_form(task_name : str, task_desc : str, task_priority_str : str, task_date : str, task_time : str, task_members : list[str]):
     if not check_csrf_token():
         return ValidationResult(False, "Invalid csrf token!")
     if not (res := validate_string_size(task_name, "task_name", "Task name")).valid:

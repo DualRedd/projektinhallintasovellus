@@ -1,4 +1,5 @@
 {% extends "layout.html" %}
+{% set messages = get_flashed_messages(with_categories=true) %}
 
 {% block content %}
 {% include "project/header.html" %}
@@ -33,7 +34,9 @@
             <div>Assigned Members</div>
         </div>
         {% for task in g.tasks %}
-        <div class="task-item">
+        <div class="task-item" id="task-{{task.id}}" data-title="{{task.title}}" data-desc="{{task.description}}" data-priority="{{task.priority.value}}" data-date="{{task.deadline|format_datetime('%Y-%m-%d')}}"
+            data-time="{{task.deadline|format_datetime('%H:%M')}}" data-state="{{task.state.value}}" data-edit="{{url_for('tasks.route_edit', group_id=g.group_id, project_id=g.project_id, task_id=task.id)}}"
+            data-members="{{task.members|user_ids}}">
             <div class="task-summary">
                 <button class="detail-toggle"><i class="fa fa-fw fa-caret-right" style="font-size: 1.5em;"></i></button>
                 <div>{{task.title}}</div>
@@ -64,15 +67,16 @@
                 <div>{% for user in task.members %}{{user.username}}{% if not loop.last %}, {% endif %}{% endfor %}</div>
                 {% else %}<div>None</div>{% endif %}
 
-                <div class="secondary-text" style="grid-column: 2 / 6;">{{task["description"]}}</div>
+                <div class="secondary-text" style="grid-column: 2 / 6;">{{task.description}}</div>
 
                 <div class="buttons-1" style="grid-column: 2 / 7;">
                     {% if g.role.value >= g.role_enum.Collaborator.value or task.members|user_in_task(g.username) %}
                     <button onclick="enableStateEditMode(this)" class="button-grey button-small">Change State</button>
                     {% endif %}
                     {% if g.role.value >= g.role_enum.Collaborator.value  %}
-                    <a href="{{url_for('tasks.route_edit', group_id=g.group_id, project_id=g.project_id, task_id=task.id)}}">
-                    <button class="button-grey button-small">Edit Task</button></a>
+                    <!--<a href="{{url_for('tasks.route_edit', group_id=g.group_id, project_id=g.project_id, task_id=task.id)}}">
+                    <button class="button-grey button-small">Edit Task</button></a>-->
+                    <button class="button-grey button-small" onclick="activateEditMode(this)">Edit Task</button>
                     {% endif %}
                 </div>
                 
@@ -90,14 +94,14 @@
 </div>
 
 <div id="new-task-view" style="display: none;">
-    <h1>Create New Task</h1>
     <form action="{{url_for('tasks.route_new', group_id=g.group_id, project_id=g.project_id)}}" method="POST">
+        <h1>Create New Task</h1>
         <p>Task name *</p>
-        <input type="text" name="name-stored" maxlength="{{MAX_INPUT_SIZES['task_name']}}" required> <br>
+        <input type="text" name="title-stored" maxlength="{{MAX_INPUT_SIZES['task_name']}}" required> <br>
         <p>Task details</p>
         <textarea style="width: 100%; height: 10em;" name="desc-stored" rows="10" cols="50" maxlength="{{MAX_INPUT_SIZES['task_description']}}"></textarea>
         <br> <br>
-        <label for="priority-stored">Priority *</label>
+        <label>Priority *</label>
         <select name="priority-stored" required>
         {% for priority in g.priorities %}
             <option value="{{priority.value}}">{{priority.display_name}}</option>
@@ -105,30 +109,69 @@
         </select>
         <br><br>
         <label>Deadline:</label>
-        <input id="date" type="date" name="date-stored" min="{{g.date}}">
-        <input id="time" type="time" name="time-stored">
-        <button type="button" onclick="clear_selected_datetime()" class="button-grey-small button-box-shadow">Clear</button>
+        <input type="date" name="date-stored" min="{{g.date}}">
+        <input type="time" name="time-stored">
+        <button type="button" onclick="clearSelectedDatetime()" class="button-grey-small button-box-shadow">Clear</button>
         <br><br>
         <label>Assign Members:</label>
-        <select id="member-select">
+        <select class="member-select">
             {% for member in g.group_members %}
             <option value="{{member.id}}">{{member.username}}</option>
             {% endfor %}
         </select>
-        <button type="button" onclick="add_member()" class="button-grey-small button-box-shadow">Add</button>
+        <button type="button" onclick="add_member(0)" class="button-grey-small button-box-shadow">Add</button>
         <br><br>
-        <div id="member-view"></div>
+        <div class="member-view"></div>
         <br>
         <input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
         <button type="submit" class="button-green" onclick="saveSidebar()">Create</button>
-        <button type="button" class="button-red" onclick="deactivateCreateForm()">Cancel</button>
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% for category, message in messages %}
-                {% if category == 'bad-form' %}
-                    <p class="error" style="color:red"> {{message}} </p>
-                {% endif %}
+        <button type="button" class="button-red" onclick="deactivateForms()">Cancel</button>
+        {% for category, message in messages %}
+            {% if category == 'bad-form' %}
+                <p class="error" style="color:red"> {{message}} </p>
+            {% endif %}
+        {% endfor %}
+    </form>
+</div>
+
+<div id="edit-task-view" style="display: none;">
+    <form action="" method="POST">
+        <h1>Edit Task</h1>
+        <p>Task name *</p>
+        <input type="text" name="title-stored" maxlength="{{MAX_INPUT_SIZES['task_name']}}" required> <br>
+        <p>Task details</p>
+        <textarea style="width: 100%; height: 10em;" name="desc-stored" rows="10" cols="50" maxlength="{{MAX_INPUT_SIZES['task_description']}}"></textarea>
+        <br> <br>
+        <label>Priority *</label>
+        <select name="priority-stored" required>
+        {% for priority in g.priorities %}
+            <option value="{{priority.value}}">{{priority.display_name}}</option>
+        {% endfor %}
+        </select>
+        <br><br>
+        <label>Deadline:</label>
+        <input type="date" name="date-stored" min="{{g.date}}">
+        <input type="time" name="time-stored">
+        <button type="button" onclick="clearSelectedDatetime()" class="button-grey-small button-box-shadow">Clear</button>
+        <br><br>
+        <label>Assign Members:</label>
+        <select class="member-select">
+            {% for member in g.group_members %}
+            <option value="{{member.id}}">{{member.username}}</option>
             {% endfor %}
-        {% endwith %}
+        </select>
+        <button type="button" onclick="add_member(1)" class="button-grey-small button-box-shadow">Add</button>
+        <br><br>
+        <div class="member-view"></div>
+        <br>
+        <input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
+        <button type="submit" class="button-green" onclick="saveSidebar()">Submit</button>
+        <button type="button" class="button-red" onclick="deactivateForms()">Cancel</button>
+        {% for category, message in messages %}
+            {% if category == 'bad-form' %}
+                <p class="error" style="color:red"> {{message}} </p>
+            {% endif %}
+        {% endfor %}
     </form>
 </div>
 
@@ -158,7 +201,6 @@ document.querySelectorAll('.task-details button.detail-toggle').forEach(button =
   });
 });
 function enableStateEditMode(button){
-    console.log("HELLO");
     const parent = button.closest(".task-details");
     parent.querySelector(".state-field").style.display = "none";
     parent.querySelector("form").style.display = "block";
@@ -183,10 +225,9 @@ function submitStateForm(button){
 
 
 const id_to_name = {};
-const memberSelect = document.getElementById("member-select");
-const memberView = document.getElementById("member-view");
-for(let i = 0; i < memberSelect.children.length; i++) {
-    let option = memberSelect.children[i];
+const memberSelects = document.querySelectorAll(".member-select");
+for(let i = 0; i < memberSelects[0].children.length; i++) {
+    let option = memberSelects[0].children[i];
     id_to_name[option.value] = option.innerHTML;
 }
 let added = new Set();
@@ -194,62 +235,93 @@ if ("members-stored[]" in stored_data){
     stored_data["members-stored[]"].forEach(val => {
         if(val in id_to_name) added.add(val)
     });
-    refresh_member_view();
+    refresh_member_views();
 }
-function add_member(){
-    let id = memberSelect.value;
+
+function add_member(formId){
+    let id = memberSelects[formId].value;
     added.add(id)
-    refresh_member_view();
+    refresh_member_views();
 }
 function remove_member(button){
     let id = button.value;
     added.delete(id);
-    refresh_member_view();
+    refresh_member_views();
 }
-function refresh_member_view(){
-    memberView.innerHTML = "";
-    added.forEach(id => {
-        let input = document.createElement("input");
-        input.type = "hidden";
-        input.name = "members-stored[]";
-        input.value = id;
-        memberView.appendChild(input);
-        let button = document.createElement("button");
-        button.type = "button";
-        button.value = id;
-        button.addEventListener('click', () =>  remove_member(button));
-        button.classList.add("selected-member");
-        button.innerHTML = id_to_name[id] + "<span>❌</span>";
-        memberView.appendChild(button);
-    });
-    for (let i = 0; i < memberSelect.children.length; i++) {
-        let option = memberSelect.children[i];
-        option.disabled = added.has(option.value);
+function refresh_member_views(){
+    views = document.querySelectorAll(".member-view");
+    for (let j = 0; j < 2; j++) {
+        views[j].innerHTML = "";
+        added.forEach(id => {
+            let input = document.createElement("input");
+            input.type = "hidden";
+            input.name = "members-stored[]";
+            input.value = id;
+            views[j].appendChild(input);
+            let button = document.createElement("button");
+            button.type = "button";
+            button.value = id;
+            button.addEventListener('click', () =>  remove_member(button));
+            button.classList.add("selected-member");
+            button.innerHTML = id_to_name[id] + "<span>❌</span>";
+            views[j].appendChild(button);
+        });
+        for (let i = 0; i < memberSelects[j].children.length; i++) {
+            const option = memberSelects[j].children[i];
+            option.disabled = added.has(option.value);
+        }
     }
 }
-function clear_selected_datetime(){
-    document.getElementById("date").value = "";
-    document.getElementById("time").value = "";
+function clearSelectedDatetime(){
+    document.querySelectorAll("input[name='date-stored']").forEach(el => el.value = "");
+    document.querySelectorAll("input[name='time-stored']").forEach(el => el.value = "");
 }
 
 const taskView = document.getElementById("task-view");
 const newTaskView = document.getElementById("new-task-view");
+const editTaskView = document.getElementById("edit-task-view");
 function activateCreateForm(reset = true){
     if(reset){
         newTaskView.querySelector("form").reset();
         added = new Set();
-        refresh_member_view();
+        refresh_member_views();
     }
     newTaskView.style.display = "block";
     taskView.style.display = "none";
 }
-function deactivateCreateForm(){
+function deactivateForms(){
     newTaskView.style.display = "none";
+    editTaskView.style.display = "none";
     taskView.style.display = "block";
+    remove_errors();
+}
+
+function activateEditMode(button, reset=true){
+    const task = button.closest(".task-item");
+    const form = editTaskView.querySelector("form");
+    form.action = task.dataset.edit;
+    if(reset){
+        form.querySelector("input[name='title-stored']").value = task.dataset.title;
+        form.querySelector("textarea[name='desc-stored']").value = task.dataset.desc;
+        form.querySelector("select[name='priority-stored']").value = task.dataset.priority;
+        form.querySelector("input[name='date-stored']").value = task.dataset.date;
+        form.querySelector("input[name='time-stored']").value = task.dataset.time;
+        added.clear();
+        JSON.parse(task.dataset.members).forEach(val => {
+            val = String(val);
+            if(val in id_to_name) added.add(val)
+        });
+        refresh_member_views();
+    }
+    editTaskView.style.display = "block";
+    taskView.style.display = "none";
 }
 {% if "bad-form-stored" in stored_data %}
-activateCreateForm(false);
+    {% if stored_data["bad-form-stored"] == -1 %}
+        activateCreateForm(false);
+    {% else %}
+        activateEditMode(document.querySelector("#task-{{stored_data['bad-form-stored']}}"), false);
+    {% endif %}
 {% endif %}
-
 </script>
 {% endblock %}

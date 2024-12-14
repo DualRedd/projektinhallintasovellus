@@ -41,7 +41,6 @@ CREATE TABLE projects (
 
 CREATE TABLE tasks (
     id SERIAL PRIMARY KEY,
-    created_by_id INTEGER REFERENCES users,
     project_id INTEGER REFERENCES projects,
     title TEXT,
     description TEXT,
