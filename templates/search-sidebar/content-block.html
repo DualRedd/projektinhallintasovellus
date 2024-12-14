@@ -119,11 +119,11 @@
 </div>
 
 <div style="margin: 0.5em;">
-    <button type="button" onclick="submitSearchForm()" class="button-grey">Apply</button>
+    <button type="submit" onclick="saveSidebar()" class="button-grey">Apply</button>
     {% if g.current_page == 'project/my-tasks' %}
-    <a href="{{url_for('projects.route_my_tasks', group_id=g.group_id, project_id=g.project_id)}}"><button type="button" onclick="saveUIState()" class="button-red-inverted">Reset</button></a>
+    <a href="{{url_for('projects.route_my_tasks', group_id=g.group_id, project_id=g.project_id)}}"><button type="button" onclick="saveSidebar()" class="button-red-inverted">Reset</button></a>
     {% elif g.current_page == 'project/all-tasks' %}
-    <a href="{{url_for('projects.route_all_tasks', group_id=g.group_id, project_id=g.project_id)}}"><button type="button" onclick="saveUIState()" class="button-red-inverted">Reset</button></a>
+    <a href="{{url_for('projects.route_all_tasks', group_id=g.group_id, project_id=g.project_id)}}"><button type="button" onclick="saveSidebar()" class="button-red-inverted">Reset</button></a>
     {% endif %}
 </div>
 {% with messages = get_flashed_messages(with_categories=true) %}

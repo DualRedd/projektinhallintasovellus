@@ -6,9 +6,6 @@ function toggleRightSidebar(instant = false){
     sidebar.classList.toggle("sidebar-open");
     if(instant) setTimeout(() => sidebar.classList.add("sidebar-animate"), 1);
 }
-{% if request.args.get("search", "0") == "1" %}
-toggleRightSidebar(true);
-{% endif %}
 
 const container = document.querySelector('.draggable-container');
 container.addEventListener('dragstart', element => {
@@ -53,29 +50,28 @@ function orderDragElements(order){
     }
 }
 
-const searchForm = document.getElementById("search-form");
-function saveUIState(){
-    let dropdownState = [];
-    searchForm.querySelectorAll(".dropdown").forEach(element => {
-        dropdownState.push(element.querySelector(".dropdown-item-container").style.display);
-    });
-    sessionStorage.setItem("dropdownState", JSON.stringify(dropdownState));
-}
-function submitSearchForm(){
-    saveUIState();
-    searchForm.submit();
-}
-
 orderDragElements({{request.args.getlist("sort")|tojson}});
 const dropdownState = JSON.parse(sessionStorage.getItem("dropdownState"));
 if(dropdownState !== null){
     sessionStorage.removeItem("dropdownState")
-    dropdowns = searchForm.querySelectorAll(".dropdown");
+    dropdowns = document.getElementById("search-form").querySelectorAll(".dropdown");
     for(let i = 0; i < dropdowns.length; i++){
         if(dropdownState[i] == 'block'){
             toggleDropdown(dropdowns[i].querySelector("button"));
         }
     }
 }
+
+function saveSidebar(){
+    let dropdownState = [];
+    document.getElementById("search-form").querySelectorAll(".dropdown").forEach(element => {
+        dropdownState.push(element.querySelector(".dropdown-item-container").style.display);
+    });
+    sessionStorage.setItem("dropdownState", JSON.stringify(dropdownState));
+    sessionStorage.setItem("sidebarState", document.querySelector(".sidebar-right-container").classList.contains("sidebar-open"));
+}
+let sidebarState = sessionStorage.getItem("sidebarState");
+sessionStorage.removeItem("sidebarState");
+if(sidebarState === 'true') toggleRightSidebar(true);
 
 </script>

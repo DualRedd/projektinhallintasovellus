@@ -29,17 +29,9 @@ def get_task_data():
     if "task_id" in request.view_args:
         g.task_id = request.view_args["task_id"]
 
-@tasks_bp.route("/group/<int:group_id>/project/<int:project_id>/tasks/new", methods=["GET", "POST"])
+@tasks_bp.route("/group/<int:group_id>/project/<int:project_id>/tasks/new", methods=["POST"])
 @permissions(require_login=True, require_min_role=role_enum.Collaborator)
 def route_new(group_id, project_id):
-    referrer = request.args.get('referrer', 'my')
-    if request.method == "GET":
-        g.date = datetime.now().strftime('%Y-%m-%d')
-        g.time = datetime.now().strftime('%H:%M')
-        g.members = get_group_members(g.group_id)
-        g.current_page = 'project/my-tasks' if referrer == 'my' else 'project/all-tasks'
-        return render_template("project/new-task.html")
-    # else POST-request
     task_name = request.form["name-stored"]
     task_desc = remove_line_breaks(request.form["desc-stored"])
     task_priority = request.form["priority-stored"]
@@ -53,13 +45,10 @@ def route_new(group_id, project_id):
         task_id = create_task(g.user_id, g.project_id, task_name, task_desc, task_priority, task_deadline)
         for member in task_members:
             create_task_assignment(task_id, int(member))
-        if referrer == 'my':
-            return redirect(url_for("projects.route_my_tasks", group_id=g.group_id, project_id=g.project_id))
-        else:
-            return redirect(url_for("projects.route_all_tasks", group_id=g.group_id, project_id=g.project_id))
     else:
         flash(result.error, "bad-form")
-        return redirect(url_for("tasks.route_new", group_id=g.group_id, project_id=g.project_id, referrer=referrer))
+        session["bad-form-stored"] = 1 # flag to open form after redirect
+    return redirect(request.referrer)
 
 # TODO:
 @tasks_bp.route("/group/<int:group_id>/project/<int:project_id>/task/<int:task_id>/edit", methods=["GET", "POST"])

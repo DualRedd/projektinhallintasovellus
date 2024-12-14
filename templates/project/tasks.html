@@ -3,91 +3,135 @@
 {% block content %}
 {% include "project/header.html" %}
 
-<div class="header-flex">
-    {% if g.current_page == "project/my-tasks" %}
-    <h1>My tasks</h1>
-    {% else %}
-    <h1>All tasks</h1>
-    {% endif %}
-    <div class="flex-horizontal">
-        {% if g.role.value >= g.role_enum.Collaborator.value %}
-        <a href="{{url_for('tasks.route_new', group_id=g.group_id, project_id=g.project_id, referrer='my')}}">
-            <button class="button-grey button-box-shadow no-wrap">
+<div id="task-view">
+    <div class="header-flex">
+        {% if g.current_page == "project/my-tasks" %}
+        <h1>My tasks</h1>
+        {% else %}
+        <h1>All tasks</h1>
+        {% endif %}
+        <div class="flex-horizontal">
+            {% if g.role.value >= g.role_enum.Collaborator.value %}
+            <button onclick="activateCreateForm()" class="button-grey button-box-shadow no-wrap">
                 <i class="fa fa-plus" style="margin-right:0.5em;"></i>New Task
             </button>
-        </a>
+            {% endif %}
+            <button class="button-grey button-box-shadow no-wrap" onclick="toggleRightSidebar()">
+                <i class="fa fa-search" style="margin-right:0.5em;"></i>Search
+            </button>
+        </div>
+    </div>
+    <hr style="margin-top:0;">
+
+    <div class="tasks-container">
+        <div class="task-item table-title">
+            <div></div>
+            <div>Title</div>
+            <div>Priority</div>
+            <div>Deadline</div>
+            <div>State</div>
+            <div>Assigned Members</div>
+        </div>
+        {% for task in g.tasks %}
+        <div class="task-item">
+            <div class="task-summary">
+                <button class="detail-toggle"><i class="fa fa-fw fa-caret-right" style="font-size: 1.5em;"></i></button>
+                <div>{{task.title}}</div>
+                <div>{{task.priority.display_name}}</div>
+                <div>{{task.deadline|format_datetime}}</div>
+                <div>{{task.state.display_name}}</div>
+                {% if task.members %}
+                <div>{% for user in task.members %}{{user.username}}{% if not loop.last %}, {% endif %}{% endfor %}</div>
+                {% else %}<div>None</div>{% endif %}
+            </div>
+            <div class="task-details">
+                <button onclick="resetStateEditMode(this)" class="detail-toggle"><i class="fa fa-fw fa-caret-down" style="font-size: 1.5em;"></i></button>
+                <div>{{task.title}}</div>
+                <div>{{task.priority.display_name}}</div>
+                <div>{{task.deadline|format_datetime}}</div>
+
+                <div class="state-field">{{task.state.display_name}}</div>
+                <form action="{{url_for('tasks.route_edit_state', group_id=g.group_id, project_id=g.project_id, task_id=task.id)}}" method="POST" style="display: none;">
+                    <select name="state" data-value="{{task.state.value}}">
+                    {% for state in g.states %}
+                        <option value="{{state.value}}" {% if state.value == task.state.value %}selected disabled{% endif %}>{{state.display_name}}</option>
+                    {% endfor %}
+                    </select>
+                    <input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
+                </form>
+
+                {% if task.members %}
+                <div>{% for user in task.members %}{{user.username}}{% if not loop.last %}, {% endif %}{% endfor %}</div>
+                {% else %}<div>None</div>{% endif %}
+
+                <div class="secondary-text" style="grid-column: 2 / 6;">{{task["description"]}}</div>
+
+                <div class="buttons-1" style="grid-column: 2 / 7;">
+                    {% if g.role.value >= g.role_enum.Collaborator.value or task.members|user_in_task(g.username) %}
+                    <button onclick="enableStateEditMode(this)" class="button-grey button-small">Change State</button>
+                    {% endif %}
+                    {% if g.role.value >= g.role_enum.Collaborator.value  %}
+                    <a href="{{url_for('tasks.route_edit', group_id=g.group_id, project_id=g.project_id, task_id=task.id)}}">
+                    <button class="button-grey button-small">Edit Task</button></a>
+                    {% endif %}
+                </div>
+                
+                <div class="buttons-2" style="grid-column: 2 / 7;display:none">
+                    <button onclick="submitStateForm(this)" class="button-green button-small" style="font-size: 70%;">Confirm</button>
+                    <button onclick="resetStateEditMode(this)" class="button-red button-small" style="font-size: 70%;">Cancel</button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        {% if not g.tasks %}
+        <div class="empty-placeholder all-column-item"> No tasks found! </div>
         {% endif %}
-        <button class="button-grey button-box-shadow no-wrap" onclick="toggleRightSidebar()">
-            <i class="fa fa-search" style="margin-right:0.5em;"></i>Search
-        </button>
     </div>
 </div>
-<hr style="margin-top:0;">
 
-<div class="tasks-container">
-    <div class="task-item table-title">
-        <div></div>
-        <div>Title</div>
-        <div>Priority</div>
-        <div>Deadline</div>
-        <div>State</div>
-        <div>Assigned Members</div>
-    </div>
-    {% for task in g.tasks %}
-    <div class="task-item">
-        <div class="task-summary">
-            <button class="detail-toggle"><i class="fa fa-fw fa-caret-right" style="font-size: 1.5em;"></i></button>
-            <div>{{task.title}}</div>
-            <div>{{task.priority.display_name}}</div>
-            <div>{{task.deadline|format_datetime}}</div>
-            <div>{{task.state.display_name}}</div>
-            {% if task.members %}
-            <div>{% for user in task.members %}{{user.username}}{% if not loop.last %}, {% endif %}{% endfor %}</div>
-            {% else %}<div>None</div>{% endif %}
-        </div>
-        <div class="task-details">
-            <button onclick="resetStateEditMode(this)" class="detail-toggle"><i class="fa fa-fw fa-caret-down" style="font-size: 1.5em;"></i></button>
-            <div>{{task.title}}</div>
-            <div>{{task.priority.display_name}}</div>
-            <div>{{task.deadline|format_datetime}}</div>
-
-            <div class="state-field">{{task.state.display_name}}</div>
-            <form action="{{url_for('tasks.route_edit_state', group_id=g.group_id, project_id=g.project_id, task_id=task.id)}}" method="POST" style="display: none;">
-                <select name="state" data-value="{{task.state.value}}">
-                {% for state in g.states %}
-                    <option value="{{state.value}}" {% if state.value == task.state.value %}selected disabled{% endif %}>{{state.display_name}}</option>
-                {% endfor %}
-                </select>
-                <input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
-            </form>
-
-            {% if task.members %}
-            <div>{% for user in task.members %}{{user.username}}{% if not loop.last %}, {% endif %}{% endfor %}</div>
-            {% else %}<div>None</div>{% endif %}
-
-            <div class="secondary-text" style="grid-column: 2 / 6;">{{task["description"]}}</div>
-
-            <div class="buttons-1" style="grid-column: 2 / 7;">
-                {% if g.role.value >= g.role_enum.Collaborator.value or task.members|user_in_task(g.username) %}
-                <button onclick="enableStateEditMode(this)" class="button-grey button-small">Change State</button>
+<div id="new-task-view" style="display: none;">
+    <h1>Create New Task</h1>
+    <form action="{{url_for('tasks.route_new', group_id=g.group_id, project_id=g.project_id)}}" method="POST">
+        <p>Task name *</p>
+        <input type="text" name="name-stored" maxlength="{{MAX_INPUT_SIZES['task_name']}}" required> <br>
+        <p>Task details</p>
+        <textarea style="width: 100%; height: 10em;" name="desc-stored" rows="10" cols="50" maxlength="{{MAX_INPUT_SIZES['task_description']}}"></textarea>
+        <br> <br>
+        <label for="priority-stored">Priority *</label>
+        <select name="priority-stored" required>
+        {% for priority in g.priorities %}
+            <option value="{{priority.value}}">{{priority.display_name}}</option>
+        {% endfor %}
+        </select>
+        <br><br>
+        <label>Deadline:</label>
+        <input id="date" type="date" name="date-stored" min="{{g.date}}">
+        <input id="time" type="time" name="time-stored">
+        <button type="button" onclick="clear_selected_datetime()" class="button-grey-small button-box-shadow">Clear</button>
+        <br><br>
+        <label>Assign Members:</label>
+        <select id="member-select">
+            {% for member in g.group_members %}
+            <option value="{{member.id}}">{{member.username}}</option>
+            {% endfor %}
+        </select>
+        <button type="button" onclick="add_member()" class="button-grey-small button-box-shadow">Add</button>
+        <br><br>
+        <div id="member-view"></div>
+        <br>
+        <input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
+        <button type="submit" class="button-green" onclick="saveSidebar()">Create</button>
+        <button type="button" class="button-red" onclick="deactivateCreateForm()">Cancel</button>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                {% if category == 'bad-form' %}
+                    <p class="error" style="color:red"> {{message}} </p>
                 {% endif %}
-                {% if g.role.value >= g.role_enum.Collaborator.value  %}
-                <a href="{{url_for('tasks.route_edit', group_id=g.group_id, project_id=g.project_id, task_id=task.id)}}">
-                <button class="button-grey button-small">Edit Task</button></a>
-                {% endif %}
-            </div>
-            
-            <div class="buttons-2" style="grid-column: 2 / 7;display:none">
-                <button onclick="submitStateForm(this)" class="button-green button-small" style="font-size: 70%;">Confirm</button>
-                <button onclick="resetStateEditMode(this)" class="button-red button-small" style="font-size: 70%;">Cancel</button>
-            </div>
-        </div>
-    </div>
-    {% endfor %}
-    {% if not g.tasks %}
-    <div class="empty-placeholder all-column-item"> No tasks found! </div>
-    {% endif %}
+            {% endfor %}
+        {% endwith %}
+    </form>
 </div>
+
 {% endblock %}
 
 {% block sidebar_right %}
@@ -132,9 +176,80 @@ function resetStateEditMode(button){
     optionToSelect.selected = true;
 }
 function submitStateForm(button){
-    saveUIState();
+    saveSidebar();
     const parent = button.closest(".task-details");
     parent.querySelector("form").submit();
 }
+
+
+const id_to_name = {};
+const memberSelect = document.getElementById("member-select");
+const memberView = document.getElementById("member-view");
+for(let i = 0; i < memberSelect.children.length; i++) {
+    let option = memberSelect.children[i];
+    id_to_name[option.value] = option.innerHTML;
+}
+let added = new Set();
+if ("members-stored[]" in stored_data){
+    stored_data["members-stored[]"].forEach(val => {
+        if(val in id_to_name) added.add(val)
+    });
+    refresh_member_view();
+}
+function add_member(){
+    let id = memberSelect.value;
+    added.add(id)
+    refresh_member_view();
+}
+function remove_member(button){
+    let id = button.value;
+    added.delete(id);
+    refresh_member_view();
+}
+function refresh_member_view(){
+    memberView.innerHTML = "";
+    added.forEach(id => {
+        let input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "members-stored[]";
+        input.value = id;
+        memberView.appendChild(input);
+        let button = document.createElement("button");
+        button.type = "button";
+        button.value = id;
+        button.addEventListener('click', () =>  remove_member(button));
+        button.classList.add("selected-member");
+        button.innerHTML = id_to_name[id] + "<span>❌</span>";
+        memberView.appendChild(button);
+    });
+    for (let i = 0; i < memberSelect.children.length; i++) {
+        let option = memberSelect.children[i];
+        option.disabled = added.has(option.value);
+    }
+}
+function clear_selected_datetime(){
+    document.getElementById("date").value = "";
+    document.getElementById("time").value = "";
+}
+
+const taskView = document.getElementById("task-view");
+const newTaskView = document.getElementById("new-task-view");
+function activateCreateForm(reset = true){
+    if(reset){
+        newTaskView.querySelector("form").reset();
+        added = new Set();
+        refresh_member_view();
+    }
+    newTaskView.style.display = "block";
+    taskView.style.display = "none";
+}
+function deactivateCreateForm(){
+    newTaskView.style.display = "none";
+    taskView.style.display = "block";
+}
+{% if "bad-form-stored" in stored_data %}
+activateCreateForm(false);
+{% endif %}
+
 </script>
 {% endblock %}

@@ -62,11 +62,10 @@ def route_new(group_id):
 def route_my_tasks(group_id, project_id):
     g.current_page = 'project/my-tasks'
     result = get_task_page()
-    # filter personal tasks 
-    g.tasks = [task for task in g.tasks if any(g.username == member["username"] for member in task["members"])]
     if not result:
         return redirect(url_for("projects.route_my_tasks", group_id=g.group_id, project_id=g.project_id))
     else:
+        g.tasks = [task for task in g.tasks if any(g.username == member["username"] for member in task["members"])]
         return render_template("project/tasks.html")
 
 @projects_bp.route("/group/<int:group_id>/project/<int:project_id>/all-tasks", methods=["GET"])
@@ -83,6 +82,8 @@ def get_task_page() -> bool:
     g.sidebar_right = 1
     g.group_members = get_group_members(g.group_id)
     sorting = ["deadline", "priority", "state", "title"]
+    g.date = datetime.now().strftime('%Y-%m-%d')
+    g.time = datetime.now().strftime('%H:%M')
 
     if request.args.get("search", "0") == "1":
         sorting = request.args.getlist("sort")
