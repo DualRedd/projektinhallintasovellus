@@ -15,9 +15,22 @@
         <nav>
             <span class="left-align">
                 <span> Project Management App </span>
-                {% if 'username' in session %}
-                <a href="{{url_for('base.route_index')}}">Home</a>
-                {% endif %}
+                <span>
+                    {% if 'username' in session %}
+                        <a href="{{url_for('base.route_index')}}" style="padding-right:0;">My groups</a>
+                    {% endif %}
+                    {% if g.group_id %}
+                        <span style="padding:0;font-size:80%;">>></span>
+                        <a href="{{url_for('groups.route_dashboard', group_id=g.group_id)}}" style="padding:0;">{{g.group_details.name}}</a>
+                    {% endif %}
+                    {% if g.project_id %}
+                        <span style="padding:0;font-size:80%;">>></span>
+                        <a href="{{url_for('projects.route_my_tasks', group_id=g.group_id, project_id=g.project_id)}}" style="padding:0;">{{g.project_details.name}}</a>
+                        {% if g.project_details.archived %}
+                            <span style="padding:0;">(Archived)</span>
+                        {% endif %}
+                    {% endif %} 
+                </span>
             </span>
             <span class="right-align">
                 {% if 'username' in session %}

@@ -24,6 +24,7 @@ def get_group_data():
         g.sidebar = True
         g.role = get_group_role(g.group_id, g.user_id, is_invitee=False)
         g.projects = get_projects(g.group_id)
+        g.group_details = get_group_details(g.group_id)
 
 @groups_bp.route("/group/<int:group_id>", methods=["GET"])
 def route_base(group_id):
@@ -64,7 +65,6 @@ def route_join(group_id):
 @groups_bp.route("/group/<int:group_id>/dashboard", methods=["GET"])
 @permissions(require_login=True, require_min_role=role_enum.Observer)
 def route_dashboard(group_id):
-    g.group_details = get_group_details(g.group_id)
     g.current_page = 'dashboard'
     return render_template("group/dashboard.html")
 

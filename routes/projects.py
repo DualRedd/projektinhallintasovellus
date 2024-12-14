@@ -3,7 +3,7 @@ from flask import Blueprint
 from flask import session, request, render_template, redirect, flash, url_for, g
 from datetime import datetime
 # Internal services
-from services.groups_service import get_group_role, get_group_members
+from services.groups_service import get_group_role, get_group_members, get_group_details
 from services.projects_service import create_project, update_project, get_project_details, get_projects
 from services.projects_service import update_project_archive_state, delete_soft_project
 from services.tasks_service import get_tasks
@@ -24,6 +24,7 @@ def get_project_data():
         g.role = get_group_role(g.group_id, g.user_id, is_invitee=False)
         if g.role: g.setting_access = g.role.value >= role_enum.Manager.value
         g.projects = get_projects(g.group_id)
+        g.group_details = get_group_details(g.group_id)
     if "project_id" in request.view_args:
         g.project_id = request.view_args["project_id"]
         g.project_details = get_project_details(g.project_id)
