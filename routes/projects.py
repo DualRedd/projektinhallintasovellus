@@ -67,7 +67,7 @@ def route_my_tasks(group_id, project_id):
     if not result:
         return redirect(url_for("projects.route_my_tasks", group_id=g.group_id, project_id=g.project_id))
     else:
-        return render_template("project/my-tasks.html")
+        return render_template("project/tasks.html")
 
 @projects_bp.route("/group/<int:group_id>/project/<int:project_id>/all-tasks", methods=["GET"])
 @permissions(require_login=True, require_min_role=role_enum.Observer)
@@ -77,12 +77,11 @@ def route_all_tasks(group_id, project_id):
     if not result:
         return redirect(url_for("projects.route_all_tasks", group_id=g.group_id, project_id=g.project_id))
     else:
-        return render_template("project/all-tasks.html")
+        return render_template("project/tasks.html")
 
 def get_task_page() -> bool:
     g.sidebar_right = 1
     g.group_members = get_group_members(g.group_id)
-    g.can_edit_tasks = g.role.value >= role_enum.Collaborator.value
     sorting = ["deadline", "priority", "state", "title"]
 
     if request.args.get("search", "0") == "1":

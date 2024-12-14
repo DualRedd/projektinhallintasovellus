@@ -1,7 +1,7 @@
 from flask import request, session, g
 from config import config
 from app import app
-from enums.enums import task_priority_enum, task_state_enum
+from enums.enums import task_priority_enum, task_state_enum, role_enum
 
 # global data for rendering pages
 @app.context_processor
@@ -22,6 +22,7 @@ def get_user_data():
     g.user_id = session.get("user_id")
     g.priorities = [priority for priority in task_priority_enum]
     g.states = [state for state in task_state_enum]
+    g.role_enum = role_enum
 
 # form data storing
 @app.after_request

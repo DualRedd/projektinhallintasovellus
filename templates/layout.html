@@ -56,13 +56,6 @@
             });null
         }
 
-        function toggleRightSidebar(instant = false){
-            const sidebar = document.querySelector(".sidebar-right-container");
-            if(instant) sidebar.classList.remove("sidebar-animate");
-            sidebar.classList.toggle("sidebar-open");
-            if(instant) setTimeout(() => sidebar.classList.add("sidebar-animate"), 1);
-        }
-
         function toggleDropdown(button){
             const dropdown = button.closest(".dropdown");
             const itemContainer = dropdown.querySelector(".dropdown-item-container");

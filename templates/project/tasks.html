@@ -4,19 +4,26 @@
 {% include "project/header.html" %}
 
 <div class="header-flex">
-    <h1>All tasks</h1>  
+    {% if g.current_page == "project/my-tasks" %}
+    <h1>My tasks</h1>
+    {% else %}
+    <h1>All tasks</h1>
+    {% endif %}
     <div class="flex-horizontal">
-        <a href="{{url_for('tasks.route_new', group_id=g.group_id, project_id=g.project_id, referrer='all')}}">
+        {% if g.role.value >= g.role_enum.Collaborator.value %}
+        <a href="{{url_for('tasks.route_new', group_id=g.group_id, project_id=g.project_id, referrer='my')}}">
             <button class="button-grey button-box-shadow no-wrap">
                 <i class="fa fa-plus" style="margin-right:0.5em;"></i>New Task
             </button>
         </a>
+        {% endif %}
         <button class="button-grey button-box-shadow no-wrap" onclick="toggleRightSidebar()">
             <i class="fa fa-search" style="margin-right:0.5em;"></i>Search
         </button>
     </div>
 </div>
 <hr style="margin-top:0;">
+
 <div class="tasks-container">
     <div class="task-item table-title">
         <div></div>
@@ -61,10 +68,10 @@
             <div class="secondary-text" style="grid-column: 2 / 6;">{{task["description"]}}</div>
 
             <div class="buttons-1" style="grid-column: 2 / 7;">
-                {% if g.can_edit_tasks or task.members|user_in_task(g.username) %}
+                {% if g.role.value >= g.role_enum.Collaborator.value or task.members|user_in_task(g.username) %}
                 <button onclick="enableStateEditMode(this)" class="button-grey button-small">Change State</button>
                 {% endif %}
-                {% if g.can_edit_tasks  %}
+                {% if g.role.value >= g.role_enum.Collaborator.value  %}
                 <a href="{{url_for('tasks.route_edit', group_id=g.group_id, project_id=g.project_id, task_id=task.id)}}">
                 <button class="button-grey button-small">Edit Task</button></a>
                 {% endif %}
@@ -81,7 +88,6 @@
     <div class="empty-placeholder all-column-item"> No tasks found! </div>
     {% endif %}
 </div>
-
 {% endblock %}
 
 {% block sidebar_right %}
@@ -90,4 +96,45 @@
 
 {% block scripts %}
 {% include 'search-sidebar/script-block.html' %}
+<script>
+document.querySelectorAll('.task-summary button.detail-toggle').forEach(button => {
+  button.addEventListener('click', function () {
+    const summary = this.parentElement;
+    const details = summary.nextElementSibling;
+    summary.style.display = 'none';
+    details.style.display = 'contents';
+  });
+});
+document.querySelectorAll('.task-details button.detail-toggle').forEach(button => {
+  button.addEventListener('click', function () {
+    const details = this.parentElement;
+    const summary = details.previousElementSibling;
+    summary.style.display = 'contents';
+    details.style.display = 'none';
+  });
+});
+function enableStateEditMode(button){
+    console.log("HELLO");
+    const parent = button.closest(".task-details");
+    parent.querySelector(".state-field").style.display = "none";
+    parent.querySelector("form").style.display = "block";
+    button.parentElement.style.display = "none";
+    button.parentElement.nextElementSibling.style.display = "block";
+}
+function resetStateEditMode(button){
+    const parent = button.closest(".task-details");
+    parent.querySelector(".buttons-1").style.display = "block";
+    parent.querySelector(".buttons-2").style.display = "none";
+    parent.querySelector(".state-field").style.display = "block";
+    parent.querySelector("form").style.display = "none";
+    const select = parent.querySelector("form select");
+    const optionToSelect = select.querySelector("option[value='" + select.dataset.value + "']");
+    optionToSelect.selected = true;
+}
+function submitStateForm(button){
+    saveUIState();
+    const parent = button.closest(".task-details");
+    parent.querySelector("form").submit();
+}
+</script>
 {% endblock %}

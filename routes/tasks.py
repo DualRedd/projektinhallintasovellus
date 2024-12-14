@@ -21,6 +21,7 @@ def get_task_data():
     if "group_id" in request.view_args:
         g.group_id = request.view_args["group_id"]
         g.role = get_group_role(g.group_id, g.user_id)
+        if g.role: g.setting_access = g.role.value >= role_enum.Manager.value
         g.projects = get_projects(g.group_id)
     if "project_id" in request.view_args:
         g.project_id = request.view_args["project_id"]
