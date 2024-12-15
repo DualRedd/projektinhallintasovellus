@@ -4,7 +4,7 @@ Kirjautumisominaisuudet ja ryhmät:
 - Kirjautuminen on pakollista sovelluksen käyttämiseksi.
 - Sovelluksella on sivut uuden käyttäjän luomiselle sekä kirjautumiselle.
 - Kirjauduttua etusivulla näkyy ryhmät joihin kuuluu sekä mahdolliset ryhmäkutsut.
-- Etusivulla on myös linkki uuden ryhmän luomiseen.
+- Etusivulla on linkki uuden ryhmän luomiseen.
 
 Ryhmän hallinta:
 - Ryhmän omistajat voivat kutsua uusia jäseniä ja asettaa heidän roolinsa.
@@ -15,13 +15,19 @@ Ryhmän hallinta:
 Projektit ja tehtävät:
 - Projektien sisällä voi luoda tehtäviä, joiden tietoja voi myöhemmin muokata.
 - Tehtäville voi asettaa nimen, kuvauksen, tärkeysasteen, määräpäivän sekä jäsenet.
-- Tehtävillä on myös tila (mm. keskeneräinen tai valmis), jota voi muokata tehtävänäkymästä nopeasti.
+- Tehtävillä on myös tila (mm. keskeneräinen tai valmis), jota voi muokata kaikista tehtävänäkymistä nopeasti.
 - Projekteilla on statistiikka-sivu, jossa näkyy miten tehtävät ja niiden edistyminen jakautuvat ryhmän jäsenille.
 - Tehtäviä voi katsoa projektikohtaisesti projektin omalla sivulla tai koko ryhmän laajuisesti ryhmän tehtävä-sivulla.
 - Tehtävänäkymistä löytyy hakuominaisuudet, joilla tehtäviä voi järjestää ja suodattaa.
 - Projekteja voi arkistoida, jolloin niiden sisältämiä tehtäviä ei voi muokata ja projekti ei enää näy sivupalkissa.
 - Arkistoidun projektin tehtävät eivät myöskään näy oletuksena ryhmän tehtäväsivulla, mutta niitä on mahdollista hakea suodattimilla.
 - Arkistoidun projektin voi myös aktivoida uudelleen tai poistaa kokonaan.
+
+Muita QoL-ominaisuuksia:
+- Jos ryhmän jäsen poistuu tai poistetaan, hänen nimensä näkyy harmaana tehtävissä, joihin hänet oli asetettu tekijäksi. Jos jäsen palaa ryhmään, hän on siten automaattisesti taas jäsenenä tehtävissä.
+- Tehtävät, joissa määräaikä on mennyt ohi, on se korostettu punaisella.
+- Linkkipolku, joka helpottaa hahmottamaan sivuhierarkiaa.
+- Määräaika on mahdollista asettaa päivän tai päivän ja ajan tarkkuudella, ja se myös näytetään oikein käyttöliittymässä.
 
 Muit teknisiä ominaisuuksia:
 - Salasanat tallennetaan tietokantaan hajautusarvona.
