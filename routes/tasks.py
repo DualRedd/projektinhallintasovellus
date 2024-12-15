@@ -84,7 +84,7 @@ def route_edit_state(group_id, project_id, task_id):
 @tasks_bp.route("/group/<int:group_id>/project/<int:project_id>/task/<int:task_id>/delete", methods=["POST"])
 @permissions(require_login=True, require_min_role=role_enum.Collaborator)
 def route_delete(group_id, project_id, task_id):
-    result = input.validate_empty_form()
+    result = input.validate_task_delete_form()
     if result.valid:
         delete_task(g.task_id)
     else:

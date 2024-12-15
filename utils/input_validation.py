@@ -125,6 +125,8 @@ def validate_create_project_form(project_name : str, project_desc : str):
 def validate_task_data_form(task_name : str, task_desc : str, task_priority_str : str, task_date : str, task_time : str, task_members : list[str]):
     if not check_csrf_token():
         return ValidationResult(False, "Invalid csrf token!")
+    if g.project_details.archived:
+        return ValidationResult(False, "This project is archived!")
     if not (res := validate_string_size(task_name, "task_name", "Task name")).valid:
         return res
     if not (res := validate_string_size(task_desc, "task_description", "Task description")).valid:
@@ -154,12 +156,21 @@ def validate_task_data_form(task_name : str, task_desc : str, task_priority_str 
 def validate_task_state_form(state_str : str):
     if not check_csrf_token():
         return ValidationResult(False, "Invalid csrf token!")
+    if g.project_details.archived:
+        return ValidationResult(False, "This project is archived!")
     try:
         state_int = int(state_str)
         if not task_state_enum.get_by_value(state_int):
             return ValidationResult(False, "Invalid task state!")
     except ValueError:
         return ValidationResult(False, "Invalid task state!")
+    return ValidationResult(True)
+
+def validate_task_delete_form():
+    if not check_csrf_token():
+        return ValidationResult(False, "Invalid csrf token!")
+    if g.project_details.archived:
+        return ValidationResult(False, "This project is archived!")
     return ValidationResult(True)
 
 def validate_project_task_search_form(sorting : list[str], min_date_str : str, max_date_str : str, states : list[str],

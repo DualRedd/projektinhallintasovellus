@@ -12,7 +12,7 @@
         <h1>All tasks</h1>
         {% endif %}
         <div class="flex-horizontal">
-            {% if g.role.value >= g.role_enum.Collaborator.value %}
+            {% if g.role.value >= g.role_enum.Collaborator.value and not g.project_details.archived %}
             <button onclick="activateCreateForm()" class="button-grey button-box-shadow no-wrap">
                 <i class="fa fa-plus" style="margin-right:0.5em;"></i>New Task
             </button>
@@ -83,8 +83,9 @@
                     <div><span>None</span></div>
                 {% endif %}
 
-                <div class="secondary-text" style="grid-column: 2 / 6;">{{task.description}}</div>
+                <div class="secondary-text" style="grid-column: 2 / 6;">{% if task.description.strip() != '' %}{{task.description}}{% else %}No description.{% endif%}</div>
 
+                {% if not g.project_details.archived %}
                 <div class="buttons-1" style="grid-column: 2 / 7;">
                     {% if g.role.value >= g.role_enum.Collaborator.value or task.members|user_in_task(g.username) %}
                     <button onclick="enableStateEditMode(this)" class="button-grey button-small">Change State</button>
@@ -98,6 +99,7 @@
                     <button onclick="submitStateForm(this)" class="button-green button-small">Confirm</button>
                     <button onclick="resetStateEditMode(this)" class="button-red button-small">Cancel</button>
                 </div>
+                {% endif %}
             </div>
         </div>
         {% endfor %}
@@ -107,6 +109,7 @@
     </div>
 </div>
 
+{% if not g.project_details.archived %}
 <div id="new-task-view" style="display: none;">
     <form action="{{url_for('tasks.route_new', group_id=g.group_id, project_id=g.project_id)}}" method="POST">
         <h1>Create New Task</h1>
@@ -198,6 +201,7 @@
         {% endif %}
     {% endfor %}
 </div>
+{% endif %}
 
 {% endblock %}
 
