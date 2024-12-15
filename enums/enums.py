@@ -26,7 +26,6 @@ class task_state_enum(Enum):
     Pending = (0, "Pending")
     InProgress = (1, "In Progress")
     Completed = (2, "Completed")
-    Archived = (3, "Archived")
 
     def __init__(self, value, display_name):
         self._value_ = value
