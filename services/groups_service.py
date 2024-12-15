@@ -15,15 +15,15 @@ def get_groups(user_id : str, is_invitee : bool) -> list[dict]:
     for group in result: group["role"] = role_enum.get_by_value(int(group["role"]))
     return result
 
-def get_group_members(group_id : int, invitee_status : bool = None) -> list[dict]:
+def get_group_members(group_id : int, is_invitee : bool = None) -> list[dict]:
     result = db.session.execute(text(f"SELECT U.id, U.username, GR.role, GR.is_invitee \
                                         FROM group_roles GR \
                                         JOIN users U ON U.id = GR.user_id AND U.visible = TRUE \
                                         JOIN groups G ON G.id = GR.group_id AND G.visible = TRUE \
                                         WHERE GR.group_id = :group_id \
-                                        {'AND GR.is_invitee = :invitee_status' if invitee_status else ''} \
-                                        ORDER BY U.id"),
-                                        {"group_id":group_id, "invitee_status":invitee_status}).fetchall()
+                                        {'AND GR.is_invitee = :is_invitee' if is_invitee is not None else ''} \
+                                        ORDER BY U.id"),    
+                                        {"group_id":group_id, "is_invitee":is_invitee}).fetchall()
     result = query_res_to_dict(result)
     for member in result: member["role"] = role_enum.get_by_value(int(member["role"]))
     return result
@@ -39,7 +39,7 @@ def get_group_role(group_id : int, user_id : int, is_invitee : bool = None) -> r
                                     JOIN users U ON U.id = GR.user_id AND U.visible = TRUE \
                                     JOIN groups G ON G.id = GR.group_id AND G.visible = TRUE \
                                     WHERE GR.group_id = :group_id AND U.id = :user_id \
-                                    {'AND GR.is_invitee = :is_invitee' if is_invitee else ''}"),
+                                    {'AND GR.is_invitee = :is_invitee' if is_invitee is not None else ''}"),
                                     {"group_id":group_id, "user_id":user_id, "is_invitee":is_invitee}).fetchone()
     return role_enum.get_by_value(int(result[0])) if result else None
 
@@ -65,7 +65,7 @@ def create_group_role(group_id : int, user_id : int, role : role_enum, is_invite
     db.session.commit()
 
 def update_group_role(group_id : int, user_id : int, role : role_enum, is_invitee : bool = None):
-    db.session.execute(text(f"UPDATE group_roles SET role = :role{', is_invitee = :is_invitee' if is_invitee else ''} WHERE group_id = :group_id AND user_id = :user_id"),
+    db.session.execute(text(f"UPDATE group_roles SET role = :role{', is_invitee = :is_invitee' if is_invitee is not None else ''} WHERE group_id = :group_id AND user_id = :user_id"),
                             {"group_id":group_id, "user_id":user_id, "role":role.value, "is_invitee":is_invitee})
     db.session.commit()
 
