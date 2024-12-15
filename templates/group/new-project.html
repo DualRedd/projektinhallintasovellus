@@ -5,7 +5,7 @@
 <hr>
 <form action="{{url_for('projects.route_new', group_id=g.group_id)}}" method="POST">
     <p>Project name:</p>
-    <input type="text" name="name-stored" maxlength="{{MAX_INPUT_SIZES['project_name']}}" required> <br>
+    <input type="text" name="name-stored" minlength="{{MIN_INPUT_SIZES['project_name']}}" maxlength="{{MAX_INPUT_SIZES['project_name']}}" required> <br>
     <p>Project description:</p>
     <textarea style="width: 100%; height: 10em;" name="desc-stored" rows="10" cols="50" maxlength="{{MAX_INPUT_SIZES['project_description']}}"></textarea>
     <br> <br>

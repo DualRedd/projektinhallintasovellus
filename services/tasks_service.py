@@ -120,7 +120,6 @@ def get_tasks_group(group_id : int, states : list[str] = None, priorities : list
     for task in result:
         task["state"] = task_state_enum.get_by_value(int(task["state"]))
         task["priority"] = task_priority_enum.get_by_value(int(task["priority"]))
-    print(result)
     return result
 
 def get_state_count_by_user_project(group_id : int, project_id : int):
