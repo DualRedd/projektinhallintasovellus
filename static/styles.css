@@ -614,6 +614,36 @@ header nav span a, header nav span span {
     display: inline;
 }
 
+/* TOOLTIP */ 
+.tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    font-size: medium;
+    font-weight: normal;
+}
+.tooltip .tooltip-text {
+    visibility: hidden;
+    box-sizing: border-box;
+    position: absolute;
+    background-color: white;
+    color: var(--primary-text);
+    border: 1px solid grey;
+    text-align: left;
+    border-radius: 0.3em;
+    top: 50%;
+    left: 50%;
+    padding: 1em;
+    width: max-content;
+    text-wrap: wrap;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+.tooltip:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
+
 
 /* OTHER */
 

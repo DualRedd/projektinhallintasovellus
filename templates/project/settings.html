@@ -49,7 +49,14 @@
     <input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
     <input type="hidden" name="state" value="true">
     <button class="button-grey button-box-shadow">Archive Project</button>
+    <div class="tooltip" style="margin-left: 0.5em;">
+        <i class="fa-regular fa-circle-question"></i>
+        <div class="tooltip-text" style="max-width: 17em;">
+            Archived projects are not visible in the groups sidebar. 
+        </div>
+    </div>
 </form>
+
 {% endif %}
 {% for category, message in messages %}
     {% if category == 'bad-form2' %}

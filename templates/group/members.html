@@ -7,7 +7,19 @@
 <div class="member-container">
     <div class="member-item table-title">
         <div>User</div>
-        <div>Role</div>
+        <div style="overflow: visible;">Role
+            <small class="tooltip">
+                <i class="fa-regular fa-circle-question"></i>
+                <small class="tooltip-text" style="display:grid;grid-template-columns: 6.5em 25em;">
+                    <span style="grid-column:1/3;">Roles represent permission levels. All higher level roles include the permissions of lower level roles. </span>
+                    <b>Observer</b> Changing the state of tasks assigned to them. <br>
+                    <b>Collaborator</b> Creating, editing and deleting tasks within projects. <br>
+                    <b>Manager</b> Creating, editing, archiving and deleting projects. <br>
+                    <b>Co-owner</b> Inviting, kicking and altering the role of of others with lower permission level. <br>
+                    <b>Owner</b> Deleting the group and assigning co-owners. <br>
+                </small>
+            </small>
+        </div>
         <div>Status</div>
         <div>Actions</div>
     </div>
