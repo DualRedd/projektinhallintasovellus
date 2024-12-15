@@ -36,7 +36,7 @@
         {% for task in g.tasks %}
         <div class="task-item" id="task-{{task.id}}" data-title="{{task.title}}" data-desc="{{task.description}}" data-priority="{{task.priority.value}}" data-date="{{task.deadline|format_datetime('%Y-%m-%d')}}"
             data-time="{{task.deadline|format_datetime('%H:%M')}}" data-state="{{task.state.value}}" data-edit="{{url_for('tasks.route_edit', group_id=g.group_id, project_id=g.project_id, task_id=task.id)}}"
-            data-members="{{task.members|user_ids}}">
+            data-delete="{{url_for('tasks.route_delete', group_id=g.group_id, project_id=g.project_id, task_id=task.id)}}" data-members="{{task.members|user_ids}}">
             <div class="task-summary">
                 <button class="detail-toggle"><i class="fa fa-fw fa-caret-right" style="font-size: 1.5em;"></i></button>
                 <div>{{task.title}}</div>
@@ -90,7 +90,7 @@
                     <button onclick="enableStateEditMode(this)" class="button-grey button-small">Change State</button>
                     {% endif %}
                     {% if g.role.value >= g.role_enum.Collaborator.value  %}
-                    <button class="button-grey button-small" onclick="activateEditMode(this)">Edit Task</button>
+                    <button class="button-grey button-small" onclick="activateEditMode(this)">Edit</button>
                     {% endif %}
                 </div>
                 
@@ -187,6 +187,16 @@
             {% endif %}
         {% endfor %}
     </form>
+    <h1>Other</h1>
+    <form action="" method="POST">
+        <input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
+        <button type="submit" class="button-red-inverted" onclick="return confirm('Are you sure you want to delete this task?')">Delete task</button>
+    </form>
+    {% for category, message in messages %}
+        {% if category == 'bad-form-2' %}
+            <p class="error" style="color:red"> {{message}} </p>
+        {% endif %}
+    {% endfor %}
 </div>
 
 {% endblock %}
@@ -313,18 +323,20 @@ function deactivateForms(){
 
 function activateEditMode(button, reset=true){
     const task = button.closest(".task-item");
-    const form = editTaskView.querySelector("form");
-    form.action = task.dataset.edit;
+    const forms = editTaskView.querySelectorAll("form");
+    forms[0].action = task.dataset.edit;
+    forms[1].action = task.dataset.delete;
     if(reset){
-        form.querySelector("input[name='title-stored']").value = task.dataset.title;
-        form.querySelector("textarea[name='desc-stored']").value = task.dataset.desc;
-        form.querySelector("select[name='priority-stored']").value = task.dataset.priority;
-        form.querySelector("input[name='date-stored']").value = task.dataset.date;
-        form.querySelector("input[name='time-stored']").value = task.dataset.time;
+        forms[0].querySelector("input[name='title-stored']").value = task.dataset.title;
+        forms[0].querySelector("textarea[name='desc-stored']").value = task.dataset.desc;
+        forms[0].querySelector("select[name='priority-stored']").value = task.dataset.priority;
+        forms[0].querySelector("input[name='date-stored']").value = task.dataset.date;
+        forms[0].querySelector("input[name='time-stored']").value = task.dataset.time;
         added.clear();
         JSON.parse(task.dataset.members).forEach(val => {
+            console.log(val);
             val = String(val);
-            if(val in id_to_name) added.add(val)
+            if(val != "None" && val in id_to_name) added.add(val)
         });
         refresh_member_views();
     }

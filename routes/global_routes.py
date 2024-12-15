@@ -68,4 +68,4 @@ def format_datetime(value, format='%d.%m.%Y %H:%M'):
 
 @app.template_filter('user_ids')
 def get_user_ids_from_dict(users):
-    return [user["id"] for user in users]
+    return [user["id"] for user in users if user['id'] is not None]

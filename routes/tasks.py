@@ -5,7 +5,7 @@ from datetime import datetime
 # Internal services
 from services.groups_service import get_group_role, get_group_members
 from services.projects_service import get_projects, get_project_details
-from services.tasks_service import create_task, set_task_assignments, update_task_state, update_task
+from services.tasks_service import create_task, set_task_assignments, update_task_state, update_task, delete_task
 from utils.permissions import permissions, get_page_permission_response
 from utils.tools import remove_line_breaks, parse_form_datetime
 import utils.input_validation as input
@@ -79,4 +79,15 @@ def route_edit_state(group_id, project_id, task_id):
         result = input.validate_task_state_form(state_str)
         if result.valid:
             update_task_state(g.task_id, task_state_enum.get_by_value(int(state_str)))
+    return redirect(request.referrer or url_for("projects.route_my_tasks", group_id=g.group_id, project_id=g.project_id))
+
+@tasks_bp.route("/group/<int:group_id>/project/<int:project_id>/task/<int:task_id>/delete", methods=["POST"])
+@permissions(require_login=True, require_min_role=role_enum.Collaborator)
+def route_delete(group_id, project_id, task_id):
+    result = input.validate_empty_form()
+    if result.valid:
+        delete_task(g.task_id)
+    else:
+        flash(result.error, "bad-form-2")
+        session["bad-form-stored"] = g.task_id # flag to open correct form after redirect
     return redirect(request.referrer or url_for("projects.route_my_tasks", group_id=g.group_id, project_id=g.project_id))

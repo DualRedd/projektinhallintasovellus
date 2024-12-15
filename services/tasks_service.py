@@ -20,6 +20,10 @@ def update_task(task_id : int, title : str, desc : str, priority : task_priority
                             {"task_id":task_id, "title":title, "desc":desc, "priority":priority.value, "deadline":deadline})
     db.session.commit()
 
+def delete_task(task_id : int):
+    db.session.execute(text("UPDATE tasks SET visible = FALSE WHERE id = :task_id"), {"task_id":task_id})
+    db.session.commit()
+
 def set_task_assignments(task_id : int, user_ids : list[int]):
     db.session.execute(text("DELETE FROM task_assignments WHERE task_id = :task_id"), {"task_id":task_id})
     for user_id in user_ids:
