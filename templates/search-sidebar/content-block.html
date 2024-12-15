@@ -129,7 +129,7 @@
         </div>
         {% set active_members = request.args.getlist('member') %}
         {% for member in g.group_members %}
-            {% if g.current_page != 'project/my-tasks' or member.id != g.user_id %}
+            {% if not member.is_invitee and (g.current_page != 'project/my-tasks' or member.id != g.user_id) %}
                 <div class="dropdown-item-checkbox">
                     <label>
                         <input type="checkbox" name="member" value="{{member.id}}"
