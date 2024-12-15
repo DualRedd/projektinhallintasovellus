@@ -3,6 +3,7 @@ from datetime import datetime
 from flask import session, request, g
 from services.auth_service import user_exists, authenticate_user
 from services.groups_service import get_group_role
+from utils.tools import parse_form_datetime
 from enums.enums import role_enum, task_priority_enum, task_state_enum
 from config import config
 
@@ -133,13 +134,12 @@ def validate_task_data_form(task_name : str, task_desc : str, task_priority_str 
             return ValidationResult(False, "Invalid task priority!")
     except ValueError:
         return ValidationResult(False, "Invalid task priority!")
-    if task_date != "" or task_time != "":
-        try:
-            deadline = datetime.strptime(f"{task_date} {task_time}", '%Y-%m-%d %H:%M')
-            if deadline.date() < datetime.now().date():
-                return ValidationResult(False, "Deadline cannot be set to the past!")
-        except ValueError:
-            return ValidationResult(False, "Invalid deadline!")
+    try:
+        deadline = parse_form_datetime(task_date, task_time)
+        if deadline and deadline.date() < datetime.now().date():
+            return ValidationResult(False, "Deadline cannot be set to the past!")
+    except ValueError:
+        return ValidationResult(False, "Invalid deadline!")
     for member in task_members:
         try:
             id = int(member)

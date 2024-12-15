@@ -1,8 +1,14 @@
 from sqlalchemy import Row
-from datetime import datetime
+from datetime import datetime, date, time
 
 def remove_line_breaks(string : str):
     return string.replace('\r\n', ' ').replace('\r', ' ').replace('\n', ' ')
+
+def parse_form_datetime(fdate : str, ftime : str) -> datetime | None:
+    if fdate == '' and ftime == '': return None
+    if ftime == '':
+        return datetime.combine(datetime.strptime(f"{fdate}", '%Y-%m-%d').date(), time.max)
+    return datetime.strptime(f"{fdate} {ftime}", '%Y-%m-%d %H:%M')
 
 def query_res_to_dict(result : Row | list[Row]) -> dict | list[dict]:
     if type(result) == Row:

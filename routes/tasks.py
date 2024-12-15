@@ -7,7 +7,7 @@ from services.groups_service import get_group_role, get_group_members
 from services.projects_service import get_projects, get_project_details
 from services.tasks_service import create_task, set_task_assignments, update_task_state, update_task
 from utils.permissions import permissions, get_page_permission_response
-from utils.tools import remove_line_breaks
+from utils.tools import remove_line_breaks, parse_form_datetime
 import utils.input_validation as input
 # Enums
 from enums.enums import role_enum, task_priority_enum, task_state_enum
@@ -41,7 +41,7 @@ def route_new(group_id, project_id):
     result = input.validate_task_data_form(task_name, task_desc, task_priority, task_date, task_time, task_members)
     if result.valid:
         task_priority = task_priority_enum.get_by_value(int(task_priority))
-        task_deadline = datetime.strptime(f"{task_date} {task_time}", '%Y-%m-%d %H:%M') if task_date != '' or task_time != '' else None
+        task_deadline = parse_form_datetime(task_date, task_time)
         task_id = create_task(g.project_id, task_name, task_desc, task_priority, task_deadline)
         set_task_assignments(task_id, list(map(int,task_members)))
     else:
@@ -61,7 +61,7 @@ def route_edit(group_id, project_id, task_id):
     result = input.validate_task_data_form(task_name, task_desc, task_priority, task_date, task_time, task_members)
     if result.valid:
         task_priority = task_priority_enum.get_by_value(int(task_priority))
-        task_deadline = datetime.strptime(f"{task_date} {task_time}", '%Y-%m-%d %H:%M') if task_date != '' or task_time != '' else None
+        task_deadline = parse_form_datetime(task_date, task_time)
         update_task(g.task_id, task_name, task_desc, task_priority, task_deadline)
         set_task_assignments(task_id, list(map(int,task_members)))
     else:

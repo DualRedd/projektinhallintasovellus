@@ -1,4 +1,5 @@
 from flask import request, session, g
+from datetime import datetime, time
 from config import config
 from app import app
 from enums.enums import task_priority_enum, task_state_enum, role_enum
@@ -60,7 +61,10 @@ def is_user_in_task(members : list[dict], username : str):
 
 @app.template_filter('format_datetime')
 def format_datetime(value, format='%d.%m.%Y %H:%M'):
-    return value.strftime(format) if value is not None else "None"
+    if value is None: return "None"
+    if format == '%d.%m.%Y %H:%M' and value.time() == time.max.replace(microsecond=0):
+        return value.strftime('%d.%m.%Y')
+    return value.strftime(format)
 
 @app.template_filter('user_ids')
 def get_user_ids_from_dict(users):
