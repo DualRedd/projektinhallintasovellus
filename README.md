@@ -1,21 +1,33 @@
 # Projektinhallintasovellus
 
-Projektien ja tehtävien seurantaa.
-- Sovellukseen on kirjauduttava
-- Voi luoda omia ryhmiä ja kutsua muita käyttäjiä niiden jäseniksi
-- Ryhmän omistajat voivat luoda ja hallinnoida projekteja.
-- Projektit voivat koostua useista tehtävistä.
-- Tehtäviä voi jakaa tiimin jäsenille ja asettaa deadlinet.
-- Ryhmän sivulla näkyy koottuna eri projektien tehtävät.
-- Projektisivulla näkyy koottuna kyseisen projektin tehtävät sekä tilastoja projektiin liittyen.
-- Tehtävät voi merkitä esim. keskeneräiseksi tai valmiiksi.
-- Tehtävien hakutoiminnot, joilla voi rajata ja järjestää ryhmän/projektin tehtävät.
-- Eri tärkeysasteita tehtäville
+Kirjautumisominaisuudet ja ryhmät:
+- Kirjautuminen on pakollista sovelluksen käyttämiseksi.
+- Sovelluksella on sivut uuden käyttäjän luomiselle sekä kirjautumiselle.
+- Kirjauduttua etusivulla näkyy ryhmät joihin kuuluu sekä mahdolliset ryhmäkutsut.
+- Etusivulla on myös linkki uuden ryhmän luomiseen.
 
-Mahdolllisia lisäyksiä:
-- Mahdollisuus kommentoida tehtäviä ja/tai lähettää viestiä tiimin vetäjälle.
-- Kalenterinäkymä
+Ryhmän hallinta:
+- Ryhmän omistajat voivat kutsua uusia jäseniä ja asettaa heidän roolinsa.
+- Ryhmän jäsenten rooleja voi muokata ja jäseniä voi poistaa ryhmästä (vain omistajat).
+- Ryhmän asetuksista voi muuttaa ryhmän nimeä ja kuvausta sekä poistaa ryhmän (vain ryhmän omistaja) tai poistua ryhmästä.
+- Ryhmän projektisivulla voi luoda uusia projekteja.
 
+Projektit ja tehtävät:
+- Projektien sisällä voi luoda tehtäviä, joiden tietoja voi myöhemmin muokata.
+- Tehtäville voi asettaa nimen, kuvauksen, tärkeysasteen, määräpäivän sekä jäsenet.
+- Tehtävillä on myös tila (mm. keskeneräinen tai valmis), jota voi muokata tehtävänäkymästä nopeasti.
+- Projekteilla on statistiikka-sivu, jossa näkyy miten tehtävät ja niiden edistyminen jakautuvat ryhmän jäsenille.
+- Tehtäviä voi katsoa projektikohtaisesti projektin omalla sivulla tai koko ryhmän laajuisesti ryhmän tehtävä-sivulla.
+- Tehtävänäkymistä löytyy hakuominaisuudet, joilla tehtäviä voi järjestää ja suodattaa.
+- Projekteja voi arkistoida, jolloin niiden sisältämiä tehtäviä ei voi muokata ja projekti ei enää näy sivupalkissa.
+- Arkistoidun projektin tehtävät eivät myöskään näy oletuksena ryhmän tehtäväsivulla, mutta niitä on mahdollista hakea suodattimilla.
+- Arkistoidun projektin voi myös aktivoida uudelleen tai poistaa kokonaan.
+
+Muit teknisiä ominaisuuksia:
+- Salasanat tallennetaan tietokantaan hajautusarvona.
+- Syötteiden pituudet tarkistetaan aina ennen kuin ne päätyvät tietokantaan.
+- Ennen sivun palauttamista tai tietokannan muokkaamista tarkastetaan käyttäjän oikeudet.
+- Kaikki lomakkeet käyttävät csrf-tokenia, joka tarkastetaan.
 
 # Asennusohjeet
 
@@ -39,22 +51,16 @@ Mahdolllisia lisäyksiä:
 
         $ flask run
 
-# Sovelluksen nykytilanne
+# Alkuperäinen idea
 
-- Sovelluksella on sivu uuden käyttäjän luomiselle sekä kirjautumiselle.
-- Kirjauduttua etusivulla näkyy ryhmät joihin kuuluu sekä mahdolliset ryhmäkutsut.
-- Etusivulla on myös linkki uuden ryhmän luomiseen.
-- Ryhmän omistajat voivat kutsua uusia jäseniä ja asettaa heidän roolinsa.
-- Ryhmän asetuksista voi muuttaa nimeä ja kuvausta sekä poistaa ryhmän (vain ryhmän omistaja) tai poistua ryhmästä.
-- Ryhmän projektisivulla voi luoda uusia projekteja.
-- Projektien sisällä voi luoda tehtäviä sekä muokata tehtävien tilaa.
-
-# Viimeiset puuttuvat ominaisuudet
-
-- Tehtävien koonti ryhmän sivuille.
-- Projektien arkistointi, statistiikat sekä asetukset.
-- Tehtävien muokkaaminen.
-- Tehtävien haku- ja järjestystoiminnot.
-- Ryhmän jäsenten poistaminen sekä roolien muokkaaminen.
-- Mahdollinen profiilisivu (ei kovin tärkeä).
-
+Projektien ja tehtävien seurantaa.
+- Sovellukseen on kirjauduttava
+- Voi luoda omia ryhmiä ja kutsua muita käyttäjiä niiden jäseniksi
+- Ryhmän omistajat voivat luoda ja hallinnoida projekteja.
+- Projektit voivat koostua useista tehtävistä.
+- Tehtäviä voi jakaa tiimin jäsenille ja asettaa deadlinet.
+- Ryhmän sivulla näkyy koottuna eri projektien tehtävät.
+- Projektisivulla näkyy koottuna kyseisen projektin tehtävät sekä tilastoja projektiin liittyen.
+- Tehtävät voi merkitä esim. keskeneräiseksi tai valmiiksi.
+- Tehtävien hakutoiminnot, joilla voi rajata ja järjestää ryhmän/projektin tehtävät.
+- Eri tärkeysasteita tehtäville
