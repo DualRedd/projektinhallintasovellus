@@ -510,7 +510,7 @@ header nav span a, header nav span span {
 
 .state-stats-item{
     display: grid;
-    grid-template-columns: minmax(6em, 8fr) minmax(4em, 4fr) minmax(4em, 4fr) minmax(4em, 4fr);
+    grid-template-columns: minmax(6em, 8fr) minmax(4em, 4fr) minmax(4em, 4fr) minmax(4em, 4fr) minmax(4em, 4fr);
     align-items: center;
     gap: 0.5em 1em;
     line-height: 1.8;

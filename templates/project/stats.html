@@ -10,6 +10,7 @@
         <div>Pending</div>
         <div>In Progress</div>
         <div>Complete</div>
+        <div>Total</div>
     </div>
     {% for user in g.state_stats_by_user %}
     <div class="state-stats-item">
@@ -17,6 +18,7 @@
         <div>{{g.state_stats_by_user[user][0]}}</div>
         <div>{{g.state_stats_by_user[user][1]}}</div>
         <div>{{g.state_stats_by_user[user][2]}}</div>
+        <div>{{g.state_stats_by_user[user][0]+g.state_stats_by_user[user][1]+g.state_stats_by_user[user][2]}}</div>
     </div>
     {% endfor %}
 </div>
