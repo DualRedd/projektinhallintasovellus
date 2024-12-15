@@ -44,8 +44,16 @@
                 <div>{{task.deadline|format_datetime}}</div>
                 <div>{{task.state.display_name}}</div>
                 {% if task.members %}
-                <div>{% for user in task.members %}{{user.username}}{% if not loop.last %}, {% endif %}{% endfor %}</div>
-                {% else %}<div>None</div>{% endif %}
+                    <div>
+                    {% for user in task.members %}
+                        <span class="{% if not user.is_member %}text-disabled{% endif %}">
+                            {{user.username}}{% if not loop.last %}, {% endif %}
+                        </span>
+                    {% endfor %}
+                    </div>
+                {% else %}
+                    <div><span>None</span></div>
+                {% endif %}
             </div>
             <div class="task-details">
                 <button onclick="resetStateEditMode(this)" class="detail-toggle"><i class="fa fa-fw fa-caret-down" style="font-size: 1.5em;"></i></button>
@@ -64,8 +72,16 @@
                 </form>
 
                 {% if task.members %}
-                <div>{% for user in task.members %}{{user.username}}{% if not loop.last %}, {% endif %}{% endfor %}</div>
-                {% else %}<div>None</div>{% endif %}
+                    <div>
+                    {% for user in task.members %}
+                        <span class="{% if not user.is_member %}text-disabled{% endif %}">
+                            {{user.username}}{% if not loop.last %}, {% endif %}
+                        </span>
+                    {% endfor %}
+                    </div>
+                {% else %}
+                    <div><span>None</span></div>
+                {% endif %}
 
                 <div class="secondary-text" style="grid-column: 2 / 6;">{{task.description}}</div>
 

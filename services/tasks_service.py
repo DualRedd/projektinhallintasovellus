@@ -45,7 +45,7 @@ def get_task_members(task_id : int) -> list[dict]:
                                     {"task_id":task_id}).fetchall()
     return [{"id":int(row.id), "username":row.username} for row in result]
 
-def get_tasks_project(project_id : int, states : list[str] = None, priorities : list[str] = None, members : list[int] = None,
+def get_tasks_project(group_id : int, project_id : int, states : list[str] = None, priorities : list[str] = None, members : list[int] = None,
               member_query_type : str = None, min_date : datetime = None, max_date : datetime = None):
     if min_date: min_date = datetime.combine(min_date.date(), time.min)
     if max_date: max_date = datetime.combine(max_date.date(), time.max)
@@ -54,12 +54,14 @@ def get_tasks_project(project_id : int, states : list[str] = None, priorities : 
                                                 JSON_AGG ( \
                                                     JSON_BUILD_OBJECT( \
                                                         'id', U.id, \
-                                                        'username', U.username \
+                                                        'username', U.username, \
+                                                        'is_member', (GR.user_id IS NOT NULL AND GR.is_invitee = FALSE) OR U.id IS NULL \
                                                     ) \
                                                 ) AS members \
                                     FROM tasks T \
                                     LEFT JOIN task_assignments TA ON T.id = TA.task_id \
                                     LEFT JOIN users U ON TA.user_id = U.id AND U.visible = TRUE \
+                                    LEFT JOIN group_roles GR ON GR.group_id = :group_id AND GR.user_id = U.id \
                                     WHERE T.project_id = :project_id \
                                         AND T.visible = TRUE \
                                         {'AND T.deadline >= :min_date' if min_date else ''} \
@@ -71,7 +73,7 @@ def get_tasks_project(project_id : int, states : list[str] = None, priorities : 
                                     {'HAVING ARRAY_AGG(TA.user_id) @> :members' if member_query_type == 'all' else ''} \
                                     {'HAVING ARRAY_AGG(TA.user_id) @> :members AND ARRAY_AGG(TA.user_id) <@ :members' if member_query_type == 'exact' else ''} \
                                     ORDER BY T.id"),
-                                    {"project_id":project_id, "min_date":min_date, "max_date":max_date,
+                                    {"group_id":group_id, "project_id":project_id, "min_date":min_date, "max_date":max_date,
                                      "states":states, "priorities":priorities, "members":members}).fetchall()
     result = query_res_to_dict(result)
     for task in result:
@@ -88,13 +90,15 @@ def get_tasks_group(group_id : int, states : list[str] = None, priorities : list
                                                 JSON_AGG ( \
                                                     JSON_BUILD_OBJECT( \
                                                         'id', U.id, \
-                                                        'username', U.username \
+                                                        'username', U.username, \
+                                                        'is_member', (GR.user_id IS NOT NULL AND GR.is_invitee = FALSE) OR U.id IS NULL \
                                                     ) \
                                                 ) AS members \
                                     FROM tasks T \
                                     LEFT JOIN projects P ON P.id = T.project_id \
                                     LEFT JOIN task_assignments TA ON T.id = TA.task_id \
                                     LEFT JOIN users U ON TA.user_id = U.id AND U.visible = TRUE \
+                                    LEFT JOIN group_roles GR ON GR.group_id = :group_id AND GR.user_id = U.id \
                                     WHERE P.group_id = :group_id \
                                         AND T.visible = TRUE \
                                         {'AND T.deadline >= :min_date' if min_date else ''} \
@@ -112,4 +116,5 @@ def get_tasks_group(group_id : int, states : list[str] = None, priorities : list
     for task in result:
         task["state"] = task_state_enum.get_by_value(int(task["state"]))
         task["priority"] = task_priority_enum.get_by_value(int(task["priority"]))
+    print(result)
     return result

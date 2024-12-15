@@ -658,3 +658,7 @@ textarea{
     font-weight: bold;
     padding: 0.5em;
 }
+
+.text-disabled {
+    color: rgb(191, 191, 191);
+}
