@@ -48,7 +48,7 @@
                 <div onclick="sessionStorage.setItem('project-dropdown-state', true);">{{task.project_title}}</div>
             </a>
             <div>{{task.priority.display_name}}</div>
-            <div>{{task.deadline|format_datetime}}</div>
+            <div {% if task.deadline and task.deadline|is_past_date %}class="task-overdue"{% endif %}>{{task.deadline|format_datetime}}</div>
             <div>{{task.state.display_name}}</div>
             {% if task.members %}
             <div>{% for user in task.members %}{{user.username}}{% if not loop.last %}, {% endif %}{% endfor %}</div>
@@ -61,7 +61,7 @@
                 <div onclick="sessionStorage.setItem('project-dropdown-state', true);">{{task.project_title}}</div>
             </a>
             <div>{{task.priority.display_name}}</div>
-            <div>{{task.deadline|format_datetime}}</div>
+            <div {% if task.deadline and task.deadline|is_past_date %}class="task-overdue"{% endif %}>{{task.deadline|format_datetime}}</div>
 
             <div class="state-field">{{task.state.display_name}}</div>
             <form action="{{url_for('tasks.route_edit_state', group_id=g.group_id, project_id=task.project_id, task_id=task.id)}}" method="POST" style="display: none;">

@@ -703,3 +703,7 @@ textarea{
 .text-disabled {
     color: rgb(191, 191, 191);
 }
+
+.task-overdue {
+    color: rgb(228, 72, 72);
+}

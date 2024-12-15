@@ -79,7 +79,7 @@
         <div class="dropdown-item-date">
             <label>
                 Start date:<br>
-                <input type="date" id="date-min" name="date-min" value="{{request.args.get('date-min', g.date)}}">
+                <input type="date" id="date-min" name="date-min" value="{{request.args.get('date-min', g.cur_datetime|format_datetime('%Y-%m-%d'))}}">
             </label>
         </div>
         <div class="dropdown-item-date">

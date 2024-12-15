@@ -24,6 +24,7 @@ def get_user_data():
     g.priorities = [priority for priority in task_priority_enum]
     g.states = [state for state in task_state_enum]
     g.role_enum = role_enum
+    g.cur_datetime = datetime.today()
 
 # form data storing
 @app.after_request
@@ -60,11 +61,15 @@ def is_user_in_task(members : list[dict], username : str):
     return any(member["username"] == username for member in members)
 
 @app.template_filter('format_datetime')
-def format_datetime(value, format='%d.%m.%Y %H:%M'):
+def format_datetime(value : datetime, format='%d.%m.%Y %H:%M'):
     if value is None: return "None"
     if format == '%d.%m.%Y %H:%M' and value.time() == time.max.replace(microsecond=0):
         return value.strftime('%d.%m.%Y')
     return value.strftime(format)
+
+@app.template_filter('is_past_date')
+def is_past_date(value : datetime):
+    return value.date() < g.cur_datetime.date()
 
 @app.template_filter('user_ids')
 def get_user_ids_from_dict(users):

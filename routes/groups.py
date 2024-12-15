@@ -104,7 +104,6 @@ def route_tasks(group_id):
     g.sidebar_right = 1
     g.group_members = get_group_members(g.group_id)
     sorting = ["deadline", "priority", "state", "project", "title"]
-    g.date = datetime.now().strftime('%Y-%m-%d')
 
     if request.args.get("search", "0") == "1":
         sorting = request.args.getlist("sort")

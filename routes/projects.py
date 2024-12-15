@@ -83,8 +83,6 @@ def get_task_page() -> bool:
     g.sidebar_right = 1
     g.group_members = get_group_members(g.group_id, is_invitee=False)
     sorting = ["deadline", "priority", "state", "title"]
-    g.date = datetime.now().strftime('%Y-%m-%d')
-    g.time = datetime.now().strftime('%H:%M')
 
     if request.args.get("search", "0") == "1":
         sorting = request.args.getlist("sort")
