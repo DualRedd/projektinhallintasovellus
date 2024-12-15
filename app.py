@@ -8,7 +8,7 @@ app.secret_key = getenv("SECRET_KEY")
 
 # Debug mode
 debug = getenv("DEBUG")
-if debug and bool(debug):
+if debug and debug == '1':
     app.config['DEBUG'] = True
     app.config['TEMPLATES_AUTO_RELOAD'] = True
 
