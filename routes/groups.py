@@ -77,7 +77,7 @@ def route_dashboard(group_id):
     if timeframe == 'week': max_date += timedelta(days=7)
     elif timeframe == 'month': max_date += timedelta(days=monthrange(max_date.year, max_date.month)[1])
     elif timeframe == 'anytime': max_date  = None
-    g.tasks = get_tasks_group(group_id, states, members=[g.user_id], member_query_type='all', max_date=max_date)
+    g.tasks = get_tasks_group(group_id, states, members=[g.user_id], member_query_type='all', max_date=max_date, include_archived=False)
     g.tasks.sort(key=lambda task: get_task_sorting_key(task, sorting))
     return render_template("group/dashboard.html")
 
