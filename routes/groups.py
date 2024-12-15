@@ -73,12 +73,11 @@ def route_dashboard(group_id):
     filter = request.args.get('filter', 'non-completed')
     states = ['0', '1'] if filter == 'non-completed' else['0', '1', '2', '3']
     timeframe = request.args.get('time', 'week')
-    min_date = datetime.combine(datetime.today().date(), time.min)
-    max_date = datetime.combine(datetime.today().date(), time.max)
+    max_date = datetime.today()
     if timeframe == 'week': max_date += timedelta(days=7)
     elif timeframe == 'month': max_date += timedelta(days=monthrange(max_date.year, max_date.month)[1])
     elif timeframe == 'anytime': max_date  = None
-    g.tasks = get_tasks_group(group_id, states, members=[g.user_id], member_query_type='all', min_date=min_date, max_date=max_date,
+    g.tasks = get_tasks_group(group_id, states, members=[g.user_id], member_query_type='all', min_date=datetime.today(), max_date=max_date,
                               include_archived=False, include_incomplete_before_min_date=True)
     g.tasks.sort(key=lambda task: get_task_sorting_key(task, sorting))
     return render_template("group/dashboard.html")
@@ -105,6 +104,7 @@ def route_tasks(group_id):
     g.sidebar_right = 1
     g.group_members = get_group_members(g.group_id)
     sorting = ["deadline", "priority", "state", "project", "title"]
+    g.date = datetime.now().strftime('%Y-%m-%d')
 
     if request.args.get("search", "0") == "1":
         sorting = request.args.getlist("sort")
@@ -115,17 +115,20 @@ def route_tasks(group_id):
         members = request.args.getlist("member")
         member_query_type = request.args.get('member-type')
         projects = request.args.getlist('project')
+        include_incomplete_before_min_date = request.args.get("include-before-min", "0") == "1"
+        include_null_deadlines = request.args.get("include-null", "0") == "1"
         result = input.validate_group_task_search_form(sorting, min_date_str, max_date_str, states, priorities, members, member_query_type, projects)
         if result.valid:
             min_date = datetime.strptime(min_date_str, '%Y-%m-%d') if min_date_str != "" else None
             max_date = datetime.strptime(max_date_str, '%Y-%m-%d') if max_date_str != "" else None
             if g.current_page == 'project/my-tasks' and member_query_type == 'exact': members.append(g.user_id)
-            g.tasks = get_tasks_group(g.group_id, states, priorities, list(map(int,members)), member_query_type, min_date, max_date, list(map(int,projects)))
+            g.tasks = get_tasks_group(g.group_id, states, priorities, list(map(int,members)), member_query_type, min_date, max_date, list(map(int,projects)),
+                                      include_incomplete_before_min_date=include_incomplete_before_min_date, include_null_deadlines=include_null_deadlines)
         else:
             flash(result.error, "bad-search")
             return redirect(url_for("groups.route_tasks", group_id=g.group_id))
     else:
-        g.tasks = get_tasks_group(group_id, include_archived=False)
+        g.tasks = get_tasks_group(group_id, min_date=datetime.today(), include_archived=False, include_incomplete_before_min_date=True)
     g.tasks.sort(key=lambda task: get_task_sorting_key(task, sorting))
     return render_template("group/all-tasks.html")
 

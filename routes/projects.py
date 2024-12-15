@@ -94,17 +94,20 @@ def get_task_page() -> bool:
         priorities = request.args.getlist("priority")
         members = request.args.getlist("member")
         member_query_type = request.args.get('member-type')
+        include_incomplete_before_min_date = request.args.get("include-before-min", "0") == "1"
+        include_null_deadlines = request.args.get("include-null", "0") == "1"
         result = input.validate_project_task_search_form(sorting, min_date_str, max_date_str, states, priorities, members, member_query_type)
         if result.valid:
             min_date = datetime.strptime(min_date_str, '%Y-%m-%d') if min_date_str != "" else None
             max_date = datetime.strptime(max_date_str, '%Y-%m-%d') if max_date_str != "" else None
             if g.current_page == 'project/my-tasks' and member_query_type == 'exact': members.append(g.user_id)
-            g.tasks = get_tasks_project(g.group_id, g.project_id, states, priorities, list(map(int,members)), member_query_type, min_date, max_date)
+            g.tasks = get_tasks_project(g.group_id, g.project_id, states, priorities, list(map(int,members)), member_query_type, min_date, max_date,
+                                        include_incomplete_before_min_date=include_incomplete_before_min_date, include_null_deadlines=include_null_deadlines)
         else:
             flash(result.error, "bad-search")
             return False
     else:
-        g.tasks = get_tasks_project(g.group_id, g.project_id)
+        g.tasks = get_tasks_project(g.group_id, g.project_id, min_date=datetime.today(), include_incomplete_before_min_date=True)
     g.tasks.sort(key=lambda task: get_task_sorting_key(task, sorting))
     return True
 

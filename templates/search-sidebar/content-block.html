@@ -62,10 +62,24 @@
         <span>Deadline</span>
     </button>
     <div class="dropdown-item-container" style="display: none;">
+        <div class="dropdown-item-checkbox">
+            <label>
+                <input type="checkbox" name="include-null" value="1"
+                    {% if not search or request.args.get('include-null', '0') == '1' %}checked{% endif %}>
+                <div>Include unset deadlines</div>
+            </label>
+        </div>
+        <div class="dropdown-item-checkbox">
+            <label>
+                <input type="checkbox" name="include-before-min" value="1"
+                    {% if not search or request.args.get('include-before-min', '0') == '1' %}checked{% endif %}>
+                <div>Include incomplete tasks before start date</div>
+            </label>
+        </div>
         <div class="dropdown-item-date">
             <label>
                 Start date:<br>
-                <input type="date" id="date-min" name="date-min" value="{{request.args.get('date-min','')}}">
+                <input type="date" id="date-min" name="date-min" value="{{request.args.get('date-min', g.date)}}">
             </label>
         </div>
         <div class="dropdown-item-date">
