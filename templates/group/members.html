@@ -67,8 +67,8 @@
         {% endif %}
     </div>
     {% endfor %}
-    {% if g.role.value >= g.role_enum.Co_owner.value %}
 
+    {% if g.role.value >= g.role_enum.Co_owner.value %}
     <h3> Invite user: </h3>
     <form action="{{url_for('groups.route_members_add', group_id=g.group_id)}}" method="POST">
         <label> Username: </label>
@@ -77,7 +77,7 @@
         <label for="role">Role:</label>
         <select name="role-stored">
             {% for role in g.role_enum %}
-                {% if role != g.role_enum.Owner %}
+                {% if role != g.role_enum.Owner and g.role.value > role.value %}
                 <option value="{{role.value}}">{{role.display_name}}</option>
                 {% endif %}
             {% endfor %}

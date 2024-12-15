@@ -106,9 +106,11 @@ def validate_group_invite_form(group_id : int, invitee, role_value_str : int) ->
         role_value = int(role_value_str)
     except ValueError:
         return ValidationResult(False, "Invalid role!")
-    role = role_enum.get_by_value(role_value)
-    if not role or role == role_enum.Owner:
+    new_role = role_enum.get_by_value(role_value)
+    if not new_role or new_role == role_enum.Owner:
         return ValidationResult(False, "Invalid role!")
+    if new_role.value >= g.role.value:
+        return ValidationResult(False, "Invalid permissions!")
     return ValidationResult(True)
 
 def validate_create_project_form(project_name : str, project_desc : str):
