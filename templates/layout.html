@@ -15,6 +15,7 @@
         <nav>
             <span class="left-align">
                 <span> Project Management App </span>
+                {% block breadcrumb %}
                 <span>
                     {% if 'username' in session %}
                         <a href="{{url_for('base.route_index')}}" style="padding-right:0;">My groups</a>
@@ -31,6 +32,7 @@
                         {% endif %}
                     {% endif %} 
                 </span>
+                {% endblock %}
             </span>
             <span class="right-align">
                 {% if 'username' in session %}
