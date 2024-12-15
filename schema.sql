@@ -6,6 +6,7 @@ CREATE TABLE users (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     visible BOOLEAN NOT NULL DEFAULT TRUE
 );
+CREATE INDEX idx_username ON users (username);
 
 CREATE TABLE groups (
     id SERIAL PRIMARY KEY,
@@ -16,11 +17,12 @@ CREATE TABLE groups (
 );
 
 CREATE TABLE group_roles (
-    id SERIAL PRIMARY KEY,
+    id SERIAL,
     group_id INTEGER REFERENCES groups,
     user_id INTEGER REFERENCES users,
     role TEXT NOT NULL, -- meaning defined in enums.py file
-    is_invitee BOOLEAN NOT NULL DEFAULT TRUE
+    is_invitee BOOLEAN NOT NULL DEFAULT TRUE,
+    PRIMARY KEY (group_id, user_id)
 );
 
 CREATE TABLE projects (
@@ -32,6 +34,7 @@ CREATE TABLE projects (
     archived BOOLEAN NOT NULL DEFAULT FALSE,
     visible BOOLEAN NOT NULL DEFAULT TRUE
 );
+CREATE INDEX idx_project_group_id ON projects (group_id);
 
 CREATE TABLE tasks (
     id SERIAL PRIMARY KEY,
@@ -46,8 +49,9 @@ CREATE TABLE tasks (
 );
 
 CREATE TABLE task_assignments (
-    id SERIAL PRIMARY KEY,
+    id SERIAL,
     task_id INTEGER REFERENCES tasks,
     user_id INTEGER REFERENCES users,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (task_id, user_id)
 );
