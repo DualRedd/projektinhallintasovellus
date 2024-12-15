@@ -83,6 +83,7 @@
 
             <div class="secondary-text" style="grid-column: 2 / 6;">{% if task.description.strip() != '' %}{{task.description}}{% else %}No description.{% endif%}</div>
 
+            {% if not task.archived %}
             <div class="buttons-1" style="grid-column: 2 / 7;">
                 {% if g.role.value >= g.role_enum.Collaborator.value or task.members|user_in_task(g.username) %}
                 <button onclick="enableStateEditMode(this)" class="button-grey button-small">Change State</button>
@@ -93,6 +94,7 @@
                 <button onclick="submitStateForm(this)" class="button-green button-small">Confirm</button>
                 <button onclick="resetStateEditMode(this)" class="button-red button-small">Cancel</button>
             </div>
+            {% endif %}
         </div>
     </div>
     {% endfor %}

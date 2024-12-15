@@ -89,7 +89,7 @@ def get_tasks_group(group_id : int, states : list[str] = None, priorities : list
               member_query_type : str = None, min_date : datetime = None, max_date : datetime = None, projects : list[int] = None, include_archived : bool = True):
     if min_date: min_date = datetime.combine(min_date.date(), time.min)
     if max_date: max_date = datetime.combine(max_date.date(), time.max)
-    result = db.session.execute(text(f"SELECT T.id, P.id AS project_id, T.title, P.name AS project_title, \
+    result = db.session.execute(text(f"SELECT T.id, P.id AS project_id, T.title, P.name AS project_title, P.archived, \
                                                 T.description, T.state, T.priority, T.deadline, \
                                                 JSON_AGG ( \
                                                     JSON_BUILD_OBJECT( \
