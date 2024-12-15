@@ -86,7 +86,8 @@ def get_tasks_project(group_id : int, project_id : int, states : list[str] = Non
     return result
 
 def get_tasks_group(group_id : int, states : list[str] = None, priorities : list[str] = None, members : list[int] = None,
-              member_query_type : str = None, min_date : datetime = None, max_date : datetime = None, projects : list[int] = None, include_archived : bool = True):
+              member_query_type : str = None, min_date : datetime = None, max_date : datetime = None, projects : list[int] = None,
+              include_archived : bool = True, include_incomplete_before_min_date : bool = False):
     if min_date: min_date = datetime.combine(min_date.date(), time.min)
     if max_date: max_date = datetime.combine(max_date.date(), time.max)
     result = db.session.execute(text(f"SELECT T.id, P.id AS project_id, T.title, P.name AS project_title, P.archived, \
@@ -105,7 +106,8 @@ def get_tasks_group(group_id : int, states : list[str] = None, priorities : list
                                     LEFT JOIN group_roles GR ON GR.group_id = :group_id AND GR.user_id = U.id \
                                     WHERE P.group_id = :group_id \
                                         AND T.visible = TRUE \
-                                        {'AND T.deadline >= :min_date' if min_date is not None else ''} \
+                                        {'AND T.deadline >= :min_date' if min_date is not None and not include_incomplete_before_min_date else ''} \
+                                        {'AND (T.deadline >= :min_date OR T.state != :completed)' if min_date is not None and include_incomplete_before_min_date else ''} \
                                         {'AND T.deadline <= :max_date' if max_date is not None else ''} \
                                         {'AND T.state = ANY(:states)' if states is not None else ''} \
                                         {'AND T.priority = ANY(:priorities)' if priorities is not None else ''} \
@@ -117,7 +119,7 @@ def get_tasks_group(group_id : int, states : list[str] = None, priorities : list
                                     {'HAVING ARRAY_AGG(TA.user_id) @> :members AND ARRAY_AGG(TA.user_id) <@ :members' if member_query_type == 'exact' else ''} \
                                     ORDER BY T.id"),
                                     {"group_id":group_id, "min_date":min_date, "max_date":max_date, "states":states,
-                                     "priorities":priorities, "members":members, "projects":projects}).fetchall()
+                                     "priorities":priorities, "members":members, "projects":projects, "completed":str(task_state_enum.Completed.value)}).fetchall()
     result = query_res_to_dict(result)
     for task in result:
         task["state"] = task_state_enum.get_by_value(int(task["state"]))
