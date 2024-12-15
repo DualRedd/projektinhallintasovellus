@@ -122,3 +122,22 @@ def get_tasks_group(group_id : int, states : list[str] = None, priorities : list
         task["priority"] = task_priority_enum.get_by_value(int(task["priority"]))
     print(result)
     return result
+
+def get_state_count_by_user_project(group_id : int, project_id : int):
+    user_state_counts = db.session.execute(text("SELECT U.username, T.state, COUNT(T.id) AS count \
+                                                FROM users U \
+                                                JOIN group_roles GR ON GR.user_id = U.id AND GR.group_id = :group_id AND GR.is_invitee = FALSE  \
+                                                LEFT JOIN task_assignments TA ON TA.user_id = U.id \
+                                                LEFT JOIN tasks T ON T.id = TA.task_id AND T.project_id = :project_id AND T.visible = TRUE  \
+                                                WHERE U.visible = TRUE \
+                                                GROUP BY U.id, T.state \
+                                                ORDER BY U.id, T.state \
+                                                "), 
+                                                {"group_id":group_id, "project_id":project_id}).fetchall()
+    counts_by_user = {}
+    for row in user_state_counts:
+        if row.username not in counts_by_user:
+            counts_by_user[row.username] = dict((state.value, 0) for state in task_state_enum)
+        if row.state == None: continue
+        counts_by_user[row.username][int(row.state)] = int(row.count)
+    return counts_by_user

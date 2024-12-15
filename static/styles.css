@@ -503,7 +503,22 @@ header nav span a, header nav span span {
     font-size: large;
 }
 
-/* MEMBER ROW LAYOUT */
+/* ROW LAYOUTS */
+.grid-container {
+    margin: 1.5em;
+}
+
+.state-stats-item{
+    display: grid;
+    grid-template-columns: minmax(6em, 8fr) minmax(4em, 4fr) minmax(4em, 4fr) minmax(4em, 4fr);
+    align-items: center;
+    gap: 0.5em 1em;
+    line-height: 1.8;
+    padding: 0.5em 0;
+    border-bottom: 1px solid grey;
+}
+
+
 .member-container {
     padding: 1em 1.5em;
 }
@@ -523,10 +538,6 @@ header nav span a, header nav span span {
     text-overflow: ellipsis;
 }
 
-/* TASK ROW LAYOUT */
-.tasks-container {
-    padding: 1em 1.5em;
-}
 .task-item {
     display: grid;
     grid-template-columns: 1.4em minmax(6em, 7fr) minmax(5em, 3fr) minmax(8.5em, 4fr) minmax(6em, 3fr) minmax(6em, 6fr);

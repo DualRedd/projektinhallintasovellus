@@ -6,7 +6,7 @@ from datetime import datetime
 from services.groups_service import get_group_role, get_group_members, get_group_details
 from services.projects_service import create_project, update_project, get_project_details, get_projects
 from services.projects_service import update_project_archive_state, delete_soft_project
-from services.tasks_service import get_tasks_project
+from services.tasks_service import get_tasks_project, get_state_count_by_user_project
 from utils.permissions import permissions
 from utils.tools import remove_line_breaks, get_task_sorting_key
 import utils.input_validation as input
@@ -114,6 +114,7 @@ def get_task_page() -> bool:
 @projects_bp.route("/group/<int:group_id>/project/<int:project_id>/stats", methods=["GET"])
 @permissions(require_login=True, require_min_role=role_enum.Observer)
 def route_stats(group_id, project_id):
+    g.state_stats_by_user = get_state_count_by_user_project(g.group_id, g.project_id)
     g.current_page = 'project/stats'
     return render_template("project/stats.html")
 

@@ -2,7 +2,24 @@
 {% block content %}
 {% include "project/header.html" %}
 
-<h1> Empty! </h1>
+<h1> Task progress by User </h1>
+<hr>
+<div class="grid-container">
+    <div class="state-stats-item table-title">
+        <div>Username</div>
+        <div>Pending</div>
+        <div>In Progress</div>
+        <div>Complete</div>
+    </div>
+    {% for user in g.state_stats_by_user %}
+    <div class="state-stats-item">
+        <div>{{user}}</div>
+        <div>{{g.state_stats_by_user[user][0]}}</div>
+        <div>{{g.state_stats_by_user[user][1]}}</div>
+        <div>{{g.state_stats_by_user[user][2]}}</div>
+    </div>
+    {% endfor %}
+</div>
 
 
 {% endblock %}
