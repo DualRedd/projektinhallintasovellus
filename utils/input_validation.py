@@ -185,7 +185,7 @@ def validate_project_task_search_form(sorting : list[str], min_date_str : str, m
     return ValidationResult(True)
 
 def validate_group_task_search_form(sorting : list[str], min_date_str : str, max_date_str : str, states : list[str],
-                                      priorities : list[str], members : list[str], member_query_type : str):
+                                      priorities : list[str], members : list[str], member_query_type : str, projects : list[str]):
     if len(sorting) != 5:
         return ValidationResult(False, "Invalid sort options!")
     for sort_str in sorting:
@@ -193,6 +193,14 @@ def validate_group_task_search_form(sorting : list[str], min_date_str : str, max
             return ValidationResult(False, "Invalid sort options!")
     if (res := validate_common_search(min_date_str, max_date_str, states, priorities, members, member_query_type)) is not None:
         return res
+    for project_str in projects:
+        if len(project_str) > 9: # in postgres serial has max value 2147483647
+            return ValidationResult(False, "Invalid state provided!")
+        try:
+            int(project_str)
+            # don't check each individual project existing, too many queries
+        except ValueError:
+            return ValidationResult(False, "Invalid state provided!")
     return ValidationResult(True)
 
 def validate_common_search(min_date_str : str, max_date_str : str, states : list[str], priorities : list[str], members : list[str], member_query_type : str):
@@ -219,9 +227,11 @@ def validate_common_search(min_date_str : str, max_date_str : str, states : list
         except ValueError:
             return ValidationResult(False, "Invalid priority provided!")
     for member_str in members:
+        if len(member_str) > 9: # in postgres serial has max value 2147483647
+            return ValidationResult(False, "Invalid state provided!")
         try:
             int(member_str)
-            # don't check each individual member, that would be a lot of queries in the worst case
+            # don't check each individual member existing, too many queries
         except ValueError:
             return ValidationResult(False, "Invalid state provided!")
     if member_query_type not in ["any", "all", "exact"]:

@@ -141,6 +141,27 @@
         {% endfor %}
     </div>
 </div>
+{% if g.current_page == 'tasks' %}
+<div class="dropdown">
+    <button type="button" onclick="toggleDropdown(this)" class="dropdown-toggle">
+        <i class="dropdown-icon fa fa-fw fa-lg fa-caret-right"></i>
+        <span>Projects</span>
+    </button>
+    <div class="dropdown-item-container" style="display: none;">
+        {% set active_projects = request.args.getlist('project') %}
+        {% for project in g.projects %}
+            <div class="dropdown-item-checkbox">
+                <label>
+                    <input type="checkbox" name="project" value="{{project.id}}"
+                        {% if (not search and not project.archived) or project.id|string in active_projects %}checked{% endif %}>
+                    <div>{{project.name}}{% if project.archived %} <span style="color: rgb(141, 110, 0);">(Archived)</span>{% endif %}</div>
+                </label>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endif %}
 
 <div style="margin: 0.5em;">
     <button type="submit" onclick="saveSidebar()" class="button-grey">Apply</button>

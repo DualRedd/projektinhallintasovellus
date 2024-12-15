@@ -23,8 +23,11 @@ def delete_soft_project(project_id : int):
                             {"project_id":project_id})
     db.session.commit()
 
-def get_projects(group_id : int, archived : bool = False):
-    projects = db.session.execute(text("SELECT id, name, description FROM projects WHERE group_id = :group_id AND archived = :archived AND visible = TRUE ORDER BY id"),
+def get_projects(group_id : int, archived : bool = None):
+    projects = db.session.execute(text(f"SELECT id, name, description, archived FROM projects WHERE group_id = :group_id \
+                                        {'AND archived = :archived' if archived is not None else ''} \
+                                        AND visible = TRUE \
+                                        ORDER BY archived, id"),
                                         {"group_id":group_id, "archived":archived}).fetchall()
     return projects
 

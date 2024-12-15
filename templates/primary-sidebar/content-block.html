@@ -20,9 +20,11 @@
         </div>
         <div class="dropdown-item-container" style="display: none;">
             {% for project in g.projects %}
-            <a href="{{url_for('projects.route_my_tasks', group_id=g.group_id, project_id=project.id)}}">
-                <button class="{% if g.project_id == project.id %}sidebar-button-active{% endif %} dropdown-item-project">{{project.name}}</button>
-            </a>
+                {% if not project.archived %}
+                    <a href="{{url_for('projects.route_my_tasks', group_id=g.group_id, project_id=project.id)}}">
+                        <button class="{% if g.project_id == project.id %}sidebar-button-active{% endif %} dropdown-item-project">{{project.name}}</button>
+                    </a>
+                {% endif %}
             {% endfor %}
         </div>
     </div>

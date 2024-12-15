@@ -88,7 +88,7 @@ def route_dashboard(group_id):
 @permissions(require_login=True, require_min_role=role_enum.Observer)
 def route_projects(group_id):
     g.can_create_project = g.role.value >= role_enum.Manager.value
-    g.active_projects = get_projects(g.group_id)
+    g.active_projects = get_projects(g.group_id, archived=False)
     g.archived_projects = get_projects(g.group_id, archived=True)
     g.current_page = 'projects'
     return render_template("group/projects.html")
@@ -112,17 +112,18 @@ def route_tasks(group_id):
         priorities = request.args.getlist("priority")
         members = request.args.getlist("member")
         member_query_type = request.args.get('member-type')
-        result = input.validate_group_task_search_form(sorting, min_date_str, max_date_str, states, priorities, members, member_query_type)
+        projects = request.args.getlist('project')
+        result = input.validate_group_task_search_form(sorting, min_date_str, max_date_str, states, priorities, members, member_query_type, projects)
         if result.valid:
             min_date = datetime.strptime(min_date_str, '%Y-%m-%d') if min_date_str != "" else None
             max_date = datetime.strptime(max_date_str, '%Y-%m-%d') if max_date_str != "" else None
             if g.current_page == 'project/my-tasks' and member_query_type == 'exact': members.append(g.user_id)
-            g.tasks = get_tasks_group(g.group_id, states, priorities, list(map(int,members)), member_query_type, min_date, max_date)
+            g.tasks = get_tasks_group(g.group_id, states, priorities, list(map(int,members)), member_query_type, min_date, max_date, list(map(int,projects)))
         else:
             flash(result.error, "bad-search")
             return redirect(url_for("groups.route_tasks", group_id=g.group_id))
     else:
-        g.tasks = get_tasks_group(group_id)
+        g.tasks = get_tasks_group(group_id, include_archived=False)
     g.tasks.sort(key=lambda task: get_task_sorting_key(task, sorting))
     return render_template("group/all-tasks.html")
 
