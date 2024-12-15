@@ -28,9 +28,7 @@
         <div>Assigned Members</div>
     </div>
     {% for task in g.tasks %}
-    <div class="task-item-group" id="task-{{task.id}}" data-title="{{task.title}}" data-desc="{{task.description}}" data-priority="{{task.priority.value}}" data-date="{{task.deadline|format_datetime('%Y-%m-%d')}}"
-        data-time="{{task.deadline|format_datetime('%H:%M')}}" data-state="{{task.state.value}}" data-edit="{{url_for('tasks.route_edit', group_id=g.group_id, project_id=task.project_id, task_id=task.id)}}"
-        data-members="{{task.members|user_ids}}">
+    <div class="task-item-group">
         <div class="task-summary">
             <button class="detail-toggle"><i class="fa fa-fw fa-caret-right" style="font-size: 1.5em;"></i></button>
             <div>{{task.title}}</div>

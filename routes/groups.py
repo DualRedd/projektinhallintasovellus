@@ -1,7 +1,8 @@
 # standard imports
 from flask import Blueprint
 from flask import session, request, render_template, redirect, flash, url_for, g
-from datetime import datetime
+from datetime import datetime, timedelta
+from calendar import monthrange
 # Internal services
 from services.groups_service import create_group, create_group_role
 from services.groups_service import get_group_details, get_group_members, get_group_role
@@ -68,6 +69,16 @@ def route_join(group_id):
 @permissions(require_login=True, require_min_role=role_enum.Observer)
 def route_dashboard(group_id):
     g.current_page = 'dashboard'
+    sorting = ['deadline', 'priority', 'state']
+    filter = request.args.get('filter', 'non-completed')
+    states = ['0', '1'] if filter == 'non-completed' else['0', '1', '2', '3']
+    timeframe = request.args.get('time', 'week')
+    max_date = datetime.today()
+    if timeframe == 'week': max_date += timedelta(days=7)
+    elif timeframe == 'month': max_date += timedelta(days=monthrange(max_date.year, max_date.month)[1])
+    elif timeframe == 'anytime': max_date  = None
+    g.tasks = get_tasks_group(group_id, states, members=[g.user_id], member_query_type='all', max_date=max_date)
+    g.tasks.sort(key=lambda task: get_task_sorting_key(task, sorting))
     return render_template("group/dashboard.html")
 
 #---------------#

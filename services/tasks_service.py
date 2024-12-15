@@ -1,5 +1,5 @@
 from sqlalchemy.sql import text
-from datetime import datetime
+from datetime import datetime, time
 from app import db
 from utils.tools import query_res_to_dict
 from enums.enums import task_state_enum, task_priority_enum
@@ -47,6 +47,8 @@ def get_task_members(task_id : int) -> list[dict]:
 
 def get_tasks_project(project_id : int, states : list[str] = None, priorities : list[str] = None, members : list[int] = None,
               member_query_type : str = None, min_date : datetime = None, max_date : datetime = None):
+    if min_date: min_date = datetime.combine(min_date.date(), time.min)
+    if max_date: max_date = datetime.combine(max_date.date(), time.max)
     result = db.session.execute(text(f"SELECT T.id, T.title, T.description, \
                                                 T.state, T.priority, T.deadline, \
                                                 JSON_AGG ( \
@@ -79,6 +81,8 @@ def get_tasks_project(project_id : int, states : list[str] = None, priorities : 
 
 def get_tasks_group(group_id : int, states : list[str] = None, priorities : list[str] = None, members : list[int] = None,
               member_query_type : str = None, min_date : datetime = None, max_date : datetime = None):
+    if min_date: min_date = datetime.combine(min_date.date(), time.min)
+    if max_date: max_date = datetime.combine(max_date.date(), time.max)
     result = db.session.execute(text(f"SELECT T.id, P.id AS project_id, T.title, P.name AS project_title, \
                                                 T.description, T.state, T.priority, T.deadline, \
                                                 JSON_AGG ( \

@@ -110,43 +110,43 @@ header nav span a, header nav span span {
 }
 
 /* PROJECT HEADER */
-#project-header {
+#page-header {
     padding-bottom: 1em;
 }
-#project-header-title{
+#page-header-title{
     margin: 0;
     font-size: small;
     margin-top: -0.8em;
 }
-#project-header h1{
+#page-header h1{
     margin-top: 0.1em;
     margin-bottom: 0.3em;
 }
-#project-header-desc {
+#page-header-desc {
     font-size: small;
     margin-top: 0;
     margin-bottom: 0.5em;
 }
-#project-header hr{
+#page-header hr{
     border: none;
     border-bottom: 3px solid var(--primary-background);
     border-top: none;
     margin: 0em -3em;
 }
-#project-header a{
+#page-header a{
     text-decoration: none;
 }
-#project-header a button{
+#page-header a button{
     background-color: inherit;
     border: none;
     margin: 0 -0.2em -2px 0;
     font-size: large;
     padding: 1em 0.7em 0.8em 0.7em;
 }
-#project-header .active-button {
+#page-header .active-button {
     border-bottom: 2px solid black;
 }
-#project-header a button:hover{
+#page-header a button:hover{
     background-color: rgb(246, 246, 246);
 }
 
@@ -651,4 +651,10 @@ textarea{
 }
 .link-underline:hover{
     text-decoration: underline;
+}
+
+.large-select{
+    font-size: 1em;
+    font-weight: bold;
+    padding: 0.5em;
 }

@@ -1,11 +1,11 @@
 
-<div id="project-header">
-    <p id="project-header-title" class="secondary-text">
+<div id="page-header">
+    <p id="page-header-title" class="secondary-text">
         {% if g.project_details.archived %}<span style="color: rgb(141, 110, 0);">Archived</span>{% endif %}
         <span>Project</span>
     </p>
     <h1>{{g.project_details.name}}</h1>
-    <p id="project-header-desc" class="secondary-text">
+    <p id="page-header-desc" class="secondary-text">
         {% if g.project_details.description.strip() != '' %}{{g.project_details.description}}{% else %}No description{% endif %}
     </p>
 
