@@ -7,9 +7,9 @@
 <hr>
 <div id="view-mode">
     <p>Group name:</p>
-    <div class="editable-data-field"><span>{{g.group_details.name}}</span></div>
+    <div class="editable-data-field"><span id="name-display" >{{g.group_details.name}}</span></div>
     <p>Group description:</p>
-    <div class="editable-data-field"><span>{{g.group_details.description}}</span></div>
+    <div class="editable-data-field"><span id="desc-display">{{g.group_details.description}}</span></div>
     <button class="button-grey button-box-shadow" onclick="toggle_edit_mode(true)">Edit</button>
 </div>
 <div id="edit-mode" style="display: none;"> 
@@ -62,14 +62,12 @@
 <script>
     const viewMode = document.getElementById('view-mode');
     const editMode = document.getElementById('edit-mode');
-    let group_name = "{{g.group_details.name}}";    
-    let group_desc = "{{g.group_details.description}}";
     function toggle_edit_mode(editing = true) {
         if (editing) {
             viewMode.style.display = 'none';
             editMode.style.display = 'block';
-            editMode.querySelector("form input[name='name-stored']").value = group_name;
-            editMode.querySelector("form textarea[name='desc-stored']").value = group_desc;
+            editMode.querySelector("form input[name='name-stored']").value = document.getElementById("name-display").innerHTML;
+            editMode.querySelector("form textarea[name='desc-stored']").value = document.getElementById("desc-display").innerHTML;
         } else {
             viewMode.style.display = 'block';
             editMode.style.display = 'none';
