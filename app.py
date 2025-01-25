@@ -14,8 +14,9 @@ if debug and debug == '1':
 
 # Database setup
 database_URI = getenv("DATABASE_URL")
-if database_URI.startswith("postgres://"): # SQLAlchemy has removed support for the postgres name
-    database_URI.replace("postgres://", "postgresql://", 1)
+if database_URI.startswith('postgres://'): # SQLAlchemy has removed support for the postgres name
+    database_URI.replace('postgres://', 'postgresql://')
+print(database_URI)
 app.config["SQLALCHEMY_DATABASE_URI"] = database_URI
 db = SQLAlchemy(app)
 
