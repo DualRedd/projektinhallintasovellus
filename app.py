@@ -13,7 +13,10 @@ if debug and debug == '1':
     app.config['TEMPLATES_AUTO_RELOAD'] = True
 
 # Database setup
-app.config["SQLALCHEMY_DATABASE_URI"] = getenv("DATABASE_URL")
+database_URI = getenv("DATABASE_URL")
+if database_URI.startswith("postgres://"): # SQLAlchemy has removed support for the postgres name
+    database_URI.replace("postgres://", "postgresql://", 1)
+app.config["SQLALCHEMY_DATABASE_URI"] = database_URI
 db = SQLAlchemy(app)
 
 # routes setup
