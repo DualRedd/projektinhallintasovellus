@@ -1,3 +1,7 @@
+# Demoversio
+
+Klikkaa [tästä](https://project-management-application-af90ff0e9330.herokuapp.com)!
+
 # Projektinhallintasovellus
 
 Kirjautumisominaisuudet ja ryhmät:
